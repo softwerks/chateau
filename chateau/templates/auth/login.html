@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="{{ url_for('auth.login') }}" method="post">
+    {{ form.csrf_token }}
+    {{ form.username.label }}
+    {{ form.username(type="email") }}
+    {{ form.password.label }}<span><a href="#" tabindex='-1'>Forgot your password?</a></span>
+    {{ form.password(type="password", autocomplete="current-password") }}
+    <button is="password-toggle" password-input="{{ form.password.id }}"></button>
+    {{ form.timezone }}
+    <button type="submit">Log in</button>
+    <p>Don't have an account? <a href="#">Sign up</a></p>
+</form>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+    document.getElementById('{{ form.timezone.id }}').value = tz
+</script>
+{% endblock %}

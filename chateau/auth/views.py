@@ -12,21 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Union
+
 import flask
+import werkzeug
 
-import chateau.auth
+from chateau.auth import blueprint
+import chateau.auth.forms as forms
 
 
-def create_app() -> flask.app.Flask:
-    app = flask.Flask(__name__, instance_relative_config=True)
-
-    app.config.from_object("chateau.config")
-    app.config.from_pyfile("config.py", silent=True)
-
-    @app.route("/")
-    def index() -> str:
-        return flask.render_template("index.html")
-
-    app.register_blueprint(chateau.auth.blueprint, url_prefix="/auth")
-
-    return app
+@blueprint.route("login", methods=["GET", "POST"])
+def login() -> Union[werkzeug.wrappers.Response, str]:
+    form = forms.LoginForm()
+    if form.validate_on_submit():
+        return flask.redirect(flask.url_for("index"))
+    return flask.render_template("auth/login.html", form=form)

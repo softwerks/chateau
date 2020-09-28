@@ -14,19 +14,6 @@
 
 import flask
 
-import chateau.auth
+blueprint = flask.Blueprint("auth", __name__)
 
-
-def create_app() -> flask.app.Flask:
-    app = flask.Flask(__name__, instance_relative_config=True)
-
-    app.config.from_object("chateau.config")
-    app.config.from_pyfile("config.py", silent=True)
-
-    @app.route("/")
-    def index() -> str:
-        return flask.render_template("index.html")
-
-    app.register_blueprint(chateau.auth.blueprint, url_prefix="/auth")
-
-    return app
+import chateau.auth.views

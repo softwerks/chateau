@@ -12,21 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import flask
-
-import chateau.auth
-
-
-def create_app() -> flask.app.Flask:
-    app = flask.Flask(__name__, instance_relative_config=True)
-
-    app.config.from_object("chateau.config")
-    app.config.from_pyfile("config.py", silent=True)
-
-    @app.route("/")
-    def index() -> str:
-        return flask.render_template("index.html")
-
-    app.register_blueprint(chateau.auth.blueprint, url_prefix="/auth")
-
-    return app
+SECRET_KEY = "dev"
