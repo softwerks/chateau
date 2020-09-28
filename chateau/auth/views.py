@@ -27,3 +27,11 @@ def login() -> Union[werkzeug.wrappers.Response, str]:
     if form.validate_on_submit():
         return flask.redirect(flask.url_for("index"))
     return flask.render_template("auth/login.html", form=form)
+
+
+@blueprint.route("signup", methods=["GET", "POST"])
+def signup() -> Union[werkzeug.wrappers.Response, str]:
+    form = forms.SignupForm()
+    if form.validate_on_submit():
+        return flask.redirect(flask.url_for("index"))
+    return flask.render_template("auth/signup.html", form=form)

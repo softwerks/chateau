@@ -40,3 +40,17 @@ class LoginForm(flask_wtf.FlaskForm):
             wtforms.validators.Length(min=TZDATA_MIN_LENGTH, max=TZDATA_MAX_LENGTH),
         ],
     )
+
+
+class SignupForm(flask_wtf.FlaskForm):
+    username = wtforms.StringField(
+        "Email", [wtforms.validators.DataRequired(), wtforms.validators.Email()]
+    )
+    password = wtforms.PasswordField(
+        "Password",
+        [
+            wtforms.validators.DataRequired(),
+            wtforms.validators.Length(min=PASSWORD_MIN_LENGTH, max=PASSWORD_MAX_LENGTH),
+        ],
+    )
+    recaptcha = flask_wtf.RecaptchaField()

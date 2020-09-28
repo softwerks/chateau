@@ -1,7 +1,7 @@
 {% block content %}
 <nav>
     <ul>
-        <li><a href="#">Create a free account</a></li>
+        <li><a href="{{ url_for('auth.signup') }}">Create a free account</a></li>
         <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
     </ul>
 </nav>
