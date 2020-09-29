@@ -54,3 +54,10 @@ class SignupForm(flask_wtf.FlaskForm):
         ],
     )
     recaptcha = flask_wtf.RecaptchaField()
+
+
+class ResetForm(flask_wtf.FlaskForm):
+    username = wtforms.StringField(
+        "Email", [wtforms.validators.DataRequired(), wtforms.validators.Email()]
+    )
+    recaptcha = flask_wtf.RecaptchaField()

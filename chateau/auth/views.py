@@ -35,3 +35,11 @@ def signup() -> Union[werkzeug.wrappers.Response, str]:
     if form.validate_on_submit():
         return flask.redirect(flask.url_for("index"))
     return flask.render_template("auth/signup.html", form=form)
+
+
+@blueprint.route("reset", methods=["GET", "POST"])
+def reset() -> Union[werkzeug.wrappers.Response, str]:
+    form = forms.ResetForm()
+    if form.validate_on_submit():
+        return flask.redirect(flask.url_for("index"))
+    return flask.render_template("auth/reset.html", form=form)
