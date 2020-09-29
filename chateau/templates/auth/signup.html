@@ -6,6 +6,7 @@
     {{ form.username.label }}
     {{ form.username(type="email") }}
     {{ form.password.label }}
+    <password-meter password-input="{{ form.password.id }}"></password-meter>
     {{ form.password(type="password", autocomplete="new-password") }}
     <button is="password-toggle" password-input="{{ form.password.id }}"></button>
     {{ form.recaptcha }}
