@@ -12,28 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-class PasswordToggle extends HTMLButtonElement {
+class PasswordToggle extends HTMLElement {
     constructor() {
-        self = super();
+        super();
 
-        self.type = 'button';
-        self.tabIndex = -1;
-        self.onclick = self.toggle;
-        self.innerHTML = 'Show';
+        const shadowRoot = this.attachShadow({mode: 'open'});
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.tabIndex = -1;
+        button.innerHTML = 'Show';
+        shadowRoot.append(button);
+
+        button.addEventListener('click', e => {
+            const inputID = this.getAttribute('password-input');
+            const inputElement = document.getElementById(inputID);
+            if (inputElement.type === 'password') {
+                button.innerHTML = 'Hide';
+                inputElement.type = 'text';
+            } else {
+                button.innerHTML = 'Show';
+                inputElement.type = 'password';
+            }
+            inputElement.focus();
+        });
     }
-
-    toggle = function(e) {
-        const inputID = self.getAttribute('password-input');
-        const inputElement = document.getElementById(inputID);
-        if (inputElement.type === 'password') {
-            self.innerHTML = 'Hide';
-            inputElement.type = 'text';
-        } else {
-            self.innerHTML = 'Show';
-            inputElement.type = 'password';
-        }
-        inputElement.focus();
-    };
 }
 
-window.customElements.define('password-toggle', PasswordToggle, { extends: 'button' });
+customElements.define('password-toggle', PasswordToggle);

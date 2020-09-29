@@ -8,7 +8,7 @@
     {{ form.password.label }}
     <password-meter password-input="{{ form.password.id }}"></password-meter>
     {{ form.password(type="password", autocomplete="new-password") }}
-    <button is="password-toggle" password-input="{{ form.password.id }}"></button>
+    <password-toggle password-input="{{ form.password.id }}"></password-toggle>
     {{ form.recaptcha }}
     <button type="submit">Sign up</button>
     <p>Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
