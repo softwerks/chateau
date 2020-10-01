@@ -20,15 +20,3 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     created TIMESTAMP WITH TIME ZONE NOT NULL
 );
-
-DROP TABLE IF EXISTS sessions;
-CREATE TABLE sessions (
-    id UUID PRIMARY KEY,
-    user_id INTEGER REFERENCES users,
-    created TIMESTAMP WITH TIME ZONE NOT NULL,
-    expires TIMESTAMP WITH TIME ZONE NOT NULL,
-    last_seen TIMESTAMP WITH TIME ZONE NOT NULL,
-    address INET NOT NULL,
-    user_agent TEXT NOT NULL,
-    time_zone TEXT NOT NULL
-);
