@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+DATABASE_DSN = "postgresql://user:password@host:port"
 RECAPTCHA_PRIVATE_KEY = "recaptcha-private-key"
 RECAPTCHA_PUBLIC_KEY = "recaptcha-public-key"
 SECRET_KEY = "dev"
