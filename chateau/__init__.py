@@ -13,9 +13,12 @@
 # limitations under the License.
 
 import flask
+import psycopg2.pool
+import redis
 
 import chateau.auth
 import chateau.database
+import chateau.session
 
 
 def create_app() -> flask.app.Flask:
@@ -24,7 +27,13 @@ def create_app() -> flask.app.Flask:
     app.config.from_object("chateau.config")
     app.config.from_pyfile("config.py", silent=True)
 
-    chateau.database.init_app(app)
+    database_connection_pool = psycopg2.pool.ThreadedConnectionPool(
+        1, 16, app.config["DATABASE_DSN"], cursor_factory=psycopg2.extras.DictCursor
+    )
+    chateau.database.init_app(app, database_connection_pool)
+
+    session_connection_pool = redis.ConnectionPool.from_url(app.config["SESSION_URL"])
+    chateau.session.init_app(app, session_connection_pool)
 
     @app.route("/")
     def index() -> str:

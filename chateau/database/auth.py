@@ -14,6 +14,7 @@
 
 from typing import Optional
 
+import flask
 import psycopg2.extras
 import werkzeug.security
 
@@ -22,9 +23,8 @@ from chateau import database
 
 def create_user(username: str, password: str) -> None:
     """Create a new user."""
-    db = database.connect()
     if read_user(username) is None:
-        db.execute(
+        flask.g.db.execute(
             """
             INSERT INTO users (username, password, created)
             VALUES (%s, %s,
@@ -36,8 +36,7 @@ def create_user(username: str, password: str) -> None:
 
 def read_user(username: str) -> Optional[psycopg2.extras.DictRow]:
     """Retrieve a user record."""
-    db = database.connect()
-    user = db.queryone(
+    user = flask.g.db.queryone(
         """
         SELECT *
         FROM users

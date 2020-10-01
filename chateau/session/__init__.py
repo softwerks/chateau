@@ -16,33 +16,24 @@ from functools import partial
 from typing import Union
 
 import flask
-import psycopg2.pool
-
-from chateau.database import auth
-from chateau.database import connection
+import redis
 
 
-class DatabaseError(Exception):
-    """Database error."""
-
-    pass
-
-
-def init_app(app: flask.app.Flask, pool: psycopg2.pool.ThreadedConnectionPool) -> None:
+def init_app(app: flask.app.Flask, pool: redis.ConnectionPool) -> None:
     """Initialize the app."""
-    app.before_request(partial(connect, pool))
-    app.teardown_appcontext(close)
+    app.before_request(partial(load, pool))
 
 
-def connect(pool: psycopg2.pool.ThreadedConnectionPool) -> None:
-    """Connect to the database."""
-    if "db" not in flask.g:
-        flask.g.db = connection.Connection(pool)
+def load(pool: redis.ConnectionPool) -> None:
+    session_store = connect(pool)
+    session_id = flask.session.get("session_id")
+
+    if session_id is None:
+        flask.g.user = None
 
 
-def close(error: Union[int, Exception] = None) -> None:
-    """Close the database."""
-    db = flask.g.pop("db", None)
+def connect(pool: redis.ConnectionPool) -> redis.Redis:
+    if "session_store" not in flask.g:
+        flask.g.session_store = redis.Redis(connection_pool=pool)
 
-    if db is not None:
-        db.close()
+    return flask.g.session_store

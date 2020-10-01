@@ -17,9 +17,10 @@ import logging
 from typing import Callable, Optional, Union
 
 import psycopg2
+import psycopg2.pool
 import psycopg2.extras
 
-import chateau.database
+from chateau import database
 
 
 logger = logging.getLogger(__name__)
@@ -33,31 +34,26 @@ def _operation(func: Callable) -> Callable:
         self, statement: str, vars: Union[list, tuple, dict, None] = None
     ) -> Callable:
         try:
-            with self.db:
-                with self.db.cursor() as cur:
+            with self.conn:
+                with self.conn.cursor() as cur:
                     return func(self, statement, vars, cur)
         except psycopg2.Error as e:
             logger.error(f"{e.pgcode} {e.pgerror}")
-            raise chateau.database.DatabaseError
+            raise database.DatabaseError
 
     return wrapper
 
 
-class PostgreSQL:
+class Connection:
     """Database."""
 
-    def __init__(self, dsn: str) -> None:
-        self.db = PostgreSQL._connect(dsn)
-
-    @staticmethod
-    def _connect(dsn: str) -> psycopg2.extensions.connection:
-        """Get a database session."""
-        db = psycopg2.connect(dsn, cursor_factory=psycopg2.extras.DictCursor)
-        return db
+    def __init__(self, pool: psycopg2.pool.ThreadedConnectionPool) -> None:
+        self.pool: psycopg2.pool.ThreadedConnectionPool = pool
+        self.conn: psycopg2.extensions.connection = self.pool.getconn()
 
     def close(self) -> None:
         """Close the database."""
-        self.db.close()
+        self.pool.putconn(self.conn)
 
     @_operation
     def execute(
