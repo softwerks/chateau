@@ -18,7 +18,8 @@ import flask
 import werkzeug
 
 from chateau.auth import blueprint
-import chateau.auth.forms as forms
+from chateau.auth import forms
+from chateau import database
 
 
 @blueprint.route("login", methods=["GET", "POST"])
@@ -33,6 +34,11 @@ def login() -> Union[werkzeug.wrappers.Response, str]:
 def signup() -> Union[werkzeug.wrappers.Response, str]:
     form = forms.SignupForm()
     if form.validate_on_submit():
+        try:
+            database.auth.create_user(form.username.data, form.password.data)
+        except database.DatabaseError:
+            flask.abort(500)
+        flask.flash(form.username.data)
         return flask.redirect(flask.url_for("index"))
     return flask.render_template("auth/signup.html", form=form)
 
