@@ -16,4 +16,4 @@ import flask
 
 blueprint = flask.Blueprint("auth", __name__)
 
-import chateau.auth.views
+import chateau.auth.routes
