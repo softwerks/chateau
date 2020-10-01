@@ -15,6 +15,7 @@
 import flask
 
 import chateau.auth
+import chateau.database
 
 
 def create_app() -> flask.app.Flask:
@@ -22,6 +23,8 @@ def create_app() -> flask.app.Flask:
 
     app.config.from_object("chateau.config")
     app.config.from_pyfile("config.py", silent=True)
+
+    chateau.database.init_app(app)
 
     @app.route("/")
     def index() -> str:
