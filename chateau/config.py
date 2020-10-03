@@ -16,4 +16,7 @@ DATABASE_DSN = "postgresql://user:password@host:port"
 RECAPTCHA_PRIVATE_KEY = "recaptcha-private-key"
 RECAPTCHA_PUBLIC_KEY = "recaptcha-public-key"
 SECRET_KEY = "dev"
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = False
 SESSION_URL = "redis://host:port?db=0"

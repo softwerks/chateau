@@ -13,10 +13,12 @@
 # limitations under the License.
 
 from functools import partial
-from typing import Union
+import secrets
 
 import flask
 import redis
+
+TOKEN_LENGTH = 16
 
 
 def init_app(app: flask.app.Flask, pool: redis.ConnectionPool) -> None:
@@ -25,15 +27,18 @@ def init_app(app: flask.app.Flask, pool: redis.ConnectionPool) -> None:
 
 
 def load(pool: redis.ConnectionPool) -> None:
-    session_store = connect(pool)
-    session_id = flask.session.get("session_id")
+    session_store = redis.Redis(connection_pool=pool)
+    session_id = flask.session.get("id")
 
     if session_id is None:
-        flask.g.user = None
+        token: str = new()
+        flask.session["id"] = token
+        session_store.hset("session", token, "test")
+
+    print(flask.session["id"])
 
 
-def connect(pool: redis.ConnectionPool) -> redis.Redis:
-    if "session_store" not in flask.g:
-        flask.g.session_store = redis.Redis(connection_pool=pool)
+def new() -> str:
+    token: str = secrets.token_urlsafe(TOKEN_LENGTH)
 
-    return flask.g.session_store
+    return token
