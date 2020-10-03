@@ -5,5 +5,5 @@ title: Backgammon Network | Docs
 
 # Backgammon Network
 
-- Terms
-- Privacy Policy
+- [Terms]({% link legal/terms.md | prepend: site.baseurl %})
+- [Privacy Policy]({% link legal/privacy.md | prepend: site.baseurl %})
