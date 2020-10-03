@@ -10,7 +10,8 @@
     {{ form.password(type="password", autocomplete="new-password") }}
     <password-toggle password-input="{{ form.password.id }}"></password-toggle>
     {{ form.recaptcha }}
-    <button type="submit">Sign up</button>
+    <p>By creating an account, you agree to the <a href="https://docs.bkgmn.net/legal/terms.html">Terms of Service</a> and <a href="https://docs.bkgmn.net/legal/privacy.html">Privacy Policy</a>.<p>
+    <button type="submit">Create account</button>
     <p>Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
 </form>
 {% endblock %}
