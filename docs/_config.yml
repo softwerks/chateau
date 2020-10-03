@@ -1,0 +1,11 @@
+title: Backgammon Network | Docs
+description: Documentation for bkgmn.net.
+url: https://docs.bkgmn.net
+author:
+  name: Softwerks LLC
+  url: https://www.softwerks.com
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jemoji
