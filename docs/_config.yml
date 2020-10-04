@@ -4,6 +4,7 @@ url: https://docs.bkgmn.net
 author:
   name: Softwerks LLC
   url: https://www.softwerks.com
+privacy: privacy@softwerks.com
 
 plugins:
   - jekyll-seo-tag
