@@ -14,7 +14,7 @@ Changes to our Services may require us to update the Terms. Significant changes 
 Violation of the Terms may result in termination of your account.
 
 ## Age Restriction
-Our Services are not intended for persons under the age of 13 (or 16 in the European Union). By creating an account, you verify that you are 13 (or 16 in the European Union) years of age or older. Persons between the ages of 13 and 18 must be registered by their parent or guardian.
+Our Services are not intended for persons under the age of 13. By creating an account, you verify that you are 13 years of age or older. Persons between the ages of 13 and 18 must be registered by their parent or guardian.
 
 ## Gambling
 Use of our Services to facilitate gambling in any form is strictly prohibited.
