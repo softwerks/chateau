@@ -7,7 +7,7 @@ title: Backgammon Network | Terms of Service
 
 *Last updated: Oct 3, 2020*
 
-Following are the Terms of Service ("terms") for the Backgammon Network (bkgmn.net), an online backgammon service operated by Softwerks LLC ("we", "us", "our"). These terms apply whenever you use the site, apps, products, and services ("services") offered by bkgmn.net now or in the future.
+Following are the Terms of Service ("terms") for the Backgammon Network ("bkgmn.net"), an online backgammon service operated by Softwerks LLC ("we", "us", "our"). These terms apply whenever you use the site, apps, products, and services ("services") offered by bkgmn.net now or in the future.
 
 Changes to our services may require us to update the terms. Significant changes will be announced on the bkgmn.net [blog](https://blog.bkgmn.net). When you use our services, you are agreeing to the latest Terms of Service.
 
