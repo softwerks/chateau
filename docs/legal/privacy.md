@@ -30,9 +30,9 @@ When you browse pages on Backgammon Network websites, we collect information tha
 When you sign up for an account or request a password reset, we use Google's CAPTCHA services as a means of spam protection. Refer to the [Google Privacy Policy](https://www.google.com/intl/en/policies/privacy/) for additional information.
 
 ### Cookies
-A cookie is a piece of text stored by your browser to help it remember your login information, site preferences, and more. You can adjust cookie retention settings in your own browser. To learn more about cookies, including how to view which cookies have been set and how to manage and delete them, please visit: www.allaboutcookies.org.
+A [cookie](https://en.wikipedia.org/wiki/HTTP_cookie) is a piece of text stored by your browser to help it remember your login information, site preferences, and more. You can adjust cookie retention settings in your own browser. To learn more about cookies, including how to view which cookies have been set and how to manage and delete them, please visit: www.allaboutcookies.org.
 
-We use [cookies](https://en.wikipedia.org/wiki/HTTP_cookie) to identify you when you use or browse our Services. Cookies are stored in your browser and transmitted to us whether or not you are logged in to an account.
+We use cookies to identify you when you use or browse our Services. Cookies are stored in your browser and transmitted to us whether or not you are logged in to an account.
 
 Cookies are necessary for the function of our Services and are used to help us identify and track visitors, usage, and access preferences for our Services, as well as track and understand marketing campaign effectiveness.
 
