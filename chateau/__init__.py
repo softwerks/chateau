@@ -32,7 +32,9 @@ def create_app() -> flask.app.Flask:
     )
     chateau.database.init_app(app, database_connection_pool)
 
-    session_connection_pool = redis.ConnectionPool.from_url(app.config["SESSION_URL"])
+    session_connection_pool = redis.ConnectionPool.from_url(
+        app.config["SESSION_URL"], charset="utf-8", decode_responses=True
+    )
     chateau.session.init_app(app, session_connection_pool)
 
     @app.route("/")
