@@ -43,7 +43,7 @@ def load(pool: redis.ConnectionPool) -> None:
 def _new_anonymous(pool: redis.ConnectionPool) -> str:
     token: str = secrets.token_urlsafe(TOKEN_LENGTH)
 
-    session_store = redis.Redis(connection_pool=pool)
+    session_store: redis.Redis = redis.Redis(connection_pool=pool)
     key: str = KEY_PREFIX + token
     session_store.hmset(
         key,
