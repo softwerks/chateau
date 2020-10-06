@@ -12,50 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import datetime
 from functools import partial
-import secrets
 
 import flask
 import redis
 
-KEY_PREFIX = "session:"
-TOKEN_LENGTH = 16
+from chateau.session import session
 
 
-def init_app(app: flask.app.Flask, pool: redis.ConnectionPool) -> None:
+def init_app(app: flask.app.Flask, session_store: redis.Redis) -> None:
     """Initialize the app."""
-    app.before_request(partial(load, pool))
+    app.before_request(partial(load, session_store))
 
 
-def load(pool: redis.ConnectionPool) -> None:
-    token: str = flask.session.get("id")
-    if token is None:
-        token = _new_anonymous(pool)
-
-    session_store: redis.Redis = redis.Redis(connection_pool=pool)
-    key: str = KEY_PREFIX + token
-    if not session_store.exists(key):
-        token = _new_anonymous(pool)
-    flask.g.session = session_store.hgetall(key)
-
-
-def _new_anonymous(pool: redis.ConnectionPool) -> str:
-    token: str = secrets.token_urlsafe(TOKEN_LENGTH)
-
-    session_store: redis.Redis = redis.Redis(connection_pool=pool)
-    key: str = KEY_PREFIX + token
-    session_store.hmset(
-        key,
-        {
-            "type": "anonymous",
-            "address": flask.request.remote_addr,
-            "user_agent": flask.request.user_agent.string,
-        },
-    )
-    session_store.expire(key, datetime.timedelta(days=30))
-
-    flask.session.clear()
-    flask.session["id"] = token
-
-    return token
+def load(session_store: redis.Redis) -> None:
+    if "session" not in flask.g:
+        flask.g.session = session.Session(session_store)
+    print(flask.g.session.data)

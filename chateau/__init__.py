@@ -32,10 +32,10 @@ def create_app() -> flask.app.Flask:
     )
     chateau.database.init_app(app, database_connection_pool)
 
-    session_connection_pool = redis.ConnectionPool.from_url(
+    session_store = redis.Redis.from_url(
         app.config["SESSION_URL"], charset="utf-8", decode_responses=True
     )
-    chateau.session.init_app(app, session_connection_pool)
+    chateau.session.init_app(app, session_store)
 
     @app.route("/")
     def index() -> str:
