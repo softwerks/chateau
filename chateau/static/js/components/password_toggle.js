@@ -20,6 +20,7 @@ class PasswordToggle extends HTMLElement {
 
         const button = document.createElement('button');
         button.type = 'button';
+        button.part = 'toggle';
         button.tabIndex = -1;
         button.innerHTML = 'Show';
         shadowRoot.append(button);
