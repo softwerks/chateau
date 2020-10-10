@@ -13,6 +13,6 @@
     font-size: 2rem;
 }
 
-.backgammon-board.bar {
+.backgammon-board .bar {
     background: lightgrey;
 }
