@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="backgammon-board">
+    <table>
+        <tr>
+            <td>13</td>
+            <td>14</td>
+            <td>15</td>
+            <td>16</td>
+            <td>17</td>
+            <td>18</td>
+            <td></td>
+            <td>19</td>
+            <td>20</td>
+            <td>21</td>
+            <td>22</td>
+            <td>23</td>
+            <td>24</td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker1" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker2" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker3" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker4" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker5" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker6" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker7" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker8" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker9" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker10" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker11" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker12" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker13" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker14" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker15" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)" class="die">⚀</td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)" class="die">⚁</td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)" class="die">⚄</td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)" class="die">⚄</td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker16" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker17" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker18" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker19" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker20" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker21" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker22" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker23" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker24" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker25" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker26" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+        </tr>
+        <tr>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker27" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker28" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td class="bar"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker29" draggable="true" ondragstart="drag(event)">⚪</span>
+            </td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)"></td>
+            <td ondragover="allowDrop(event)" ondrop="drop(event)">
+                <span id="checker30" draggable="true" ondragstart="drag(event)">⚫</span>
+            </td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td>11</td>
+            <td>10</td>
+            <td>9</td>
+            <td>8</td>
+            <td>7</td>
+            <td></td>
+            <td>6</td>
+            <td>5</td>
+            <td>4</td>
+            <td>3</td>
+            <td>2</td>
+            <td>1</td>
+        </tr>
+    </table>
+</div>
+<p>⚀ ⚁ ⚂ ⚃ ⚄ ⚄⚪⚫</p>
+{% endblock %}
+{% block javascript %}
+<script>
+    function allowDrop(e) {
+        e.preventDefault();
+    }
+
+    function drag(e) {
+        e.dataTransfer.setData('text', e.target.id);
+    }
+
+    function drop(e) {
+        e.preventDefault();
+        const data = e.dataTransfer.getData('text');
+        e.target.appendChild(document.getElementById(data));
+    }
+</script>
+{% endblock %}

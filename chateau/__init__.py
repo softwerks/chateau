@@ -18,6 +18,7 @@ import redis
 
 import chateau.auth
 import chateau.database
+import chateau.game
 import chateau.session
 
 
@@ -42,5 +43,6 @@ def create_app() -> flask.app.Flask:
         return flask.render_template("index.html")
 
     app.register_blueprint(chateau.auth.blueprint, url_prefix="/auth")
+    app.register_blueprint(chateau.game.blueprint, url_prefix="/game")
 
     return app
