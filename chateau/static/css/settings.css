@@ -1,3 +1,13 @@
+.settings {
+    max-width: 64rem;
+    padding: 0 1rem;
+    margin: auto;
+}
+
+.settings .table-container {
+    overflow-x:auto;
+}
+
 .settings table {
     border-collapse: collapse;
     width: 100%;
