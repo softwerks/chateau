@@ -1,3 +1,9 @@
+.auth .error {
+    font-weight: bold;
+    color: red;
+    text-align: center;
+}
+
 .auth form {
     max-width: 24rem;
     margin: auto;
@@ -11,8 +17,7 @@
 }
 
 .auth h1 {
-    display: flex;
-    justify-content: center;
+    text-align: center;
 }
 
 .auth .g-recaptcha {
@@ -21,7 +26,7 @@
     margin: 0.5rem 0;
 }
 
-.password {
+.auth .password {
     display: flex;
 }
 

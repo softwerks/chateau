@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union
+from typing import Optional, Union
 
 import flask
 import werkzeug
@@ -24,10 +24,27 @@ from chateau import database
 
 @blueprint.route("login", methods=["GET", "POST"])
 def login() -> Union[werkzeug.wrappers.Response, str]:
+    error: Optional[str] = None
     form = forms.LoginForm()
     if form.validate_on_submit():
-        return flask.redirect(flask.url_for("index"))
-    return flask.render_template("auth/login.html", form=form)
+        try:
+            password_is_valid, user_id = database.auth.validate_password(
+                form.username.data, form.password.data
+            )  # type: bool, Optional[int]
+            if password_is_valid:
+                flask.g.session.new({"type": "authenticated", "id": user_id})
+                return flask.redirect(flask.url_for("index"))
+            else:
+                error = "Invalid email or password."
+        except database.DatabaseError:
+            flask.abort(500)
+    return flask.render_template("auth/login.html", form=form, error=error)
+
+
+@blueprint.route("logout")
+def logout() -> werkzeug.wrappers.Response:
+    flask.g.session.delete()
+    return flask.redirect(flask.url_for("index"))
 
 
 @blueprint.route("signup", methods=["GET", "POST"])

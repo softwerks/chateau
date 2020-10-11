@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Optional
+from typing import Optional, Tuple
 
 import flask
 import psycopg2.extras
@@ -45,3 +45,14 @@ def read_user(username: str) -> Optional[psycopg2.extras.DictRow]:
         (username,),
     )
     return user
+
+
+def validate_password(username: str, password: str) -> Tuple[bool, Optional[int]]:
+    user = read_user(username)
+    if user is not None:
+        password_is_valid = werkzeug.security.check_password_hash(
+            user["password"], password
+        )
+        return password_is_valid, user["id"]
+    else:
+        return False, None

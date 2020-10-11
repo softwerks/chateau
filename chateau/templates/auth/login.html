@@ -4,6 +4,7 @@
 <div class="auth">
     <form action="{{ url_for('auth.login') }}" method="post">
         <h1>Log in</h1>
+        {% if error is not none %}<div class="error">{{ error }}</div>{% endif %}
         {{ form.csrf_token }}
         {{ form.username.label }}
         {{ form.username(type="email") }}

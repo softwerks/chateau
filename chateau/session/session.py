@@ -73,3 +73,13 @@ class Session:
         flask.session["id"] = token
 
         return token
+
+    def delete(self) -> None:
+        token: str = flask.session.get("id")
+        key: str = KEY_PREFIX + token
+        self.store.delete(key)
+        flask.session.clear()
+
+    def is_authenticated(self) -> bool:
+        print(self.data)
+        return True if self.data["type"] == "authenticated" else False

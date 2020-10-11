@@ -40,7 +40,9 @@ def create_app() -> flask.app.Flask:
 
     @app.route("/")
     def index() -> str:
-        return flask.render_template("index.html")
+        return flask.render_template(
+            "index.html", authenticated=flask.g.session.is_authenticated()
+        )
 
     app.register_blueprint(chateau.auth.blueprint, url_prefix="/auth")
     app.register_blueprint(chateau.settings.blueprint, url_prefix="/settings")
