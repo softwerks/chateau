@@ -16,6 +16,7 @@
 .settings th,
 .settings td {
     padding: 0.5rem;
+    white-space: nowrap;
 }
 
 .settings th {
