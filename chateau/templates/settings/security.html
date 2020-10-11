@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="settings">
+    <h1>Sessions</h1>
+    <table>
+        <tr>
+            <th>Browser & OS</th>
+            <th>Logged on</th>
+            <th>Last seen</th>
+            <th>IP address</th>
+        </tr>
+        {% for s in sessions %}
+        <tr>
+            <td>{{ browser_os(s.data.user_agent) }}</td>
+            <td>{{ local_time(s.data.created) }}</td>
+            <td>{{ local_time(s.data.last_seen) }}</td>
+            <td>{{ s.data.address }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+.settings table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.settings th, .settings td {
+    padding: 0.5rem;
+}
+
+.settings th {
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.settings tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
