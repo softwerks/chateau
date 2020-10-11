@@ -14,6 +14,8 @@
 
 import datetime
 import secrets
+import time
+from typing import Mapping, Union
 
 import flask
 import redis
@@ -32,23 +34,36 @@ class Session:
     def load(self) -> dict:
         token: str = flask.session.get("id")
         if token is None:
-            token = self.new(type="anonymous")
+            token = self.new({"type": "anonymous"})
 
         key: str = KEY_PREFIX + token
         if not self.store.exists(key):
-            token = self.new(type="anonymous")
+            token = self.new({"type": "anonymous"})
             key = KEY_PREFIX + token
+
+        self.store.hset(key, "last_seen", time.time())
 
         self.data: dict = self.store.hgetall(key)
 
         return self.data
 
-    def new(self, **kwargs) -> str:
+    def new(
+        self,
+        mapping: Mapping[Union[bytes, float, int, str], Union[bytes, float, int, str]],
+    ) -> str:
         token: str = secrets.token_urlsafe(TOKEN_LENGTH)
 
-        address = flask.request.remote_addr
-        user_agent = flask.request.user_agent.string
-        session = {**kwargs, "address": address, "user_agent": user_agent}
+        address: str = flask.request.remote_addr
+        user_agent: str = flask.request.user_agent.string
+        created: float = time.time()
+        session: Mapping[
+            Union[bytes, float, int, str], Union[bytes, float, int, str]
+        ] = {
+            **mapping,
+            "address": address,
+            "user_agent": user_agent,
+            "created": created,
+        }
 
         key: str = KEY_PREFIX + token
         self.store.hmset(key, session)
