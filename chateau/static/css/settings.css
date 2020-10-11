@@ -5,7 +5,7 @@
 }
 
 .settings .table-container {
-    overflow-x:auto;
+    overflow-x: auto;
 }
 
 .settings table {
@@ -13,7 +13,8 @@
     width: 100%;
 }
 
-.settings th, .settings td {
+.settings th,
+.settings td {
     padding: 0.5rem;
 }
 

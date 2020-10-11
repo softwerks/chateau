@@ -20,7 +20,7 @@ class PasswordMeter extends HTMLElement {
     constructor() {
         super();
 
-        const shadowRoot = this.attachShadow({mode: 'open'});
+        const shadowRoot = this.attachShadow({ mode: 'open' });
         const meterLength = 5;
         for (let i = 0; i < meterLength; i++) {
             const dot = document.createElement('span');
@@ -31,8 +31,8 @@ class PasswordMeter extends HTMLElement {
 
         const passwordInputID = this.getAttribute('password-input');
         const passwordInputElement = document.getElementById(passwordInputID);
-        passwordInputElement.addEventListener('input', e => {
-            const result = zxcvbn(passwordInputElement.value)
+        passwordInputElement.addEventListener('input', (e) => {
+            const result = zxcvbn(passwordInputElement.value);
             const meterIcons = shadowRoot.querySelectorAll('span');
             for (let i = 0; i < meterIcons.length; i++) {
                 if (i <= result.score) {
