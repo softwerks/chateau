@@ -20,6 +20,7 @@ import werkzeug
 from chateau.auth import blueprint
 from chateau.auth import forms
 from chateau import database
+from chateau import session
 
 
 @blueprint.route("login", methods=["GET", "POST"])
@@ -32,7 +33,13 @@ def login() -> Union[werkzeug.wrappers.Response, str]:
                 form.username.data, form.password.data
             )  # type: bool, Optional[int]
             if password_is_valid:
-                flask.g.session.new({"type": "authenticated", "id": user_id})
+                flask.g.session.new(
+                    {
+                        "type": "authenticated",
+                        "id": user_id,
+                        "timezone": form.timezone.data,
+                    }
+                )
                 return flask.redirect(flask.url_for("index"))
             else:
                 error = "Invalid email or password."

@@ -26,15 +26,16 @@ from chateau.settings import blueprint
 def security() -> str:
     return flask.render_template(
         "settings/security.html",
-        sessions=[
-            flask.g.session,
-        ],
+        sessions=flask.g.session.all(),
         browser_os=browser_os,
-        local_time=local_time,
+        created=created,
+        last_seen=last_seen,
+        address=address,
     )
 
 
-def browser_os(user_agent_str: str) -> str:
+def browser_os(session: dict) -> str:
+    user_agent_str: Optional[str] = session[b"user_agent"].decode()
     user_agent: useragents.UserAgent = useragents.UserAgent(user_agent_str)
 
     browser: Optional[str] = user_agent.browser
@@ -52,7 +53,22 @@ def browser_os(user_agent_str: str) -> str:
     return browser + " on " + os
 
 
-def local_time(timestamp: str) -> str:
-    time: datetime = datetime.fromtimestamp(float(timestamp))
-    timezone: str = flask.g.session.data.get("time_zone", "UTC")
-    return time.astimezone(tz.gettz(timezone)).strftime("%c")
+def created(session: dict) -> str:
+    timestamp = float(session[b"created"].decode())
+    return local_time(timestamp)
+
+
+def last_seen(session: dict) -> str:
+    timestamp = float(session[b"last_seen"].decode())
+    return local_time(timestamp)
+
+
+def local_time(timestamp: float) -> str:
+    tzinfo = flask.g.session.time_zone()
+    time: datetime = datetime.fromtimestamp(timestamp)
+    local: datetime = time.astimezone(tzinfo)
+    return local.strftime("%c")
+
+
+def address(session: dict) -> str:
+    return session[b"address"].decode()
