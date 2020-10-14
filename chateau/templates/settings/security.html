@@ -11,12 +11,12 @@
                 <th>Last seen</th>
                 <th>IP address</th>
             </tr>
-            {% for s in sessions %}
+            {% for session_data in sessions %}
             <tr>
-                <td>{{ browser_os(s) }}</td>
-                <td>{{ created(s) }}</td>
-                <td>{{ last_seen(s) }}</td>
-                <td>{{ address(s) }}</td>
+                <td>{{ browser_os(session_data) }}</td>
+                <td>{{ local_time(session_data.created) }}</td>
+                <td>{{ local_time(session_data.last_seen) }}</td>
+                <td>{{ session_data.address }}</td>
             </tr>
             {% endfor %}
         </table>
