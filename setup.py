@@ -37,6 +37,7 @@ setup(
         "email_validator",
         "flask",
         "Flask-WTF",
+        "hiredis",
         "psycopg2",
         "python-dateutil",
         "redis",
