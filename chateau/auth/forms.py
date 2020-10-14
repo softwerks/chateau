@@ -33,7 +33,7 @@ class LoginForm(flask_wtf.FlaskForm):
             wtforms.validators.Length(max=PASSWORD_MAX_LENGTH),
         ],
     )
-    timezone = wtforms.HiddenField(
+    time_zone = wtforms.HiddenField(
         "Timezone",
         [
             wtforms.validators.DataRequired(),

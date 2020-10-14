@@ -13,7 +13,7 @@
             {{ form.password(type="password", autocomplete="current-password") }}
             <password-toggle password-input="{{ form.password.id }}"></password-toggle>
         </div>
-        {{ form.timezone }}
+        {{ form.time_zone }}
         {{ form.recaptcha }}
         <div class="submit">
             <button type="submit">Log in</button>
@@ -26,6 +26,6 @@
 {% block javascript %}
 <script>
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
-    document.getElementById('{{ form.timezone.id }}').value = tz
+    document.getElementById('{{ form.time_zone.id }}').value = tz
 </script>
 {% endblock %}

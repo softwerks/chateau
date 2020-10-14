@@ -37,7 +37,7 @@ def login() -> Union[werkzeug.wrappers.Response, str]:
                     {
                         "type": "authenticated",
                         "id": user_id,
-                        "timezone": form.timezone.data,
+                        "time_zone": form.time_zone.data,
                     }
                 )
                 return flask.redirect(flask.url_for("index"))

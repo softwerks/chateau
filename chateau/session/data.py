@@ -63,7 +63,7 @@ class SessionData:
 
     @property
     def time_zone(self) -> Optional[datetime.tzinfo]:
-        time_zone: bytes = self._data.get(b"timezone", b"UTC")
+        time_zone: bytes = self._data.get(b"time_zone", b"UTC")
         tzinfo: Optional[datetime.tzinfo] = tz.gettz(time_zone.decode())
         return tzinfo
 
