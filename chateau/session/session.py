@@ -59,7 +59,9 @@ class Session:
     ) -> str:
         token: str = secrets.token_urlsafe(TOKEN_LENGTH)
 
-        address: str = flask.request.remote_addr
+        address: Optional[str] = flask.request.headers.get("X-Real-IP")
+        if address is None:
+            address = flask.request.remote_addr
         user_agent: str = flask.request.user_agent.string
         created: float = time.time()
         session: Mapping[
