@@ -27,3 +27,7 @@
 .settings tr:nth-child(even) {
     background-color: #f2f2f2;
 }
+
+.settings .delete button {
+    background: rgb(176 0 32);
+}
