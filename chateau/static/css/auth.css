@@ -46,7 +46,9 @@
     font-size: inherit;
     font-weight: bold;
     margin: 0.5rem 0;
+    outline: none;
     padding: 0.5rem;
+    width: 4rem;
 }
 
 .auth .password input:focus + password-toggle::part(toggle) {
