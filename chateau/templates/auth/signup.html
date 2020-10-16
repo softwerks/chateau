@@ -13,6 +13,10 @@
             {{ form.password(type="password", autocomplete="new-password", minlength="8", maxlength="64") }}
             <password-toggle password-input="{{ form.password.id }}"></password-toggle>
         </div>
+        <label class="optin" for="{{ form.optin.label.field_id }}">
+            {{ form.optin }}
+            {{ form.optin.label.text }}
+        </label>
         {{ form.recaptcha }}
         <p>By creating an account, you agree to the <a href="https://docs.bkgmn.net/legal/terms.html">Terms of Service</a> and <a href="https://docs.bkgmn.net/legal/privacy.html">Privacy Policy</a>.</p>
         <div class="submit">

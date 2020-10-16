@@ -26,6 +26,18 @@
     margin: 0.5rem 0;
 }
 
+.auth label[for="username"],
+.auth label[for="password"] {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.auth .optin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .auth .password {
     display: flex;
 }

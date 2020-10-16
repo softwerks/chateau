@@ -54,6 +54,7 @@ class SignupForm(flask_wtf.FlaskForm):
             wtforms.validators.Length(min=PASSWORD_MIN_LENGTH, max=PASSWORD_MAX_LENGTH),
         ],
     )
+    optin = wtforms.BooleanField("Sign up for the Backgammon Network newsletter")
     recaptcha = flask_wtf.RecaptchaField()
 
 

@@ -18,7 +18,15 @@ button {
     padding: 0.5rem 1rem;
 }
 
-input {
+input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    margin: 0.5rem;
+    outline-color: rgb(77 144 254);
+}
+
+input[type="email"],
+input[type="password"] {
     -webkit-appearance: none;
     border-radius: 0.25rem;
     border: 2px solid rgb(193 193 193);
@@ -30,13 +38,9 @@ input {
     width: 100%;
 }
 
-input:focus {
+input[type="email"]:focus,
+input[type="password"]:focus {
     border-radius: 0.25rem;
     border: 2px solid rgb(77 144 254);
     outline-width: 0;
-}
-
-label {
-    font-size: 0.9rem;
-    font-weight: bold;
 }
