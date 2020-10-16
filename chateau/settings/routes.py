@@ -13,13 +13,16 @@
 # limitations under the License.
 
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 from dateutil import tz
 import flask
+import flask_wtf
+import werkzeug
 from werkzeug import useragents
 
 from chateau.settings import blueprint
+from chateau.settings import forms
 from chateau.session.data import SessionData
 
 
@@ -31,6 +34,18 @@ def security() -> str:
         browser_os=browser_os,
         local_time=local_time,
     )
+
+
+@blueprint.route("delete", methods=["GET", "POST"])
+def delete() -> Union[werkzeug.wrappers.Response, str]:
+    error: Optional[str] = None
+    form: flask_wtf.FlaskForm = forms.create_delete_form(
+        flask.current_app.config["PASSWORD_MAX_LENGTH"]
+    )
+    if form.validate_on_submit():
+        return flask.redirect(flask.url_for("index"))
+        # error = "Invalid password."
+    return flask.render_template("settings/delete.html", form=form, error=error)
 
 
 def browser_os(session_data: SessionData) -> str:

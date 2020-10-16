@@ -15,6 +15,7 @@
 from typing import Optional, Union
 
 import flask
+import flask_wtf
 import werkzeug
 
 from chateau.auth import blueprint
@@ -26,7 +27,11 @@ from chateau import session
 @blueprint.route("login", methods=["GET", "POST"])
 def login() -> Union[werkzeug.wrappers.Response, str]:
     error: Optional[str] = None
-    form = forms.LoginForm()
+    form: flask_wtf.FlaskForm = forms.create_login_form(
+        password_max_length=flask.current_app.config["PASSWORD_MAX_LENGTH"],
+        tzdata_min_length=flask.current_app.config["TZDATA_MIN_LENGTH"],
+        tzdata_max_length=flask.current_app.config["TZDATA_MAX_LENGTH"],
+    )
     if form.validate_on_submit():
         try:
             password_is_valid, user_id = database.auth.validate_password(
@@ -56,7 +61,10 @@ def logout() -> werkzeug.wrappers.Response:
 
 @blueprint.route("signup", methods=["GET", "POST"])
 def signup() -> Union[werkzeug.wrappers.Response, str]:
-    form = forms.SignupForm()
+    form: flask_wtf.FlaskForm = forms.create_signup_form(
+        password_min_length=flask.current_app.config["PASSWORD_MIN_LENGTH"],
+        password_max_length=flask.current_app.config["PASSWORD_MAX_LENGTH"],
+    )
     if form.validate_on_submit():
         try:
             database.auth.create_user(form.username.data, form.password.data)
@@ -69,7 +77,7 @@ def signup() -> Union[werkzeug.wrappers.Response, str]:
 
 @blueprint.route("reset", methods=["GET", "POST"])
 def reset() -> Union[werkzeug.wrappers.Response, str]:
-    form = forms.ResetForm()
+    form: flask_wtf.FlaskForm = forms.ResetForm()
     if form.validate_on_submit():
         return flask.redirect(flask.url_for("index"))
     return flask.render_template("auth/reset.html", form=form)
