@@ -11,7 +11,7 @@
         <div class="password">
             {{ form.password.label }}<span><a href="{{ url_for('auth.reset') }}" tabindex='-1'>Forgot your password?</a></span>
             <div class="field">
-                {{ form.password(type="password", autocomplete="current-password", maxlength=config["PASSWORD_MAX_LENGTH"]) }}
+                {{ form.password(autocomplete="current-password", maxlength=config["PASSWORD_MAX_LENGTH"]) }}
                 <password-toggle password-input="{{ form.password.id }}"></password-toggle>
             </div>
         </div>
