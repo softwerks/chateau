@@ -26,7 +26,8 @@ input[type="checkbox"] {
 }
 
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="text"] {
     -webkit-appearance: none;
     border-radius: 0.25rem;
     border: 2px solid rgb(193 193 193);
@@ -39,7 +40,8 @@ input[type="password"] {
 }
 
 input[type="email"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="text"]:focus {
     border-radius: 0.25rem;
     border: 2px solid rgb(77 144 254);
     outline-width: 0;
