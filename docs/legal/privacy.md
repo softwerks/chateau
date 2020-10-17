@@ -5,7 +5,7 @@ title: Backgammon Network | Privacy Policy
 
 # Privacy Policy
 
-*Last updated: Oct 4, 2020*
+*Last updated: Oct 16, 2020*
 
 Softwerks LLC ("Company", "we", "us", "our") operates the Backgammon Network (\*.bkgmn.net), an online backgammon service.
 
@@ -27,7 +27,7 @@ When you browse pages on Backgammon Network websites, we collect information tha
 * User agent (details about your browser and operating system)
 
 ### Anti-Bot Assessments
-When you sign up for an account or request a password reset, we use Google's CAPTCHA services as a means of spam protection. Refer to the [Google Privacy Policy](https://www.google.com/intl/en/policies/privacy/) for additional information.
+When you submit forms, for example to create an account or log in, we use Google's reCAPTCHA services as a means of spam protection. Refer to the [Google Privacy Policy](https://www.google.com/intl/en/policies/privacy/) for additional information.
 
 ### Cookies
 A [cookie](https://en.wikipedia.org/wiki/HTTP_cookie) is a piece of text stored by your browser to help it remember your login information, site preferences, and more. You can adjust cookie retention settings in your own browser. To learn more about cookies, including how to view which cookies have been set and how to manage and delete them, please visit: www.allaboutcookies.org.
