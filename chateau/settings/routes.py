@@ -21,6 +21,7 @@ import flask_wtf
 import werkzeug
 from werkzeug import useragents
 
+from chateau import database
 from chateau.settings import blueprint
 from chateau.settings import forms
 from chateau.session.data import SessionData
@@ -43,8 +44,19 @@ def delete() -> Union[werkzeug.wrappers.Response, str]:
         flask.current_app.config["PASSWORD_MAX_LENGTH"]
     )
     if form.validate_on_submit():
-        return flask.redirect(flask.url_for("index"))
-        # error = "Invalid password."
+        try:
+            password_is_valid, user_id = database.auth.validate_password(
+                password=form.password.data
+            )  # type: bool, Optional[int]
+            if password_is_valid:
+                if user_id is not None:
+                    database.auth.delete_user(user_id)
+                flask.g.session.delete_all()
+                return flask.redirect(flask.url_for("index"))
+            else:
+                error = "Invalid password."
+        except database.DatabaseError:
+            flask.abort(500)
     return flask.render_template("settings/delete.html", form=form, error=error)
 
 

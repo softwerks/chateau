@@ -108,3 +108,13 @@ class Session:
                     sessions.append(SessionData(self.store.hgetall(session_key)))
             return sessions
         return None
+
+    def delete_all(self) -> None:
+        if self.data.user_id is not None:
+            index_key: str = "user:sessions:" + self.data.user_id
+            tokens: Set[Union[bytes, float, int, str]] = self.store.smembers(index_key)
+            for token in tokens:
+                if isinstance(token, bytes):
+                    self.store.delete(KEY_PREFIX + token.decode())
+            self.store.delete(index_key)
+        flask.session.clear()

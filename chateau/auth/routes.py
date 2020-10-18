@@ -35,7 +35,7 @@ def login() -> Union[werkzeug.wrappers.Response, str]:
     if form.validate_on_submit():
         try:
             password_is_valid, user_id = database.auth.validate_password(
-                form.username.data, form.password.data
+                username=form.username.data, password=form.password.data
             )  # type: bool, Optional[int]
             if password_is_valid:
                 flask.g.session.new(

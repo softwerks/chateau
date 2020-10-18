@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import functools
 from typing import Optional, Tuple
 
 import flask
@@ -34,6 +35,7 @@ def create_user(username: str, password: str) -> None:
         )
 
 
+@functools.singledispatch
 def read_user(username: str) -> Optional[psycopg2.extras.DictRow]:
     """Retrieve a user record."""
     user = flask.g.db.queryone(
@@ -47,8 +49,42 @@ def read_user(username: str) -> Optional[psycopg2.extras.DictRow]:
     return user
 
 
-def validate_password(username: str, password: str) -> Tuple[bool, Optional[int]]:
-    user = read_user(username)
+@read_user.register
+def _(user_id: int) -> Optional[psycopg2.extras.DictRow]:
+    """Retrieve a user record."""
+    user = flask.g.db.queryone(
+        """
+        SELECT *
+        FROM users
+        WHERE id = %s
+        """,
+        (user_id,),
+    )
+    return user
+
+
+def delete_user(user_id: int) -> None:
+    """Delete a user record."""
+    flask.g.db.execute(
+        """
+        DELETE FROM users
+        WHERE id = %s
+        """,
+        (user_id,),
+    )
+
+
+def validate_password(
+    *, username: str = None, password: str
+) -> Tuple[bool, Optional[int]]:
+    user: Optional[psycopg2.extras.DictRow] = None
+
+    if username is not None:
+        user = read_user(username)
+    elif flask.g.session.data.user_id is not None:
+        user_id: int = int(flask.g.session.data.user_id)
+        user = read_user(user_id)
+
     if user is not None:
         password_is_valid = werkzeug.security.check_password_hash(
             user["password"], password
