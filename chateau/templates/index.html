@@ -1,15 +1,5 @@
 {% extends "base.html" %}
 
 {% block content %}
-<nav>
-    <ul>
-        {% if authenticated %}
-            <li><a href="{{ url_for('settings.security') }}">Settings</a></li>
-            <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
-        {% else %}
-            <li><a href="{{ url_for('auth.signup') }}">Create a free account</a></li>
-            <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
-        {% endif %}
-    </ul>
-</nav>
+
 {% endblock %}

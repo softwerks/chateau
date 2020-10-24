@@ -8,6 +8,32 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}" />
 </head>
 <body>
+    <nav class="navbar">
+        <a href="/">
+            <img
+                class="icon"
+                alt="Backgammon Network"
+                src="{{ url_for('static', filename='img/brand/icon.svg') }}"
+            />
+            Backgammon Network
+        </a>
+        <a id="navbar-toggle" href="javascript:void(0);">
+            <img
+                class="icon menu"
+                alt="Menu"
+                src="{{ url_for('static', filename='img/icons/menu.svg') }}"
+            />
+        </a>
+        <div id="navbar-links" class="links">
+            {% if g.session.authenticated %}
+                <a href="{{ url_for('settings.security') }}">Settings</a>
+                <a href="{{ url_for('auth.logout') }}">Log out</a>
+            {% else %}
+                <a href="{{ url_for('auth.signup') }}">Create a free account</a>
+                <a href="{{ url_for('auth.login') }}">Log in</a>
+            {% endif %}
+        </div>
+    </nav>
     {% block content %}{% endblock %}
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block javascript %}{% endblock %}
