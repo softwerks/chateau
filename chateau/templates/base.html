@@ -19,7 +19,7 @@
         </a>
         <a id="navbar-toggle" href="javascript:void(0);">
             <img
-                class="icon menu"
+                class="icon"
                 alt="Menu"
                 src="{{ url_for('static', filename='img/icons/menu.svg') }}"
             />
@@ -36,6 +36,7 @@
         </div>
     </nav>
     {% block content %}{% endblock %}
+
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block javascript %}{% endblock %}
 </body>
