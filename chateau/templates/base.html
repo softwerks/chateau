@@ -27,7 +27,7 @@
         <div id="navbar-links" class="links">
             <a href="https://blog.bkgmn.net">Blog</a>
             {% if g.session.authenticated %}
-                <a href="{{ url_for('settings.security') }}">Settings</a>
+                <a href="{{ url_for('settings.menu') }}">Settings</a>
                 <a href="{{ url_for('auth.logout') }}">Log out</a>
             {% else %}
                 <a href="{{ url_for('auth.signup') }}">Create a free account</a>

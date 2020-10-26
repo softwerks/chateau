@@ -31,3 +31,25 @@
 .settings .delete button {
     background: rgb(176 0 32);
 }
+
+.settings .menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.settings .menu a {
+    color: #000000;
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem 1rem 2rem 1rem;
+    width: 100%;
+}
+
+.settings .menu a:not(:last-child) {
+    border-bottom: solid 1px rgb(220 220 220);
+}
+
+.settings .menu a:hover {
+    background: rgb(240 240 240);
+}

@@ -27,6 +27,11 @@ from chateau.settings import forms
 from chateau.session.data import SessionData
 
 
+@blueprint.route("menu")
+def menu() -> str:
+    return flask.render_template("settings/menu.html")
+
+
 @blueprint.route("security", methods=["GET", "POST"])
 def security() -> str:
     return flask.render_template(

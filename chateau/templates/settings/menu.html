@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="settings">
+    <div class="menu">
+        <a href="#">Change your password<span>→</span></a>
+        <a href="#">Update your email preferences<span>→</span></a>
+        <a href=" {{ url_for('settings.security') }}">See your active sessions<span>→</span></a>
+        <a href=" {{ url_for('settings.delete') }}">Delete your account<span>→</span></a>
+    </div>
+</div>
+{% endblock %}
