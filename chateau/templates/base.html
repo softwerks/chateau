@@ -36,7 +36,12 @@
         </div>
     </nav>
     {% block content %}{% endblock %}
-
+    <div class="footer">
+        <div>
+            <a href="https://docs.bkgmn.net/legal/terms.html">Terms of Service</a> |
+            <a href="https://docs.bkgmn.net/legal/privacy.html">Privacy Policy</a>
+        </div>
+    </div>
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block javascript %}{% endblock %}
 </body>
