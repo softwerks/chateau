@@ -15,5 +15,5 @@
 import multiprocessing
 
 workers = multiprocessing.cpu_count() * 2 + 1
-accesslog = "/var/log/gunicorn/access.log"
-errorlog = "/var/log/gunicorn/error.log"
+accesslog = "/var/log/chateau/access.log"
+errorlog = "/var/log/chateau/error.log"
