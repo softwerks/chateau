@@ -16,7 +16,7 @@ class PasswordToggle extends HTMLElement {
     constructor() {
         super();
 
-        const shadowRoot = this.attachShadow({mode: 'open'});
+        const shadowRoot = this.attachShadow({ mode: 'open' });
 
         const button = document.createElement('button');
         button.type = 'button';
@@ -25,7 +25,7 @@ class PasswordToggle extends HTMLElement {
         button.innerHTML = 'Show';
         shadowRoot.append(button);
 
-        button.addEventListener('click', e => {
+        button.addEventListener('click', (e) => {
             const inputID = this.getAttribute('password-input');
             const inputElement = document.getElementById(inputID);
             if (inputElement.type === 'password') {

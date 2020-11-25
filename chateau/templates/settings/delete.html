@@ -1,13 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="auth">
-    <form action="{{ url_for('auth.login') }}" method="post">
-        <h1>Log in</h1>
+<div class="settings">
+    <form action="{{ url_for('settings.delete') }}" method="post">
+        <h1>Delete your account</h1>
         {% if error is not none %}<div class="error">{{ error }}</div>{% endif %}
         {{ form.csrf_token }}
-        {{ form.username.label }}
-        {{ form.username(type="email") }}
         <div class="password">
             {{ form.password.label }}<span><a href="{{ url_for('auth.reset') }}" tabindex='-1'>Forgot your password?</a></span>
             <div class="field">
@@ -15,19 +13,9 @@
                 <password-toggle password-input="{{ form.password.id }}"></password-toggle>
             </div>
         </div>
-        {{ form.time_zone }}
-        {{ form.recaptcha }}
-        <div class="submit">
-            <button type="submit">Log in</button>
+        <div class="delete">
+            <button type="submit">Delete account</button>
         </div>
-        <p>Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign up</a></p>
     </form>
 </div>
-{% endblock %}
-
-{% block javascript %}
-<script>
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
-    document.getElementById('{{ form.time_zone.id }}').value = tz
-</script>
 {% endblock %}

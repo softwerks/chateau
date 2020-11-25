@@ -20,6 +20,7 @@ import chateau.auth
 import chateau.database
 import chateau.game
 import chateau.session
+import chateau.settings
 
 
 def create_app() -> flask.app.Flask:
@@ -33,9 +34,7 @@ def create_app() -> flask.app.Flask:
     )
     chateau.database.init_app(app, database_connection_pool)
 
-    session_store = redis.Redis.from_url(
-        app.config["SESSION_URL"], charset="utf-8", decode_responses=True
-    )
+    session_store = redis.Redis.from_url(app.config["SESSION_URL"])
     chateau.session.init_app(app, session_store)
 
     @app.route("/")
@@ -44,5 +43,6 @@ def create_app() -> flask.app.Flask:
 
     app.register_blueprint(chateau.auth.blueprint, url_prefix="/auth")
     app.register_blueprint(chateau.game.blueprint, url_prefix="/game")
+    app.register_blueprint(chateau.settings.blueprint, url_prefix="/settings")
 
     return app

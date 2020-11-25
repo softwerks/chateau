@@ -28,4 +28,3 @@ def init_app(app: flask.app.Flask, session_store: redis.Redis) -> None:
 def load(session_store: redis.Redis) -> None:
     if "session" not in flask.g:
         flask.g.session = session.Session(session_store)
-    print(flask.g.session.data)

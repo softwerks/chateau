@@ -16,45 +16,55 @@ import flask_wtf
 import wtforms
 import wtforms.validators
 
-PASSWORD_MIN_LENGTH = 8
-PASSWORD_MAX_LENGTH = 64
-TZDATA_MIN_LENGTH = 3
-TZDATA_MAX_LENGTH = 29  # https://en.wikipedia.org/wiki/Tz_database#Names_of_time_zones
+
+def create_login_form(
+    *, password_max_length: int, tzdata_min_length: int, tzdata_max_length: int
+):
+    class LoginForm(flask_wtf.FlaskForm):
+        username = wtforms.StringField(
+            "Email", [wtforms.validators.DataRequired(), wtforms.validators.Email()]
+        )
+        password = wtforms.PasswordField(
+            "Password",
+            [
+                wtforms.validators.DataRequired(),
+                wtforms.validators.Length(max=password_max_length),
+            ],
+        )
+        time_zone = wtforms.HiddenField(
+            "Timezone",
+            [
+                wtforms.validators.DataRequired(),
+                wtforms.validators.Length(min=tzdata_min_length, max=tzdata_max_length),
+            ],
+        )
+        recaptcha = flask_wtf.RecaptchaField()
+
+    return LoginForm()
 
 
-class LoginForm(flask_wtf.FlaskForm):
-    username = wtforms.StringField(
-        "Email", [wtforms.validators.DataRequired(), wtforms.validators.Email()]
-    )
-    password = wtforms.PasswordField(
-        "Password",
-        [
-            wtforms.validators.DataRequired(),
-            wtforms.validators.Length(max=PASSWORD_MAX_LENGTH),
-        ],
-    )
-    timezone = wtforms.HiddenField(
-        "Timezone",
-        [
-            wtforms.validators.DataRequired(),
-            wtforms.validators.Length(min=TZDATA_MIN_LENGTH, max=TZDATA_MAX_LENGTH),
-        ],
-    )
-    recaptcha = flask_wtf.RecaptchaField()
+def create_signup_form(
+    *,
+    password_min_length: int,
+    password_max_length: int,
+):
+    class SignupForm(flask_wtf.FlaskForm):
+        username = wtforms.StringField(
+            "Email", [wtforms.validators.DataRequired(), wtforms.validators.Email()]
+        )
+        password = wtforms.PasswordField(
+            "Password",
+            [
+                wtforms.validators.DataRequired(),
+                wtforms.validators.Length(
+                    min=password_min_length, max=password_max_length
+                ),
+            ],
+        )
+        optin = wtforms.BooleanField("Sign up for the Backgammon Network newsletter")
+        recaptcha = flask_wtf.RecaptchaField()
 
-
-class SignupForm(flask_wtf.FlaskForm):
-    username = wtforms.StringField(
-        "Email", [wtforms.validators.DataRequired(), wtforms.validators.Email()]
-    )
-    password = wtforms.PasswordField(
-        "Password",
-        [
-            wtforms.validators.DataRequired(),
-            wtforms.validators.Length(min=PASSWORD_MIN_LENGTH, max=PASSWORD_MAX_LENGTH),
-        ],
-    )
-    recaptcha = flask_wtf.RecaptchaField()
+    return SignupForm()
 
 
 class ResetForm(flask_wtf.FlaskForm):

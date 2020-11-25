@@ -1,8 +1,8 @@
+{% extends "base.html" %}
+
 {% block content %}
-<nav>
-    <ul>
-        <li><a href="{{ url_for('auth.signup') }}">Create a free account</a></li>
-        <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
-    </ul>
-</nav>
+<div class="index">
+    <h2>Latest news</h2>
+    <news-feed url="https://blog.bkgmn.net/feed.xml">Loading...</news-feed>
+</div>
 {% endblock %}
