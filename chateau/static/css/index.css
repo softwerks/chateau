@@ -1,3 +1,7 @@
+.index {
+    padding: 0 1rem;
+}
+
 .index news-feed::part(entries) {
     list-style: none;
     margin: 0;

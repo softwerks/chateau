@@ -1,6 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="spinner">
+    <div class="sk-circle">
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+        <div class="sk-circle-dot"></div>
+    </div>
+</div>
 <div class="backgammon-board">
     <table>
         <tr>
@@ -259,10 +275,11 @@
             <td>1</td>
         </tr>
     </table>
+    <p>⚀ ⚁ ⚂ ⚃ ⚄ ⚄⚪⚫</p>
 </div>
-<p>⚀ ⚁ ⚂ ⚃ ⚄ ⚄⚪⚫</p>
 {% endblock %}
 {% block javascript %}
+<script src="{{ url_for('static', filename='js/game.js') }}"></script>
 <script>
     function allowDrop(e) {
         e.preventDefault();

@@ -14,9 +14,6 @@
 
 import flask
 
-from chateau.game import blueprint
+blueprint = flask.Blueprint("play", __name__)
 
-
-@blueprint.route("test")
-def default() -> str:
-    return flask.render_template("game/game.html")
+import chateau.play.routes

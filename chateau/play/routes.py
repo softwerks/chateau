@@ -12,8 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Union
+import uuid
+
 import flask
+import werkzeug
 
-blueprint = flask.Blueprint("game", __name__)
+from chateau.play import blueprint
 
-import chateau.game.routes
+
+@blueprint.route("custom")
+def custom() -> Union[werkzeug.wrappers.Response, str]:
+    game_id: uuid.UUID = flask.g.session.data.game_id
+    if game_id is None:
+        game_id = uuid.uuid4()
+        flask.g.session.set_game_id(game_id)
+    return flask.redirect(flask.url_for("play.game", game_id=game_id))
+
+
+@blueprint.route("<uuid:game_id>")
+def game(game_id: uuid.UUID) -> Union[werkzeug.wrappers.Response, str]:
+    return flask.render_template("play/game.html")

@@ -17,6 +17,7 @@ import logging
 import secrets
 import time
 from typing import Dict, List, Mapping, Optional, Set, Union
+import uuid
 
 import flask
 import redis
@@ -118,3 +119,8 @@ class Session:
                     self.store.delete(KEY_PREFIX + token.decode())
             self.store.delete(index_key)
         flask.session.clear()
+
+    def set_game_id(self, game_id: uuid.UUID) -> None:
+        token: str = flask.session.get("id")
+        key: str = KEY_PREFIX + token
+        self.store.hset(key, "game_id", str(game_id))
