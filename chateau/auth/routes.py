@@ -39,11 +39,7 @@ def login() -> Union[werkzeug.wrappers.Response, str]:
             )  # type: bool, Optional[int]
             if password_is_valid:
                 flask.g.session.new(
-                    {
-                        "type": "authenticated",
-                        "id": user_id,
-                        "time_zone": form.time_zone.data,
-                    }
+                    type_="authenticated", id_=user_id, time_zone=form.time_zone.data
                 )
                 return flask.redirect(flask.url_for("index"))
             else:
