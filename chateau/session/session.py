@@ -109,8 +109,7 @@ class Session:
         session_data["created"] = str(time.time())
 
         session_key: str = self._key(token)
-        pipe = self.store.pipeline()
-        print(type(pipe))
+        pipe: redis.client.Pipeline = self.store.pipeline()
         for key, value in session_data.items():
             assert isinstance(value, str)
             pipe.hset(session_key, key, value)
@@ -169,3 +168,30 @@ class Session:
         token: str = secrets.token_urlsafe()
         self.store.setex("websocket:" + token, 10, self.token)
         return token
+
+    def game_id(self) -> Optional[uuid.UUID]:
+        """Return the user's game ID."""
+        if self.authenticated:
+            assert self.data.user_id is not None
+            game_id: Optional[bytes] = self.store.hget("games", self.data.user_id)
+            return uuid.UUID(game_id.decode()) if game_id is not None else None
+        else:
+            return self.data.game_id
+
+    def _add_to_game_index(self, game_id: uuid.UUID) -> None:
+        """Add the user's game to the index."""
+        assert self.data.user_id is not None
+        self.store.hset("games", self.data.user_id, str(game_id))
+
+    def custom_game(self) -> uuid.UUID:
+        """Create a new custom game."""
+        assert self.game_id() is None
+
+        game_id: uuid.UUID = uuid.uuid4()
+
+        if self.authenticated:
+            self._add_to_game_index(game_id)
+        else:
+            self.store.hset(self.key, "game_id", str(game_id))
+
+        return game_id
