@@ -13,108 +13,205 @@
 # limitations under the License.
 
 import datetime
-import logging
 import secrets
 import time
-from typing import Dict, List, Mapping, Optional, Set, Union
+from typing import Dict, List, Optional, Set, Union
+import uuid
 
 import flask
 import redis
 
 from chateau.session.data import SessionData
 
-KEY_PREFIX = "session:"
-TOKEN_LENGTH = 16
-
-logger = logging.getLogger(__name__)
-
 
 class Session:
-    """Session."""
+    """Session data persisted between requests."""
+
+    authenticated: bool
+    data: SessionData
+    key: str
+    store: redis.Redis
+    token: str
+
+    @staticmethod
+    def _key(token: str) -> str:
+        """Return the session store key."""
+        return f"session:{token}"
 
     def __init__(self, store: redis.Redis) -> None:
-        self.store: redis.Redis = store
-        self.load()
+        def valid() -> bool:
+            """Return the status of the user's session."""
+            return (
+                False
+                if flask.session.get("id") is None
+                or not self.store.exists(f"session:{flask.session['id']}")
+                else True
+            )
 
-    def load(self):
-        token: str = flask.session.get("id")
-        if token is None:
-            token = self.new({"type": "anonymous"})
+        def update_timestamp() -> None:
+            """Update the user's last seen timestamp."""
+            self.store.hset(self.key, "last_seen", time.time())
 
-        key: str = KEY_PREFIX + token
-        if not self.store.exists(key):
-            token = self.new({"type": "anonymous"})
-            key = KEY_PREFIX + token
+        def load() -> None:
+            """Load the user's session."""
+            self.data = SessionData(self.store.hgetall(self.key))
+            self.authenticated = (
+                True if self.data.session_type == "authenticated" else False
+            )
 
-        self.store.hset(key, "last_seen", time.time())
+        self.store = store
+        if not valid():
+            self.new()
+        self.token = flask.session["id"]
+        self.key = self._key(self.token)
+        update_timestamp()
+        load()
 
-        self.data: SessionData = SessionData(self.store.hgetall(key))
-        self.authenticated: bool = (
-            True if self.data.session_type == "authenticated" else False
-        )
+    @staticmethod
+    def _index_key(user_id: str) -> str:
+        """Return the index key."""
+        return f"user:sessions:{user_id}"
+
+    def _add_to_index(self, user_id: str, token: str) -> None:
+        """Add the session to the user's index."""
+        self.store.sadd(self._index_key(user_id), token)
+
+    def _remove_from_index(self, user_id: str, token: str) -> None:
+        """Remove the session from the user's index."""
+        self.store.srem(self._index_key(user_id), token)
 
     def new(
         self,
-        mapping: Mapping[Union[bytes, float, int, str], Union[bytes, float, int, str]],
-    ) -> str:
-        token: str = secrets.token_urlsafe(TOKEN_LENGTH)
+        *,
+        type_: str = "anonymous",
+        id_: Optional[int] = None,
+        time_zone: Optional[str] = None,
+    ) -> None:
+        """Create a new session."""
 
-        address: Optional[str] = flask.request.headers.get("X-Real-IP")
-        if address is None:
-            address = flask.request.remote_addr
-        user_agent: str = flask.request.user_agent.string
-        created: float = time.time()
-        session: Mapping[
-            Union[bytes, float, int, str], Union[bytes, float, int, str]
-        ] = {
-            **mapping,
-            "address": address,
-            "user_agent": user_agent,
-            "created": created,
-        }
+        def get_address() -> str:
+            """Return the user's IP address."""
+            if flask.request.headers.get("X-Real-IP") is not None:
+                return flask.request.headers["X-Real-IP"]
+            else:
+                return flask.request.remote_addr
 
-        key: str = KEY_PREFIX + token
-        self.store.hmset(key, session)
-        self.store.expire(key, datetime.timedelta(days=30))
+        token: str = secrets.token_urlsafe()
+
+        session_data: Dict[str, str] = {}
+        session_data["type"] = type_
+        if id_ is not None:
+            session_data["id"] = str(id_)
+        if time_zone is not None:
+            session_data["time_zone"] = time_zone
+        session_data["address"] = get_address()
+        session_data["user_agent"] = flask.request.user_agent.string
+        session_data["created"] = str(time.time())
+
+        session_key: str = self._key(token)
+        pipe: redis.client.Pipeline = self.store.pipeline()
+        for key, value in session_data.items():
+            assert isinstance(value, str)
+            pipe.hset(session_key, key, value)
+        pipe.expire(session_key, datetime.timedelta(days=30))
+        pipe.execute()
+
+        if id_ is not None:
+            self._add_to_index(str(id_), token)
 
         flask.session.clear()
         flask.session["id"] = token
 
-        self.load()
-
-        if self.data.user_id is not None:
-            index_key: str = "user:sessions:" + self.data.user_id
-            self.store.sadd(index_key, token)
-
-        return token
-
     def delete(self) -> None:
-        token: str = flask.session.get("id")
-        key: str = KEY_PREFIX + token
-        self.store.delete(key)
-        if self.data.user_id is not None:
-            index_key: str = "user:sessions:" + self.data.user_id
-            self.store.srem(index_key, token)
+        """Delete the session."""
+        if self.authenticated:
+            assert self.data.user_id is not None
+            self._remove_from_index(self.data.user_id, self.token)
+        self.store.delete(self.key)
         flask.session.clear()
 
-    def all(self) -> Optional[List[SessionData]]:
-        if self.data.user_id is not None:
-            index_key: str = "user:sessions:" + self.data.user_id
-            tokens: Set[Union[bytes, float, int, str]] = self.store.smembers(index_key)
-            sessions: List[SessionData] = []
-            for token in tokens:
-                if isinstance(token, bytes):
-                    session_key: str = KEY_PREFIX + token.decode()
-                    sessions.append(SessionData(self.store.hgetall(session_key)))
+    def _tokens_in_index(self) -> Set[str]:
+        """Return all of the authenticated user's session tokens."""
+        if self.authenticated:
+            assert self.data.user_id is not None
+            sessions: Set[str] = set()
+            for token in self.store.smembers(self._index_key(self.data.user_id)):
+                assert isinstance(token, bytes)
+                sessions.add(token.decode())
             return sessions
-        return None
+        else:
+            raise ValueError("Anonymous sessions are not indexed.")
+
+    def all(self) -> List[SessionData]:
+        """Return a list of the user's sessions."""
+        if self.authenticated:
+            return [
+                SessionData(self.store.hgetall(self._key(token)))
+                for token in self._tokens_in_index()
+            ]
+        else:
+            return [self.data]
 
     def delete_all(self) -> None:
-        if self.data.user_id is not None:
-            index_key: str = "user:sessions:" + self.data.user_id
-            tokens: Set[Union[bytes, float, int, str]] = self.store.smembers(index_key)
-            for token in tokens:
-                if isinstance(token, bytes):
-                    self.store.delete(KEY_PREFIX + token.decode())
-            self.store.delete(index_key)
+        """Delete all of the authenticated user's sessions."""
+        if self.authenticated:
+            for token in self._tokens_in_index():
+                self.store.delete(self._key(token))
+            assert self.data.user_id is not None
+            self.store.delete(self._index_key(self.data.user_id))
+        else:
+            self.delete()
         flask.session.clear()
+
+    def websocket_token(self) -> str:
+        """Return a token that can be used to establish a websocket connection."""
+        token: str = secrets.token_urlsafe()
+        self.store.setex("websocket:" + token, 10, self.token)
+        return token
+
+    def game_id(self) -> Optional[uuid.UUID]:
+        """Return the user's game ID."""
+        if self.authenticated:
+            assert self.data.user_id is not None
+            game_id: Optional[bytes] = self.store.hget("games", self.data.user_id)
+            return uuid.UUID(game_id.decode()) if game_id is not None else None
+        else:
+            return self.data.game_id
+
+    def _add_to_game_index(self, game_id: uuid.UUID) -> None:
+        """Add the user's game to the index."""
+        assert self.data.user_id is not None
+        self.store.hset("games", self.data.user_id, str(game_id))
+
+    @staticmethod
+    def _game_key(game_id: uuid.UUID) -> str:
+        """Return the game key."""
+        return f"game:{game_id}"
+
+    @staticmethod
+    def _player_key(player: int) -> str:
+        """Return the game key."""
+        return f"player_{player}"
+
+    def join_custom_game(self, game_id: uuid.UUID, player: int) -> None:
+        if self.authenticated:
+            assert self.data.user_id is not None
+            if self.store.hsetnx(
+                self._game_key(game_id), self._player_key(player), self.data.user_id
+            ):
+                self._add_to_game_index(game_id)
+        else:
+            if self.store.hsetnx(
+                self._game_key(game_id), self._player_key(player), self.token
+            ):
+                self.store.hset(self.key, "game_id", str(game_id))
+
+    def new_custom_game(self) -> uuid.UUID:
+        """Create a new custom game."""
+        assert self.game_id() is None
+        game_id: uuid.UUID = uuid.uuid4()
+        self.join_custom_game(game_id, 1)
+        return game_id
+
+    def game_exists(self, game_id: uuid.UUID) -> bool:
+        return bool(self.store.exists(self._game_key(game_id)))

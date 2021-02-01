@@ -48,8 +48,14 @@ input[type="text"]:focus {
     outline-width: 0;
 }
 
+.wrapper {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
 .content {
-    max-width: 64rem;
-    padding: 0 1rem;
-    margin: auto;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(auto, 64rem));
 }

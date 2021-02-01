@@ -14,6 +14,7 @@
 
 import datetime
 from typing import Dict, Optional
+import uuid
 
 from dateutil import tz
 from werkzeug import useragents
@@ -45,6 +46,13 @@ class SessionData:
     @property
     def created(self) -> float:
         return float(self._data[b"created"].decode())
+
+    @property
+    def game_id(self) -> Optional[uuid.UUID]:
+        game_id: Optional[str] = self._property(b"game_id")
+        if game_id is not None:
+            return uuid.UUID(game_id)
+        return None
 
     @property
     def last_seen(self) -> float:

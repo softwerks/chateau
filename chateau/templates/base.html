@@ -8,40 +8,43 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}" />
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/">
-            <img
-                class="icon"
-                alt="Backgammon Network"
-                src="{{ url_for('static', filename='img/brand/icon.svg') }}"
-            />
-            Backgammon Network
-        </a>
-        <a id="navbar-toggle" href="javascript:void(0);">
-            <img
-                class="icon"
-                alt="Menu"
-                src="{{ url_for('static', filename='img/icons/menu.svg') }}"
-            />
-        </a>
-        <div id="navbar-links" class="links">
-            <a href="https://blog.bkgmn.net">Blog</a>
-            {% if g.session.authenticated %}
-                <a href="{{ url_for('settings.menu') }}">Settings</a>
-                <a href="{{ url_for('auth.logout') }}">Log out</a>
-            {% else %}
-                <a href="{{ url_for('auth.signup') }}">Create a free account</a>
-                <a href="{{ url_for('auth.login') }}">Log in</a>
-            {% endif %}
+    <div class="wrapper">
+        <nav class="navbar">
+            <a href="/">
+                <img
+                    class="icon"
+                    alt="Backgammon Network"
+                    src="{{ url_for('static', filename='img/brand/icon.svg') }}"
+                />
+                Backgammon Network
+            </a>
+            <a id="navbar-toggle" href="javascript:void(0);">
+                <img
+                    class="icon"
+                    alt="Menu"
+                    src="{{ url_for('static', filename='img/icons/menu.svg') }}"
+                />
+            </a>
+            <div id="navbar-links" class="links">
+                <a href="{{ url_for('play.custom') }}">Play</a>
+                <a href="https://blog.bkgmn.net">Blog</a>
+                {% if g.session.authenticated %}
+                    <a href="{{ url_for('settings.menu') }}">Settings</a>
+                    <a href="{{ url_for('auth.logout') }}">Log out</a>
+                {% else %}
+                    <a href="{{ url_for('auth.signup') }}">Create a free account</a>
+                    <a href="{{ url_for('auth.login') }}">Log in</a>
+                {% endif %}
+            </div>
+        </nav>
+        <div class="content">
+            {% block content %}{% endblock %}
         </div>
-    </nav>
-    <div class="content">
-        {% block content %}{% endblock %}
-    </div>
-    <div class="footer">
-        <div>
-            <a href="https://docs.bkgmn.net/legal/terms.html">Terms of Service</a> |
-            <a href="https://docs.bkgmn.net/legal/privacy.html">Privacy Policy</a>
+        <div class="footer">
+            <div>
+                <a href="https://docs.bkgmn.net/legal/terms.html">Terms of Service</a> |
+                <a href="https://docs.bkgmn.net/legal/privacy.html">Privacy Policy</a>
+            </div>
         </div>
     </div>
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
