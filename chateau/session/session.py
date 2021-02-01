@@ -183,15 +183,35 @@ class Session:
         assert self.data.user_id is not None
         self.store.hset("games", self.data.user_id, str(game_id))
 
-    def custom_game(self) -> uuid.UUID:
+    @staticmethod
+    def _game_key(game_id: uuid.UUID) -> str:
+        """Return the game key."""
+        return f"game:{game_id}"
+
+    @staticmethod
+    def _player_key(player: int) -> str:
+        """Return the game key."""
+        return f"player_{player}"
+
+    def join_custom_game(self, game_id: uuid.UUID, player: int) -> None:
+        if self.authenticated:
+            assert self.data.user_id is not None
+            if self.store.hsetnx(
+                self._game_key(game_id), self._player_key(player), self.data.user_id
+            ):
+                self._add_to_game_index(game_id)
+        else:
+            if self.store.hsetnx(
+                self._game_key(game_id), self._player_key(player), self.token
+            ):
+                self.store.hset(self.key, "game_id", str(game_id))
+
+    def new_custom_game(self) -> uuid.UUID:
         """Create a new custom game."""
         assert self.game_id() is None
-
         game_id: uuid.UUID = uuid.uuid4()
-
-        if self.authenticated:
-            self._add_to_game_index(game_id)
-        else:
-            self.store.hset(self.key, "game_id", str(game_id))
-
+        self.join_custom_game(game_id, 1)
         return game_id
+
+    def game_exists(self, game_id: uuid.UUID) -> bool:
+        return bool(self.store.exists(self._game_key(game_id)))

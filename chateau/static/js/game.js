@@ -12,14 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const url = 'ws://' + location.hostname + ':8000/socket' + location.pathname;
+const url = websocket_secure
+    ? 'wss://'
+    : 'ws://' +
+      websocket_host +
+      '/socket' +
+      location.pathname +
+      '?token=' +
+      websocket_token;
 const socket = new WebSocket(url);
 
-socket.onopen = function (event) {
-    socket.send('ping');
+socket.onmessage = function (event) {
+    console.log('incoming: ' + event.data);
 };
 
-socket.onmessage = function (event) {
-    console.log(event.data);
-    socket.close(1000);
-};
+document.querySelector('form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const move = document.querySelector('#move').value;
+    const msg = { opcode: 'move', move: move.split(' ').map(Number) };
+    socket.send(JSON.stringify(msg));
+    document.querySelector('form').reset();
+});

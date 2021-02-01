@@ -24,3 +24,5 @@ SESSION_COOKIE_SECURE = False
 SESSION_URL = "redis://host:port?db=0"
 TZDATA_MIN_LENGTH = 3
 TZDATA_MAX_LENGTH = 29  # https://en.wikipedia.org/wiki/Tz_database#Names_of_time_zones
+WEBSOCKET_HOST = "host:port"
+WEBSOCKET_SECURE = False

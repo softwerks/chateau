@@ -1,7 +1,3 @@
-.backgammon-board {
-    display: none;
-}
-
 .backgammon-board table {
     table-layout: fixed;
     border-collapse: collapse;

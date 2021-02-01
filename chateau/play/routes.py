@@ -25,11 +25,16 @@ from chateau.play import blueprint
 def custom() -> Union[werkzeug.wrappers.Response, str]:
     game_id: uuid.UUID = flask.g.session.game_id()
     if game_id is None:
-        game_id = flask.g.session.custom_game()
+        game_id = flask.g.session.new_custom_game()
     return flask.redirect(flask.url_for("play.game", game_id=game_id))
 
 
 @blueprint.route("<uuid:game_id>")
 def game(game_id: uuid.UUID) -> Union[werkzeug.wrappers.Response, str]:
-    token: str = flask.g.session.websocket_token()
-    return flask.render_template("play/game.html", token=token)
+    if flask.g.session.game_exists(game_id):
+        if flask.g.session.game_id() is None:
+            flask.g.session.join_custom_game(game_id, 2)
+        websocket_token: str = flask.g.session.websocket_token()
+        return flask.render_template("play/game.html", websocket_token=websocket_token)
+    else:
+        flask.abort(404)
