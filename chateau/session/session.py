@@ -190,10 +190,17 @@ class Session:
 
     @staticmethod
     def _player_key(player: int) -> str:
-        """Return the game key."""
+        """Return the player key."""
         return f"player_{player}"
 
+    def game_exists(self, game_id: uuid.UUID) -> bool:
+        """Verify that the game exists."""
+        return bool(self.store.exists(self._game_key(game_id)))
+
     def join_custom_game(self, game_id: uuid.UUID, player: int) -> None:
+        """Try to join a custom game."""
+        assert self.game_exists(game_id)
+        assert self.game_id() is None
         if self.authenticated:
             assert self.data.user_id is not None
             if self.store.hsetnx(
@@ -212,6 +219,3 @@ class Session:
         game_id: uuid.UUID = uuid.uuid4()
         self.join_custom_game(game_id, 1)
         return game_id
-
-    def game_exists(self, game_id: uuid.UUID) -> bool:
-        return bool(self.store.exists(self._game_key(game_id)))
