@@ -199,8 +199,6 @@ class Session:
 
     def join_custom_game(self, game_id: uuid.UUID, player: int) -> None:
         """Try to join a custom game."""
-        assert self.game_exists(game_id)
-        assert self.game_id() is None
         if self.authenticated:
             assert self.data.user_id is not None
             if self.store.hsetnx(
