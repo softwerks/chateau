@@ -33,7 +33,7 @@ def custom() -> Union[werkzeug.wrappers.Response, str]:
 def game(game_id: uuid.UUID) -> Union[werkzeug.wrappers.Response, str]:
     if flask.g.session.game_exists(game_id):
         if flask.g.session.game_id() is None:
-            flask.g.session.join_custom_game(game_id, 2)
+            flask.g.session.join_custom_game(game_id, 1)
         websocket_token: str = flask.g.session.websocket_token()
         return flask.render_template("play/game.html", websocket_token=websocket_token)
     else:

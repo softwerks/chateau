@@ -18,6 +18,7 @@ import time
 from typing import Dict, List, Optional, Set, Union
 import uuid
 
+import backgammon
 import flask
 import redis
 
@@ -215,5 +216,12 @@ class Session:
         """Create a new custom game."""
         assert self.game_id() is None
         game_id: uuid.UUID = uuid.uuid4()
-        self.join_custom_game(game_id, 1)
+        game_key: str = self._game_key(game_id)
+        game: backgammon.Backgammon = backgammon.Backgammon()
+        game.first_roll()
+        pipeline: redis.client.Pipeline = self.store.pipeline()
+        pipeline.hset(game_key, "position", game.position.encode())
+        pipeline.hset(game_key, "match", game.match.encode())
+        pipeline.execute()
+        self.join_custom_game(game_id, 0)
         return game_id
