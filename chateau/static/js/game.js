@@ -23,7 +23,7 @@ const url = websocket_secure
 const socket = new WebSocket(url);
 
 socket.onmessage = function (event) {
-    console.log('incoming: ' + event.data);
+    console.log(JSON.parse(event.data));
 };
 
 document.querySelector('form').addEventListener('submit', (event) => {
