@@ -15,6 +15,7 @@
 import './components/password_meter.js';
 import './components/password_toggle.js';
 import './components/news_feed.js';
+import './components/backgammon_board.js';
 
 const navbarToggle = document.getElementById('navbar-toggle');
 navbarToggle.addEventListener('click', (e) => {

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<backgammon-board websocketURL="{{ websocket_url }}"></backgammon-board>
 <div class="backgammon-board">
     <table>
         <tr>
@@ -264,16 +265,9 @@
         <input type="text" id="move">
         <input type="submit">
     </form>
-    <p>⚀ ⚁ ⚂ ⚃ ⚄ ⚄⚪⚫</p>
 </div>
 {% endblock %}
 {% block javascript %}
-<script type="text/javascript">
-    const websocket_host = {{ config["WEBSOCKET_HOST"] | tojson }};
-    const websocket_secure = {{ config["WEBSOCKET_SECURE"] | tojson }};
-    const websocket_token = '{{ websocket_token }}';
-</script>
-<script src="{{ url_for('static', filename='js/game.js') }}"></script>
 <script>
     function allowDrop(e) {
         e.preventDefault();
