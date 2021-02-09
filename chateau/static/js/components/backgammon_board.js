@@ -80,8 +80,9 @@ class BackgammonBoard extends HTMLElement {
             let tr = table.insertRow();
             for (let col = 0; col < board[row].length; col++) {
                 let td = tr.insertCell();
-                if (col == 6 && row != 0 && row != board.length - 1)
-                    td.part = 'board-td-bar';
+                if (row == 0 || row == board.length - 1)
+                    td.part = 'board-td-num';
+                else if (col == 6) td.part = 'board-td-bar';
                 else td.part = 'board-td';
                 if (board[row][col] != undefined) {
                     if (row == 6) td.part = 'board-td-die';
@@ -99,7 +100,7 @@ class BackgammonBoard extends HTMLElement {
 
         const shadowRoot = this.attachShadow({ mode: 'open' });
         const div = document.createElement('div');
-        div.className = 'backgammon-board';
+        div.part = 'board-div';
         shadowRoot.append(div);
 
         const websocketURL = this.getAttribute('websocketURL');
