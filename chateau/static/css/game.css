@@ -11,6 +11,7 @@ backgammon-board::part(board-div) {
 backgammon-board::part(board-table) {
     table-layout: fixed;
     border-collapse: collapse;
+    border: 1px solid darkgrey;
 }
 
 backgammon-board::part(board-td) {
