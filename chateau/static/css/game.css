@@ -42,3 +42,10 @@ backgammon-board::part(board-td-die) {
     text-align: center;
     vertical-align: middle;
 }
+
+backgammon-board::part(board-td-cube) {
+    font-weight: bold;
+    width: 2rem;
+    text-align: center;
+    vertical-align: middle;
+}

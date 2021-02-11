@@ -76,7 +76,7 @@ class BackgammonBoard extends HTMLElement {
         for (let row = 0; row < off.length; row++) {
             board[row].push(off[row]);
         }
-        let dice = Array.from({ length: 15 });
+        let dice = Array.from({ length: 14 });
         dice[match.player == 0 ? 2 : 9] =
             BackgammonBoard.dice[match.dice[0] - 1];
         dice[match.player == 0 ? 3 : 10] =
@@ -101,10 +101,12 @@ class BackgammonBoard extends HTMLElement {
                 let td = tr.insertCell();
                 if (row == 0 || row == board.length - 1)
                     td.part = 'board-td-num';
-                else if (col == 6) td.part = 'board-td-bar';
+                else if (col == 7) td.part = 'board-td-bar';
                 else td.part = 'board-td';
                 if (board[row][col] != undefined) {
-                    if (row == 6) td.part = 'board-td-die';
+                    if (row == 6)
+                        if (col == 0) td.part = 'board-td-cube';
+                        else td.part = 'board-td-die';
                     let tdText = document.createTextNode(board[row][col]);
                     td.appendChild(tdText);
                 }
