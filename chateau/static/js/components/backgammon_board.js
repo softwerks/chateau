@@ -27,7 +27,7 @@ function checkers(match, position) {
         bottom: position.slice(position.length / 2),
     };
 
-    let checkers = Array.from({ length: 11 }, (_, i) =>
+    let checkers = Array.from({ length: 10 }, (_, i) =>
         Array.from({ length: split['top'].length })
     );
 
@@ -57,22 +57,41 @@ class BackgammonBoard extends HTMLElement {
             position.player_bar,
             position.opponent_bar,
         ]);
+        const off = checkers(match, [
+            position.player_off,
+            position.opponent_off,
+        ]);
 
         let board = [];
         board.push(match.player == 0 ? range(12, 1, -1) : range(13, 24, 1));
         board.push(...points);
         board.push(match.player == 0 ? range(13, 24, 1) : range(12, 1, -1));
-        board[0].splice(6, 0, undefined);
-        for (let row = 1; row <= bar.length; row++) {
-            board[row].splice(6, 0, bar[row - 1]);
+        bar.unshift(undefined);
+        bar.push(undefined);
+        for (let row = 0; row < bar.length; row++) {
+            board[row].splice(6, 0, bar[row]);
         }
-        board[board.length - 1].splice(6, 0, undefined);
-        let dice = Array.from({ length: 13 });
+        off.unshift(undefined);
+        off.push(undefined);
+        for (let row = 0; row < off.length; row++) {
+            board[row].push(off[row]);
+        }
+        let dice = Array.from({ length: 15 });
         dice[match.player == 0 ? 2 : 9] =
             BackgammonBoard.dice[match.dice[0] - 1];
         dice[match.player == 0 ? 3 : 10] =
             BackgammonBoard.dice[match.dice[1] - 1];
         board.splice(6, 0, dice);
+        let double = Array.from({ length: 13 });
+        let double_pos = 6;
+        if (match.cube_holder == 0) double_pos = 1;
+        else if (match.cube_holder == 1) double_pos = 11;
+        const double_val =
+            match.cube_holder == 3 ? 64 : Math.pow(2, match.cube_value);
+        double[double_pos] = double_val;
+        for (let row = 0; row < double.length; row++) {
+            board[row].unshift(double[row]);
+        }
 
         const table = document.createElement('table');
         table.part = 'board-table';
