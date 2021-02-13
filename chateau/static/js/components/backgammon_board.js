@@ -83,12 +83,15 @@ class BackgammonBoard extends HTMLElement {
                     if (row <= BackgammonBoard.checker_rows / 2)
                         board[row][col] = {
                             value: board[row][col],
-                            data: { point: board[0][col].value },
+                            data: { type: 'point', point: board[0][col].value },
                         };
                     else
                         board[row][col] = {
                             value: board[row][col],
-                            data: { point: board[board.length - 1][col].value },
+                            data: {
+                                type: 'point',
+                                point: board[board.length - 1][col].value,
+                            },
                         };
                 }
             }
@@ -111,13 +114,13 @@ class BackgammonBoard extends HTMLElement {
                 if (row < checkers.length / 2)
                     checkers[row] = {
                         value: checkers[row],
-                        data: { [property]: 0 },
+                        data: { type: [property], [property]: 0 },
                         part: 'board-td-' + property,
                     };
                 else
                     checkers[row] = {
                         value: checkers[row],
-                        data: { [property]: 1 },
+                        data: { type: [property], [property]: 1 },
                         part: 'board-td-' + property,
                     };
             }
@@ -141,12 +144,12 @@ class BackgammonBoard extends HTMLElement {
         let dice = Array.from({ length: board[0].length });
         dice[this.match.player == 0 ? 2 : 9] = {
             value: BackgammonBoard.dice[this.match.dice[0] - 1],
-            data: { die: this.match.dice[0] },
+            data: { type: 'die', die: this.match.dice[0] },
             part: 'board-td-die',
         };
         dice[this.match.player == 0 ? 3 : 10] = {
             value: BackgammonBoard.dice[this.match.dice[1] - 1],
-            data: { die: this.match.dice[1] },
+            data: { type: 'die', die: this.match.dice[1] },
             part: 'board-td-die',
         };
         dice[6] = { part: 'board-td-bar' };
@@ -162,7 +165,7 @@ class BackgammonBoard extends HTMLElement {
                 : Math.pow(2, this.match.cube_value);
         cube[cube_pos] = {
             value: cube_val,
-            data: { cube: this.match.cube_holder },
+            data: { type: 'cube', cube: this.match.cube_holder },
             part: 'board-td-cube',
         };
         cube[0] = cube[cube.length - 1] = { part: 'board-td-num' };
