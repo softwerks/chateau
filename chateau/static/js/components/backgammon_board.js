@@ -40,6 +40,14 @@ class BackgammonBoard extends HTMLElement {
             table.replaceWith(this.render());
         };
 
+        document.addEventListener('keydown', (event) => {
+            switch (event.key) {
+                case 'Escape':
+                    delete this.source;
+                    break;
+            }
+        });
+
         const form = document.createElement('form');
         form.autocomplete = 'off';
         const move = document.createElement('input');
@@ -190,6 +198,34 @@ class BackgammonBoard extends HTMLElement {
                 let part = board[row][col]?.part;
                 if (part != undefined) td.part = part;
                 else td.part = 'board-td';
+
+                td.addEventListener('click', (event) => {
+                    const type = event.srcElement.dataset?.type;
+                    switch (type) {
+                        case 'point':
+                            const point = parseInt(
+                                event.srcElement.dataset.point
+                            );
+                            this.source == undefined
+                                ? (this.source = point)
+                                : this.handleMove(point);
+                            break;
+                        case 'bar':
+                            const bar = parseInt(event.srcElement.dataset.bar);
+                            if (
+                                this.match.player == bar &&
+                                this.position.player_bar > 0 &&
+                                this.source == undefined
+                            )
+                                this.source = 0;
+                            break;
+                        case 'off':
+                            const off = parseInt(event.srcElement.dataset.off);
+                            if (this.match.player == off && this.source)
+                                this.handleMove(0);
+                            break;
+                    }
+                });
             }
         }
 
@@ -261,6 +297,11 @@ class BackgammonBoard extends HTMLElement {
         }
 
         return enumerated;
+    }
+
+    handleMove(destination) {
+        console.log([this.source, destination]);
+        delete this.source;
     }
 }
 
