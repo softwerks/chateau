@@ -13,8 +13,10 @@
 // limitations under the License.
 
 class BackgammonBoard extends HTMLElement {
-    static checker_0 = '⚪';
-    static checker_1 = '⚫';
+    static checker_0 = '🔴';
+    static checker_1 = '🔵';
+    static highlight_0 = 'crimson';
+    static highlight_1 = 'cornflowerblue';
     static checker_rows = 10;
     static max_checkers = 5;
     static dice = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
@@ -30,6 +32,10 @@ class BackgammonBoard extends HTMLElement {
         let table = document.createElement('table');
         div.appendChild(table);
 
+        let style = document.createElement('style');
+        shadowRoot.append(style);
+        this.styleSheet = style.sheet;
+
         const websocketURL = this.getAttribute('websocketURL');
         const websocket = new WebSocket(websocketURL);
 
@@ -43,7 +49,7 @@ class BackgammonBoard extends HTMLElement {
         document.addEventListener('keydown', (event) => {
             switch (event.key) {
                 case 'Escape':
-                    delete this.source;
+                    this.deselect();
                     break;
             }
         });
@@ -91,7 +97,13 @@ class BackgammonBoard extends HTMLElement {
                     if (row <= BackgammonBoard.checker_rows / 2)
                         board[row][col] = {
                             value: board[row][col],
-                            data: { type: 'point', point: board[0][col].value },
+                            data: {
+                                type: 'point',
+                                point: board[0][col].value,
+                                ...(board[0][col].data?.player != undefined && {
+                                    player: board[0][col].data.player,
+                                }),
+                            },
                         };
                     else
                         board[row][col] = {
@@ -99,6 +111,12 @@ class BackgammonBoard extends HTMLElement {
                             data: {
                                 type: 'point',
                                 point: board[board.length - 1][col].value,
+                                ...(board[board.length - 1][col].data?.player !=
+                                    undefined && {
+                                    player:
+                                        board[board.length - 1][col].data
+                                            .player,
+                                }),
                             },
                         };
                 }
@@ -207,7 +225,11 @@ class BackgammonBoard extends HTMLElement {
                                 event.srcElement.dataset.point
                             );
                             this.source == undefined
-                                ? (this.source = point)
+                                ? this.select(
+                                      'point',
+                                      point,
+                                      parseInt(event.srcElement.dataset?.player)
+                                  )
                                 : this.handleMove(point);
                             break;
                         case 'bar':
@@ -217,7 +239,7 @@ class BackgammonBoard extends HTMLElement {
                                 this.position.player_bar > 0 &&
                                 this.source == undefined
                             )
-                                this.source = 0;
+                                this.select('bar', bar, 0);
                             break;
                         case 'off':
                             const off = parseInt(event.srcElement.dataset.off);
@@ -234,21 +256,34 @@ class BackgammonBoard extends HTMLElement {
 
     header() {
         return this.match.player == 0
-            ? BackgammonBoard.range(12, 1, -1)
-            : BackgammonBoard.range(13, 24, 1);
+            ? this.points(12, 1, -1)
+            : this.points(13, 24, 1);
     }
 
     footer() {
         return this.match.player == 0
-            ? BackgammonBoard.range(13, 24, 1)
-            : BackgammonBoard.range(12, 1, -1);
+            ? this.points(13, 24, 1)
+            : this.points(12, 1, -1);
     }
 
-    static range(start, stop, step) {
-        return Array.from({ length: (stop - start) / step + 1 }, (_, i) => ({
-            value: start + i * step,
-            part: 'board-td-num',
-        }));
+    points(start, stop, step) {
+        let points = Array.from(
+            { length: (stop - start) / step + 1 },
+            (_, i) => ({
+                value: start + i * step,
+                part: 'board-td-num',
+            })
+        );
+
+        const player = this.match.player;
+        const opponent = Math.abs(player - 1);
+        for (let i = 0; i < points.length; i++) {
+            let checkers = this.position.board_points[points[i].value - 1];
+            if (checkers > 0) points[i].data = { player: player };
+            else if (checkers < 0) points[i].data = { player: opponent };
+        }
+
+        return points;
     }
 
     static enumerate_checkers(player, checkers) {
@@ -299,9 +334,28 @@ class BackgammonBoard extends HTMLElement {
         return enumerated;
     }
 
-    handleMove(destination) {
-        console.log([this.source, destination]);
+    select(type, value, player) {
+        if (!isNaN(player)) {
+            this.source = type == 'point' ? value : 0;
+            this.styleSheet.insertRule(
+                `td[data-${type}='${value}'] { text-shadow: 0 0 1rem ${
+                    player == 0
+                        ? BackgammonBoard.highlight_0
+                        : BackgammonBoard.highlight_1
+                } }`,
+                0
+            );
+        }
+    }
+
+    deselect() {
+        this.styleSheet.deleteRule(0);
         delete this.source;
+    }
+
+    handleMove(destination) {
+        if (this.source != destination) console.log([this.source, destination]);
+        this.deselect();
     }
 }
 
