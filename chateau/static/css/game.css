@@ -18,6 +18,7 @@ backgammon-board::part(board-td) {
     width: 2rem;
     text-align: center;
     vertical-align: middle;
+    user-select: none;
 }
 
 backgammon-board::part(board-td-bar) {
@@ -25,6 +26,7 @@ backgammon-board::part(board-td-bar) {
     width: 2rem;
     text-align: center;
     vertical-align: middle;
+    user-select: none;
 }
 
 backgammon-board::part(board-td-num) {
@@ -35,6 +37,7 @@ backgammon-board::part(board-td-num) {
     padding: 0.5rem 0 0.5rem 0;
     text-align: center;
     vertical-align: middle;
+    user-select: none;
 }
 
 backgammon-board::part(board-td-die) {
@@ -42,6 +45,7 @@ backgammon-board::part(board-td-die) {
     width: 2rem;
     text-align: center;
     vertical-align: middle;
+    user-select: none;
 }
 
 backgammon-board::part(board-td-cube) {
@@ -49,4 +53,5 @@ backgammon-board::part(board-td-cube) {
     width: 2rem;
     text-align: center;
     vertical-align: middle;
+    user-select: none;
 }
