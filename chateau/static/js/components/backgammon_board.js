@@ -29,9 +29,6 @@ class BackgammonBoard extends HTMLElement {
         div.part = 'board-div';
         shadowRoot.append(div);
 
-        let table = document.createElement('table');
-        div.appendChild(table);
-
         let style = document.createElement('style');
         shadowRoot.append(style);
         this.styleSheet = style.sheet;
@@ -43,40 +40,26 @@ class BackgammonBoard extends HTMLElement {
             const game = JSON.parse(event.data);
             this.match = game.match;
             this.position = game.position;
-            table.replaceWith(this.render());
+            this.moves = new Array(0);
+            div.innerHTML = '';
+            div.appendChild(this.render());
         };
 
         document.addEventListener('keydown', (event) => {
             switch (event.key) {
+                case 'Enter':
+                    websocket.send(
+                        JSON.stringify({
+                            opcode: 'move',
+                            move: this.moves.map((n) => (n > 0 ? n : null)),
+                        })
+                    );
+                    break;
                 case 'Escape':
                     this.deselect();
                     break;
             }
         });
-
-        const form = document.createElement('form');
-        form.autocomplete = 'off';
-        const move = document.createElement('input');
-        move.type = 'text';
-        move.id = 'move';
-        form.appendChild(move);
-        const submit = document.createElement('input');
-        submit.type = 'submit';
-        form.appendChild(submit);
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-            websocket.send(
-                JSON.stringify({
-                    opcode: 'move',
-                    move: move.value
-                        .split(' ')
-                        .map(Number)
-                        .map((n) => (n > 0 ? n : null)),
-                })
-            );
-            form.reset();
-        });
-        shadowRoot.append(form);
     }
 
     render() {
@@ -239,7 +222,7 @@ class BackgammonBoard extends HTMLElement {
                                 this.position.player_bar > 0 &&
                                 this.source == undefined
                             )
-                                this.select('bar', bar, 0);
+                                this.select('bar', bar, this.match.player);
                             break;
                         case 'off':
                             const off = parseInt(event.srcElement.dataset.off);
@@ -286,7 +269,7 @@ class BackgammonBoard extends HTMLElement {
         return points;
     }
 
-    static enumerate_checkers(player, checkers) {
+    static enumerate_checkers(player, [...checkers]) {
         function normalize() {
             if (player == 1)
                 checkers = checkers.reverse().map((n) => (n != 0 ? -n : n));
@@ -335,17 +318,19 @@ class BackgammonBoard extends HTMLElement {
     }
 
     select(type, value, player) {
-        if (!isNaN(player)) {
-            this.source = type == 'point' ? value : 0;
-            this.styleSheet.insertRule(
-                `td[data-${type}='${value}'] { text-shadow: 0 0 1rem ${
-                    player == 0
-                        ? BackgammonBoard.highlight_0
-                        : BackgammonBoard.highlight_1
-                } }`,
-                0
-            );
-        }
+        if (isNaN(player)) return;
+
+        if (player != this.match.player) return;
+
+        this.source = type == 'point' ? value : 0;
+        this.styleSheet.insertRule(
+            `td[data-${type}='${value}'] { text-shadow: 0 0 1rem ${
+                player == 0
+                    ? BackgammonBoard.highlight_0
+                    : BackgammonBoard.highlight_1
+            } }`,
+            0
+        );
     }
 
     deselect() {
@@ -354,7 +339,14 @@ class BackgammonBoard extends HTMLElement {
     }
 
     handleMove(destination) {
-        if (this.source != destination) console.log([this.source, destination]);
+        if (destination == this.source) {
+            this.deselect();
+            return;
+        }
+
+        if (this.source > 0 && destination > this.source) return;
+
+        this.moves.push(this.source, destination);
         this.deselect();
     }
 }
