@@ -25,9 +25,9 @@ class BackgammonBoard extends HTMLElement {
         super();
 
         const shadowRoot = this.attachShadow({ mode: 'open' });
-        const div = document.createElement('div');
-        div.part = 'board-div';
-        shadowRoot.append(div);
+        this.div = document.createElement('div');
+        this.div.part = 'board-div';
+        shadowRoot.append(this.div);
 
         let style = document.createElement('style');
         shadowRoot.append(style);
@@ -41,8 +41,8 @@ class BackgammonBoard extends HTMLElement {
             this.match = game.match;
             this.position = game.position;
             this.moves = new Array(0);
-            div.innerHTML = '';
-            div.appendChild(this.render());
+            this.div.innerHTML = '';
+            this.div.appendChild(this.render());
         };
 
         document.addEventListener('keydown', (event) => {
@@ -223,6 +223,7 @@ class BackgammonBoard extends HTMLElement {
                                 this.source == undefined
                             )
                                 this.select('bar', bar, this.match.player);
+                            else if (this.source == 0) this.deselect();
                             break;
                         case 'off':
                             const off = parseInt(event.srcElement.dataset.off);
@@ -334,8 +335,9 @@ class BackgammonBoard extends HTMLElement {
     }
 
     deselect() {
-        this.styleSheet.deleteRule(0);
-        delete this.source;
+        for (let i = 0; i < this.styleSheet.cssRules.length; i++)
+            this.styleSheet.deleteRule(i);
+        if (this.source != undefined) delete this.source;
     }
 
     handleMove(destination) {
@@ -347,7 +349,27 @@ class BackgammonBoard extends HTMLElement {
         if (this.source > 0 && destination > this.source) return;
 
         this.moves.push(this.source, destination);
+        this.applyMove(this.source, destination);
         this.deselect();
+    }
+
+    applyMove(source, destination) {
+        if (source == 0) this.position.player_bar--;
+        else this.position.board_points[source - 1]--;
+
+        if (destination == 0) this.position.player_off++;
+        else {
+            let hit = this.position.board_points[destination - 1] == -1;
+            if (hit) {
+                this.position.board_points[destination - 1] = 1;
+                this.position.opponent_bar--;
+            } else {
+                this.position.board_points[destination - 1]++;
+            }
+        }
+
+        this.div.innerHTML = '';
+        this.div.appendChild(this.render());
     }
 }
 
