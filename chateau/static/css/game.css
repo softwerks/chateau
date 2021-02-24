@@ -2,26 +2,6 @@
     visibility: hidden;
 }
 
-backgammon-board::part(board-div) {
-    display: flex;
-    justify-content: center;
-    margin: 1rem 0 1rem 0;
-}
-
-backgammon-board::part(board-table) {
-    table-layout: fixed;
-    border-collapse: collapse;
-    border: 1px solid darkgrey;
-}
-
-backgammon-board::part(board-td) {
-    width: 2rem;
-    height: 1rem;
-    text-align: center;
-    vertical-align: middle;
-    user-select: none;
-}
-
 backgammon-board::part(board-td-bar) {
     background: lightgrey;
     width: 2rem;
