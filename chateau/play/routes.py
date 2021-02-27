@@ -26,7 +26,7 @@ def custom() -> Union[werkzeug.wrappers.Response, str]:
     game_id: uuid.UUID = flask.g.session.game_id()
     if game_id is None:
         game_id = flask.g.session.new_custom_game()
-    return flask.redirect(flask.url_for("play.game", game_id=game_id))
+    return flask.redirect(flask.url_for("play.game", game_id=game_id), code=303)
 
 
 @blueprint.route("<uuid:game_id>")
