@@ -134,8 +134,8 @@ customElements.define(
         }
 
         reset() {
-            this.match = this.game.match;
-            this.position = this.game.position;
+            this.match = JSON.parse(JSON.stringify(this.game.match));
+            this.position = JSON.parse(JSON.stringify(this.game.position));
             this.moves = new Array(0);
             this.deselect();
             this.render();
@@ -434,6 +434,7 @@ customElements.define(
             this.moves.push(this.source, destination);
             this.applyMove(this.source, destination);
             this.deselect();
+            this.render();
         }
 
         applyMove(source, destination) {
@@ -457,12 +458,15 @@ customElements.define(
         }
 
         play() {
-            this.websocket.send(
-                JSON.stringify({
-                    opcode: 'move',
-                    move: this.moves.map((n) => (n > 0 ? n : null)),
-                })
-            );
+            if (this.moves.length == 0)
+                this.websocket.send(JSON.stringify({ opcode: 'skip' }));
+            else
+                this.websocket.send(
+                    JSON.stringify({
+                        opcode: 'move',
+                        move: this.moves.map((n) => (n > 0 ? n : null)),
+                    })
+                );
         }
 
         resign() {
