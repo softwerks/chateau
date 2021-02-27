@@ -90,15 +90,12 @@ customElements.define(
             this.styleSheet = style.sheet;
 
             const websocketURL = this.getAttribute('websocketURL');
-            const websocket = new WebSocket(websocketURL);
+            this.websocket = new WebSocket(websocketURL);
 
-            websocket.onmessage = (event) => {
-                const game = JSON.parse(event.data);
-                this.match = game.match;
-                this.position = game.position;
-                this.moves = new Array(0);
-                this.render();
-            };
+            this.websocket.addEventListener('message', (event) => {
+                this.game = JSON.parse(event.data);
+                this.reset();
+            });
 
             this.shadowRoot
                 .querySelector('#undo')
@@ -124,18 +121,24 @@ customElements.define(
             document.addEventListener('keydown', (event) => {
                 switch (event.key) {
                     case 'Enter':
-                        websocket.send(
-                            JSON.stringify({
-                                opcode: 'move',
-                                move: this.moves.map((n) => (n > 0 ? n : null)),
-                            })
-                        );
+                        this.play();
                         break;
                     case 'Escape':
                         this.deselect();
                         break;
+                    case 'z':
+                        if (event.ctrlKey) this.undo();
+                        break;
                 }
             });
+        }
+
+        reset() {
+            this.match = this.game.match;
+            this.position = this.game.position;
+            this.moves = new Array(0);
+            this.deselect();
+            this.render();
         }
 
         render() {
@@ -450,11 +453,16 @@ customElements.define(
         }
 
         undo() {
-            console.log('undo');
+            this.reset();
         }
 
         play() {
-            console.log('play');
+            this.websocket.send(
+                JSON.stringify({
+                    opcode: 'move',
+                    move: this.moves.map((n) => (n > 0 ? n : null)),
+                })
+            );
         }
 
         resign() {
