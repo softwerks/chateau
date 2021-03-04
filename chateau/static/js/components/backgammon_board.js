@@ -33,18 +33,37 @@ template.innerHTML = `
             margin: 0.5rem 0 0.5rem 0;
         }
 
-        .board table {
+        table {
             border-collapse: collapse;
             border: 1px solid darkgrey;
             table-layout: fixed;
         }
 
-        .board td {
+        td {
             height: 1rem;
             text-align: center;
             user-select: none;
             vertical-align: middle;
             width: 2rem;
+        }
+
+        .bar {
+            background: lightgrey;
+        }
+
+        .num {
+            background: darkgrey;
+            color: rgb(248, 248, 248);
+            font-weight: bold;
+            padding: 0.5rem 0 0.5rem 0;
+        }
+
+        .die {
+            font-size: 2rem;
+        }
+
+        .cube {
+            font-weight: bold;
         }
 
         .controls button {
@@ -205,12 +224,14 @@ customElements.define(
                             value: checkers[row],
                             data: { type: [property], [property]: 0 },
                             part: 'board-td-' + property,
+                            className: property,
                         };
                     else
                         checkers[row] = {
                             value: checkers[row],
                             data: { type: [property], [property]: 1 },
                             part: 'board-td-' + property,
+                            className: property,
                         };
                 }
             }
@@ -219,8 +240,8 @@ customElements.define(
             annotate_bar_off(off, 'off');
 
             function insert_bar_off(checkers, index) {
-                checkers.unshift({ part: 'board-td-num' });
-                checkers.push({ part: 'board-td-num' });
+                checkers.unshift({ part: 'board-td-num', className: 'num' });
+                checkers.push({ part: 'board-td-num', className: 'num' });
 
                 for (let row = 0; row < checkers.length; row++) {
                     board[row].splice(index, 0, checkers[row]);
@@ -235,13 +256,15 @@ customElements.define(
                 value: DICE[this.match.dice[0] - 1],
                 data: { type: 'die', die: this.match.dice[0] },
                 part: 'board-td-die',
+                className: 'die',
             };
             dice[this.match.player == 0 ? 3 : 10] = {
                 value: DICE[this.match.dice[1] - 1],
                 data: { type: 'die', die: this.match.dice[1] },
                 part: 'board-td-die',
+                className: 'die',
             };
-            dice[6] = { part: 'board-td-bar' };
+            dice[6] = { part: 'board-td-bar', className: 'bar' };
             board.splice(board.length / 2, 0, dice);
 
             let cube = Array.from({ length: board.length });
@@ -256,8 +279,12 @@ customElements.define(
                 value: cube_val,
                 data: { type: 'cube', cube: this.match.cube_holder },
                 part: 'board-td-cube',
+                className: 'cube',
             };
-            cube[0] = cube[cube.length - 1] = { part: 'board-td-num' };
+            cube[0] = cube[cube.length - 1] = {
+                part: 'board-td-num',
+                className: 'num',
+            };
             for (let row = 0; row < cube.length; row++) {
                 board[row].unshift(cube[row]);
             }
@@ -279,6 +306,9 @@ customElements.define(
                     let part = board[row][col]?.part;
                     if (part != undefined) td.part = part;
                     else td.part = 'board-td';
+
+                    let className = board[row][col]?.className;
+                    if (className != undefined) td.className = className;
 
                     td.addEventListener('click', (event) => {
                         const type = event.srcElement.dataset?.type;
@@ -344,6 +374,7 @@ customElements.define(
                 (_, i) => ({
                     value: start + i * step,
                     part: 'board-td-num',
+                    className: 'num',
                 })
             );
 
