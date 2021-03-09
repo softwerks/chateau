@@ -81,17 +81,26 @@ template.innerHTML = `
             margin-right: 4rem;
         }
 
-        .controls button:hover {
+        .controls button:disabled {
+            cursor: not-allowed;
+        }
+
+        .controls button:enabled {
             color: rgb(248, 248, 248);
+        }
+
+        .controls button:hover:enabled {
             background: darkgrey;
             border-color: grey;
         }
     </style>
     <div class="board"></div>
     <div class="controls">
-        <button id="undo" title="Undo">⎌</button>
-        <button id="play" title="Play">⎆</button>
-        <button id="resign" title="Resign">⚐</button>
+        <button id="undo" title="Undo" disabled>⎌</button>
+        <button id="play" title="Double" disabled>▣</button>
+        <button id="play" title="Play" disabled>⎆</button>
+        <button id="play" title="Roll" disabled>⚂</button>
+        <button id="resign" title="Resign" disabled>⚐</button>
     </div>
 `;
 
