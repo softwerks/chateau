@@ -66,19 +66,21 @@ template.innerHTML = `
             font-weight: bold;
         }
 
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            width: 32rem;
+        }
+
         .controls button {
             background: lightgrey;
             border-radius: 0.25rem;
             border: 2px solid darkgrey;
             cursor: pointer;
+            font-size: 1rem;
             font: inherit;
-            font-size: 2rem;
             height: 3rem;
             width: 3rem;
-        }
-
-        .controls button:not(:last-child) {
-            margin-right: 4rem;
         }
 
         .controls button:disabled {
@@ -86,21 +88,20 @@ template.innerHTML = `
         }
 
         .controls button:enabled {
-            color: rgb(248, 248, 248);
+            border-color: grey;
         }
 
         .controls button:hover:enabled {
             background: darkgrey;
-            border-color: grey;
         }
     </style>
     <div class="board"></div>
     <div class="controls">
-        <button id="undo" title="Undo" disabled>⎌</button>
-        <button id="play" title="Double" disabled>▣</button>
-        <button id="play" title="Play" disabled>⎆</button>
-        <button id="play" title="Roll" disabled>⚂</button>
-        <button id="resign" title="Resign" disabled>⚐</button>
+        <button id="undo" title="Undo" disabled>❌</button>
+        <button id="play" title="Double" disabled>🔳</button>
+        <button id="play" title="Play" disabled>👍</button>
+        <button id="play" title="Roll" disabled>🎲</button>
+        <button id="resign" title="Resign" disabled>🏳️</button>
     </div>
 `;
 
