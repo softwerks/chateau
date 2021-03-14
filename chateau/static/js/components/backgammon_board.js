@@ -121,6 +121,10 @@ customElements.define(
             const websocketURL = this.getAttribute('websocketURL');
             this.websocket = new WebSocket(websocketURL);
 
+            this.websocket.addEventListener('open', (event) => {
+                this.websocket.send(JSON.stringify({ opcode: 'join' }));
+            });
+
             this.websocket.addEventListener('message', (event) => {
                 this.game = JSON.parse(event.data);
                 this.reset();
