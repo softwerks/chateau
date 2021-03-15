@@ -67,7 +67,7 @@ class SessionData:
 
     @property
     def session_type(self) -> Optional[str]:
-        return self._property(b"type")
+        return self._property(b"session_type")
 
     @property
     def time_zone(self) -> Optional[datetime.tzinfo]:
@@ -77,4 +77,4 @@ class SessionData:
 
     @property
     def user_id(self) -> Optional[str]:
-        return self._property(b"id")
+        return self._property(b"user_id")

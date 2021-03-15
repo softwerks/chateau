@@ -84,8 +84,8 @@ class Session:
     def new(
         self,
         *,
-        type_: str = "anonymous",
-        id_: Optional[int] = None,
+        session_type: str = "anonymous",
+        user_id: Optional[int] = None,
         time_zone: Optional[str] = None,
     ) -> None:
         """Create a new session."""
@@ -100,9 +100,9 @@ class Session:
         token: str = secrets.token_urlsafe()
 
         session_data: Dict[str, str] = {}
-        session_data["type"] = type_
-        if id_ is not None:
-            session_data["id"] = str(id_)
+        session_data["session_type"] = session_type
+        if user_id is not None:
+            session_data["user_id"] = str(user_id)
         if time_zone is not None:
             session_data["time_zone"] = time_zone
         session_data["address"] = get_address()
@@ -117,8 +117,8 @@ class Session:
         pipe.expire(session_key, datetime.timedelta(days=30))
         pipe.execute()
 
-        if id_ is not None:
-            self._add_to_index(str(id_), token)
+        if user_id is not None:
+            self._add_to_index(str(user_id), token)
 
         flask.session.clear()
         flask.session["id"] = token
@@ -198,30 +198,14 @@ class Session:
         """Verify that the game exists."""
         return bool(self.store.exists(self._game_key(game_id)))
 
-    def join_custom_game(self, game_id: uuid.UUID, player: int) -> None:
-        """Try to join a custom game."""
-        if self.authenticated:
-            assert self.data.user_id is not None
-            if self.store.hsetnx(
-                self._game_key(game_id), self._player_key(player), self.data.user_id
-            ):
-                self._add_to_game_index(game_id)
-        else:
-            if self.store.hsetnx(
-                self._game_key(game_id), self._player_key(player), self.token
-            ):
-                self.store.hset(self.key, "game_id", str(game_id))
-
     def new_custom_game(self) -> uuid.UUID:
         """Create a new custom game."""
         assert self.game_id() is None
         game_id: uuid.UUID = uuid.uuid4()
         game_key: str = self._game_key(game_id)
         game: backgammon.Backgammon = backgammon.Backgammon()
-        game.first_roll()
         pipeline: redis.client.Pipeline = self.store.pipeline()
         pipeline.hset(game_key, "position", game.position.encode())
         pipeline.hset(game_key, "match", game.match.encode())
         pipeline.execute()
-        self.join_custom_game(game_id, 0)
         return game_id
