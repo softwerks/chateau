@@ -126,8 +126,16 @@ customElements.define(
             });
 
             this.websocket.addEventListener('message', (event) => {
-                this.game = JSON.parse(event.data);
+                const msg = JSON.parse(event.data);
+                console.log(msg);
+                this.game = JSON.parse(msg.game);
                 this.reset();
+                if (msg?.player != undefined) {
+                    this.player = msg.player;
+                    this.websocket.send(
+                        JSON.stringify({ opcode: 'ready', player: this.player })
+                    );
+                }
             });
 
             this.shadowRoot
