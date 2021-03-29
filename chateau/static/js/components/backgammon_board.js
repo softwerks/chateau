@@ -98,9 +98,9 @@ template.innerHTML = `
     <div class="board"></div>
     <div class="controls">
         <button id="undo" title="Undo" disabled>❌</button>
-        <button id="play" title="Double" disabled>🔳</button>
+        <button id="double" title="Double" disabled>🔳</button>
         <button id="play" title="Play" disabled>👍</button>
-        <button id="play" title="Roll" disabled>🎲</button>
+        <button id="roll" title="Roll" disabled>🎲</button>
         <button id="resign" title="Resign" disabled>🏳️</button>
     </div>
 `;
@@ -129,13 +129,13 @@ customElements.define(
                 const msg = JSON.parse(event.data);
                 console.log(msg);
                 this.game = JSON.parse(msg.game);
-                this.reset();
                 if (msg?.player != undefined) {
                     this.player = msg.player;
                     this.websocket.send(
                         JSON.stringify({ opcode: 'ready', player: this.player })
                     );
                 }
+                this.reset();
             });
 
             this.shadowRoot
@@ -376,6 +376,34 @@ customElements.define(
             const div = this.shadowRoot.querySelector('.board');
             div.innerHTML = '';
             div.appendChild(table);
+
+            this.updateControls();
+        }
+
+        updateControls() {
+            const undo = this.shadowRoot.querySelector('#undo');
+            const double = this.shadowRoot.querySelector('#double');
+            const play = this.shadowRoot.querySelector('#play');
+            const roll = this.shadowRoot.querySelector('#roll');
+            const resign = this.shadowRoot.querySelector('#resign');
+
+            [undo, double, play, roll, resign].forEach((button) => {
+                button.disabled = true;
+            });
+
+            if (this?.player == this.match.player) {
+                play.disabled = false;
+                resign.disabled = false;
+
+                if (this.match.dice == [0, 0]) {
+                    double.disabled = false;
+                    roll.disabled = false;
+                }
+
+                if (this.moves.length > 0) {
+                    undo.disabled = false;
+                }
+            }
         }
 
         header() {
@@ -460,6 +488,8 @@ customElements.define(
             if (isNaN(player)) return;
 
             if (player != this.match.player) return;
+
+            if (this?.player != this.match.player) return;
 
             this.source = type == 'point' ? value : 0;
             this.styleSheet.insertRule(
