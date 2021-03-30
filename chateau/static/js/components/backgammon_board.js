@@ -52,6 +52,14 @@ template.innerHTML = `
             padding: 0;
         }
 
+        td:first-child {
+            border-right: 1px solid darkgrey;
+        }
+
+        td:last-child {
+            border-left: 1px solid darkgrey;
+        }
+
         .bar {
             background: lightgrey;
         }
