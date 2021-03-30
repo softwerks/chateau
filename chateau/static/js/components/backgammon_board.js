@@ -153,6 +153,13 @@ customElements.define(
                 });
 
             this.shadowRoot
+                .querySelector('#roll')
+                .addEventListener('click', (event) => {
+                    event.target.blur();
+                    this.roll();
+                });
+
+            this.shadowRoot
                 .querySelector('#resign')
                 .addEventListener('click', (event) => {
                     event.target.blur();
@@ -392,13 +399,12 @@ customElements.define(
             });
 
             if (this?.player == this.match.player) {
-                play.disabled = false;
                 resign.disabled = false;
 
-                if (this.match.dice == [0, 0]) {
+                if (this.match.dice[0] == 0 && this.match.dice[1] == 0) {
                     double.disabled = false;
                     roll.disabled = false;
-                }
+                } else play.disabled = false;
 
                 if (this.moves.length > 0) {
                     undo.disabled = false;
@@ -550,6 +556,10 @@ customElements.define(
                         move: this.moves.map((n) => (n > 0 ? n : null)),
                     })
                 );
+        }
+
+        roll() {
+            this.websocket.send(JSON.stringify({ opcode: 'roll' }));
         }
 
         resign() {
