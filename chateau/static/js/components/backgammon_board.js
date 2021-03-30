@@ -39,12 +39,17 @@ template.innerHTML = `
             table-layout: fixed;
         }
 
+        tr:nth-child(7) {
+            height: 2.25rem;
+        }
+
         td {
-            height: 1rem;
+            height: 1.25rem;
             text-align: center;
             user-select: none;
             vertical-align: middle;
-            width: 2rem;
+            width: 2.1rem;
+            padding: 0;
         }
 
         .bar {
