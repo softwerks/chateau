@@ -7,6 +7,27 @@ body {
         Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
         "Segoe UI Symbol";
     background: rgb(248, 248, 248);
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
+main {
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(auto, 64rem));
+}
+
+footer {
+    margin: 1rem 0 1rem 0;
+    display: flex;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+footer a {
+    color: #000000;
+    margin: 0 1rem 0 1rem;
 }
 
 button {
@@ -46,16 +67,4 @@ input[type="text"]:focus {
     border-radius: 0.25rem;
     border: 2px solid rgb(77, 144, 254);
     outline-width: 0;
-}
-
-.wrapper {
-    min-height: 100vh;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-}
-
-.content {
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(auto, 64rem));
 }
