@@ -16,7 +16,13 @@
                 />
             </a>
             <span><a href="/">Backgammon Network</a></span>
-            <ul>
+            <a class="menu" id="navbar-toggle" href="javascript:void(0);">
+                <img
+                    alt="Menu"
+                    src="{{ url_for('static', filename='img/icons/menu.svg') }}"
+                />
+            </a>
+            <ul id="navbar-links">
                 {% if g.session.authenticated %}
                 <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
                 <li><a href="{{ url_for('settings.menu') }}">Settings</a></li>
@@ -26,12 +32,6 @@
                 {% endif %}
                 <li><a href="{{ url_for('play.custom') }}">Play</a></li>
             </ul>
-            <a id="navbar-toggle" href="javascript:void(0);">
-                <img
-                    alt="Menu"
-                    src="{{ url_for('static', filename='img/icons/menu.svg') }}"
-                />
-            </a>
         </nav>
         <main>
             {% block content %}{% endblock %}

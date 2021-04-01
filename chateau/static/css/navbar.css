@@ -1,7 +1,8 @@
 nav {
     background: rgb(220 220 220);
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-rows: auto auto;
+    grid-template-columns: auto 1fr auto;
 }
 
 nav a {
@@ -20,14 +21,45 @@ nav > span {
 }
 
 nav > ul {
-    display: inline-flex;
-    justify-content: space-between;
-    align-items: center;
     list-style-type: none;
     margin: 0;
     padding: 0;
+    grid-column: 1 / span 3;
+    display: none;
+    background: rgb(180 180 180);
 }
 
-nav > ul > li:not(:last-child) {
-    padding-right: 2rem;
+nav > ul.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+nav > ul > li {
+    padding: 0.5rem 0 0.5rem 0;
+    text-align: center;
+}
+
+@media only screen and (min-width: 768px) {
+    nav {
+        grid-template-rows: auto;
+        grid-template-columns: auto 1fr auto auto;
+    }
+
+    nav > a.menu {
+        display: none;
+    }
+
+    nav > ul,
+    nav > ul.visible {
+        display: inline-flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        grid-column: 3;
+        background: inherit;
+    }
+
+    nav > ul > li {
+        padding-right: 2rem;
+    }
 }

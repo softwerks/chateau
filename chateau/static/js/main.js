@@ -18,9 +18,7 @@ import './components/news_feed.js';
 import './components/backgammon_board.js';
 
 const navbarToggle = document.getElementById('navbar-toggle');
+const navbarLinks = document.getElementById('navbar-links');
 navbarToggle.addEventListener('click', (e) => {
-    const navbarLinks = document.getElementById('navbar-links');
-    if (navbarLinks.style.display === 'block')
-        navbarLinks.style.display = 'none';
-    else navbarLinks.style.display = 'block';
+    navbarLinks.classList.toggle('visible');
 });
