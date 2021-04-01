@@ -34,7 +34,8 @@ nav > ul.visible {
     flex-direction: column;
 }
 
-nav > ul > li {
+nav > ul > li > a {
+    display: block;
     padding: 0.5rem 0 0.5rem 0;
     text-align: center;
 }
@@ -59,6 +60,12 @@ nav > ul > li {
     }
 
     nav > ul > li {
-        padding-right: 2rem;
+        margin-right: 2rem;
+    }
+
+    nav > ul > li > a {
+        display: inherit;
+        padding: 0;
+        text-align: inherit;
     }
 }
