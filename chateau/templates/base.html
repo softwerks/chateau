@@ -8,39 +8,39 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}" />
 </head>
 <body>
-        <nav>
-            <a href="/">
-                <img
-                    alt="Backgammon Network"
-                    src="{{ url_for('static', filename='img/brand/icon.svg') }}"
-                />
-            </a>
-            <span><a href="/">Backgammon Network</a></span>
-            <a class="menu" id="navbar-toggle" href="javascript:void(0);">
-                <img
-                    alt="Menu"
-                    src="{{ url_for('static', filename='img/icons/menu.svg') }}"
-                />
-            </a>
-            <ul id="navbar-links">
-                {% if g.session.authenticated %}
-                <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
-                <li><a href="{{ url_for('settings.menu') }}">Settings</a></li>
-                {% else %}
-                <li><a href="{{ url_for('auth.signup') }}">Create a free account</a></li>
-                <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
-                {% endif %}
-                <li><a href="{{ url_for('play.custom') }}">Play</a></li>
-            </ul>
-        </nav>
-        <main>
-            {% block content %}{% endblock %}
-        </main>
-        <footer>
-                <a href="https://docs.bkgmn.net/legal/terms.html">Terms of Service</a>
-                <span>|</span>
-                <a href="https://docs.bkgmn.net/legal/privacy.html">Privacy Policy</a>
-        </footer>
+    <nav>
+        <a href="/">
+            <img
+                alt="Backgammon Network"
+                src="{{ url_for('static', filename='img/brand/icon.svg') }}"
+            />
+        </a>
+        <span><a href="/">Backgammon Network</a></span>
+        <a class="menu" id="navbar-toggle" href="javascript:void(0);">
+            <img
+                alt="Menu"
+                src="{{ url_for('static', filename='img/icons/menu.svg') }}"
+            />
+        </a>
+        <ul id="navbar-links">
+            {% if g.session.authenticated %}
+            <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
+            <li><a href="{{ url_for('settings.menu') }}">Settings</a></li>
+            {% else %}
+            <li><a href="{{ url_for('auth.signup') }}">Create a free account</a></li>
+            <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('play.custom') }}">Play</a></li>
+        </ul>
+    </nav>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+            <a href="https://docs.bkgmn.net/legal/terms.html">Terms of Service</a>
+            <span>|</span>
+            <a href="https://docs.bkgmn.net/legal/privacy.html">Privacy Policy</a>
+    </footer>
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block javascript %}{% endblock %}
 </body>
