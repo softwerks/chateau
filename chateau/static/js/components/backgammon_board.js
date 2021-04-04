@@ -140,15 +140,15 @@ customElements.define(
 
             this.websocket.addEventListener('message', (event) => {
                 const msg = JSON.parse(event.data);
-                console.log(msg);
-                this.game = JSON.parse(msg.game);
-                if (msg?.player != undefined) {
-                    this.player = msg.player;
-                    this.websocket.send(
-                        JSON.stringify({ opcode: 'ready', player: this.player })
-                    );
+                switch (msg.code) {
+                    case 'player':
+                        this.player = msg.player;
+                        break;
+                    case 'update':
+                        this.game = JSON.parse(msg.game);
+                        this.reset();
+                        break;
                 }
-                this.reset();
             });
 
             this.shadowRoot
