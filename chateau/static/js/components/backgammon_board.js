@@ -17,8 +17,17 @@ const CHECKER_1 = '🔵';
 const HIGHLIGHT_0 = 'crimson';
 const HIGHLIGHT_1 = 'cornflowerblue';
 const CHECKER_ROWS = 10;
-const MAX_CHECKERS = 5;
 const DICE = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+const POINT_X = [150, 230, 310, 390, 470, 550, 730, 810, 890, 970, 1050, 1130];
+const POINT_Y = { top: 20, bottom: 700 };
+const POINT_DIRECTION = { up: -1, down: 1 };
+const CHECKER_FILL = ['white', 'dimgrey'];
+const CHECKER_STROKE = ['dimgrey', 'white'];
+const CHECKER_RADIUS = 28;
+const CHECKER_STROKE_WIDTH = 4;
+const CHECKER_COMBINED_RADIUS = CHECKER_RADIUS + CHECKER_STROKE_WIDTH / 2;
+const MAX_CHECKERS = 5;
 
 let template = document.createElement('template');
 template.innerHTML = `
@@ -107,6 +116,12 @@ template.innerHTML = `
         .controls button:hover:enabled {
             background: darkgrey;
         }
+
+        text {
+            font-weight: bold;
+            font-size: 2rem;
+            pointer-events: none;
+        }
     </style>
     <div class="board"></div>
     <div class="controls">
@@ -116,6 +131,41 @@ template.innerHTML = `
         <button id="roll" title="Roll" disabled>🎲</button>
         <button id="resign" title="Resign" disabled>🏳️</button>
     </div>
+    <svg id="backgammon" viewBox="0 0 1280 720">
+        <rect width="1280" height="720" fill="black" />
+        <rect x="20" y="20" width="80" height="680" fill="tan" />
+        <rect x="104" y="20" width="496" height="680" fill="tan" />
+        <rect x="680" y="20" width="496" height="680" fill="tan" />
+        <rect x="1180" y="20" width="80" height="680" fill="tan" />
+
+        <polygon points="120,${POINT_Y.top} 180,${POINT_Y.top} ${POINT_X[0]},320" fill="green" />
+        <polygon points="200,${POINT_Y.top} 260,${POINT_Y.top} ${POINT_X[1]},320" fill="black" />
+        <polygon points="280,${POINT_Y.top} 340,${POINT_Y.top} ${POINT_X[2]},320" fill="green" />
+        <polygon points="360,${POINT_Y.top} 420,${POINT_Y.top} ${POINT_X[3]},320" fill="black" />
+        <polygon points="440,${POINT_Y.top} 500,${POINT_Y.top} ${POINT_X[4]},320" fill="green" />
+        <polygon points="520,${POINT_Y.top} 580,${POINT_Y.top} ${POINT_X[5]},320" fill="black" />
+
+        <polygon points="700,${POINT_Y.top} 760,${POINT_Y.top} ${POINT_X[6]},320" fill="green" />
+        <polygon points="780,${POINT_Y.top} 840,${POINT_Y.top} ${POINT_X[7]},320" fill="black" />
+        <polygon points="860,${POINT_Y.top} 920,${POINT_Y.top} ${POINT_X[8]},320" fill="green" />
+        <polygon points="940,${POINT_Y.top} 1000,${POINT_Y.top}  ${POINT_X[9]},320" fill="black" />
+        <polygon points="1020,${POINT_Y.top} 1080,${POINT_Y.top} ${POINT_X[10]},320" fill="green" />
+        <polygon points="1100,${POINT_Y.top} 1160,20 ${POINT_X[11]},320" fill="black" />
+
+        <polygon points="120,${POINT_Y.bottom} 180,${POINT_Y.bottom} ${POINT_X[0]},400" fill="black" />
+        <polygon points="200,${POINT_Y.bottom} 260,${POINT_Y.bottom} ${POINT_X[1]},400" fill="green" />
+        <polygon points="280,${POINT_Y.bottom} 340,${POINT_Y.bottom} ${POINT_X[2]},400" fill="black" />
+        <polygon points="360,${POINT_Y.bottom} 420,${POINT_Y.bottom} ${POINT_X[3]},400" fill="green" />
+        <polygon points="440,${POINT_Y.bottom} 500,${POINT_Y.bottom} ${POINT_X[4]},400" fill="black" />
+        <polygon points="520,${POINT_Y.bottom} 580,${POINT_Y.bottom} ${POINT_X[5]},400" fill="green" />
+
+        <polygon points="700,${POINT_Y.bottom} 760,${POINT_Y.bottom} ${POINT_X[6]},400" fill="black" />
+        <polygon points="780,${POINT_Y.bottom} 840,${POINT_Y.bottom} ${POINT_X[7]},400" fill="green" />
+        <polygon points="860,${POINT_Y.bottom} 920,${POINT_Y.bottom} ${POINT_X[8]},400" fill="black" />
+        <polygon points="940,${POINT_Y.bottom} 1000,${POINT_Y.bottom} ${POINT_X[9]},400" fill="green" />
+        <polygon points="1020,${POINT_Y.bottom} 1080,${POINT_Y.bottom} ${POINT_X[10]},400" fill="black" />
+        <polygon points="1100,${POINT_Y.bottom} 1160,${POINT_Y.bottom} ${POINT_X[11]},400" fill="green" />
+    </svg>
 `;
 
 customElements.define(
@@ -146,6 +196,7 @@ customElements.define(
                         break;
                     case 'update':
                         this.game = JSON.parse(msg.game);
+                        console.log(this.game);
                         this.reset();
                         break;
                 }
@@ -200,6 +251,85 @@ customElements.define(
             this.moves = new Array(0);
             this.deselect();
             this.render();
+            this.draw();
+        }
+
+        draw() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            function drawCheckers(player, num, cx, cy, direction) {
+                let fill = CHECKER_FILL[player];
+                let stroke = CHECKER_STROKE[player];
+
+                for (let i = 1; i <= num; i++) {
+                    let checker = document.createElementNS(
+                        'http://www.w3.org/2000/svg',
+                        'circle'
+                    );
+                    checker.setAttribute('cx', cx);
+                    checker.setAttribute('cy', cy);
+                    checker.setAttribute('r', CHECKER_RADIUS);
+                    checker.setAttribute('fill', fill);
+                    checker.setAttribute('stroke', stroke);
+                    checker.setAttribute('stroke-width', CHECKER_STROKE_WIDTH);
+                    svg.appendChild(checker);
+
+                    if (i == MAX_CHECKERS) {
+                        let remaining_checkers = num - i;
+                        if (remaining_checkers > 0) {
+                            let label = document.createElementNS(
+                                'http://www.w3.org/2000/svg',
+                                'text'
+                            );
+                            label.setAttribute('x', cx);
+                            label.setAttribute('y', cy);
+                            label.setAttribute('text-anchor', 'middle');
+                            label.setAttribute('alignment-baseline', 'middle');
+                            label.setAttribute('fill', 'black');
+                            let text = document.createTextNode(
+                                remaining_checkers
+                            );
+                            label.appendChild(text);
+                            svg.appendChild(label);
+                        }
+                        break;
+                    }
+
+                    cy += CHECKER_COMBINED_RADIUS * 2 * direction;
+                }
+            }
+
+            let normalized_points;
+            if (this.match.player == 0)
+                normalized_points = this.position.board_points;
+            else
+                normalized_points = this.position.board_points
+                    .map((n) => (n != 0 ? -n : n))
+                    .reverse();
+
+            const halves = {
+                top: normalized_points
+                    .slice(0, normalized_points.length / 2)
+                    .reverse(),
+                bottom: normalized_points.slice(normalized_points.length / 2),
+            };
+
+            for (const half in halves) {
+                let direction =
+                    half == 'top' ? POINT_DIRECTION.down : POINT_DIRECTION.up;
+                let cy = POINT_Y[half] + CHECKER_COMBINED_RADIUS * direction;
+
+                halves[half].forEach((num_checkers, index) => {
+                    if (num_checkers != 0) {
+                        let player = num_checkers > 0 ? 0 : 1;
+                        let num = Math.abs(num_checkers);
+                        let cx = POINT_X[index];
+                        drawCheckers(player, num, cx, cy, direction);
+                    }
+                });
+            }
+
+            console.log(svg);
         }
 
         render() {
