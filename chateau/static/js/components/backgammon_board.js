@@ -20,7 +20,14 @@ const CHECKER_ROWS = 10;
 const DICE = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
 const POINT_CX = [150, 230, 310, 390, 470, 550, 730, 810, 890, 970, 1050, 1130];
-const BOARD = { top: 20, middle: 640, bottom: 700, left: 60, right: 1220 };
+const BOARD = {
+    top: 20,
+    middleX: 640,
+    middleY: 360,
+    bottom: 700,
+    left: 60,
+    right: 1220,
+};
 const DIRECTION = { up: -1, down: 1 };
 const CHECKER_FILL = ['white', 'dimgrey'];
 const CHECKER_STROKE = ['dimgrey', 'white'];
@@ -29,6 +36,14 @@ const CHECKER_STROKE_WIDTH = 4;
 const CHECKER_COMBINED_RADIUS = CHECKER_RADIUS + CHECKER_STROKE_WIDTH / 2;
 const MAX_CHECKERS = 5;
 const OFF = { width: 76, height: 16, padding: 4 };
+const CUBE = {
+    width: 60,
+    height: 60,
+    padding: 10,
+    radius: 8,
+    fill: 'black',
+    text: 'white',
+};
 
 let template = document.createElement('template');
 template.innerHTML = `
@@ -57,7 +72,7 @@ template.innerHTML = `
             height: 1.25rem;
             text-align: center;
             user-select: none;
-            vertical-align: middle;
+            vertical-align: middleX;
             width: 2.1rem;
             padding: 0;
         }
@@ -340,8 +355,8 @@ customElements.define(
                             );
                             label.setAttribute('x', cx);
                             label.setAttribute('y', cy);
-                            label.setAttribute('text-anchor', 'middle');
-                            label.setAttribute('alignment-baseline', 'middle');
+                            label.setAttribute('text-anchor', 'middleX');
+                            label.setAttribute('alignment-baseline', 'middleX');
                             label.setAttribute('fill', 'black');
                             let text = document.createTextNode(
                                 remaining_checkers
@@ -393,7 +408,7 @@ customElements.define(
                 drawCheckers(
                     0,
                     numBarPlayer0,
-                    BOARD.middle,
+                    BOARD.middleX,
                     BOARD.top + CHECKER_COMBINED_RADIUS,
                     DIRECTION.down
                 );
@@ -406,7 +421,7 @@ customElements.define(
                 drawCheckers(
                     1,
                     numBarPlayer1,
-                    BOARD.middle,
+                    BOARD.middleX,
                     BOARD.bottom - CHECKER_COMBINED_RADIUS,
                     DIRECTION.up
                 );
@@ -446,6 +461,40 @@ customElements.define(
                     ? this.match.player_off
                     : this.match.opponent_off;
             if (numOffPlayer1 > 0) drawOff(1, numOffPlayer0);
+
+            let y;
+            if (this.match.cube_holder == 3)
+                y = BOARD.middleY - CUBE.height / 2;
+            else if (this.match.cube_holder == 0) y = BOARD.top + CUBE.padding;
+            else y = BOARD.bottom - (CUBE.height + CUBE.padding);
+            let cube = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'rect'
+            );
+            cube.setAttribute('x', BOARD.left - CUBE.width / 2);
+            cube.setAttribute('y', y);
+            cube.setAttribute('rx', CUBE.radius);
+            cube.setAttribute('ry', CUBE.radius);
+            cube.setAttribute('width', CUBE.width);
+            cube.setAttribute('height', CUBE.height);
+            cube.setAttribute('fill', CUBE.fill);
+            svg.appendChild(cube);
+            const cubeValue =
+                this.match.cube_holder == 3
+                    ? 64
+                    : Math.pow(2, this.match.cube_value);
+            let label = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'text'
+            );
+            label.setAttribute('x', BOARD.left);
+            label.setAttribute('y', y + CUBE.height / 2);
+            label.setAttribute('text-anchor', 'middle');
+            label.setAttribute('alignment-baseline', 'middle');
+            label.setAttribute('fill', CUBE.text);
+            let text = document.createTextNode(cubeValue);
+            label.appendChild(text);
+            svg.appendChild(label);
 
             console.log(svg);
         }
