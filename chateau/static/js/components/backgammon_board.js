@@ -46,6 +46,7 @@ const CUBE = {
 };
 
 let template = document.createElement('template');
+// prettier-ignore
 template.innerHTML = `
     <style>
         :host {
@@ -149,94 +150,38 @@ template.innerHTML = `
     </div>
     <svg id="backgammon" viewBox="0 0 1280 720">
         <rect width="1280" height="720" fill="black" />
-        <rect x="20" y="${BOARD.top}" width="80" height="${
-    BOARD.bottom - BOARD.top
-}" fill="tan" />
-        <rect x="104" y="${BOARD.top}" width="496" height="${
-    BOARD.bottom - BOARD.top
-}" fill="tan" />
-        <rect x="680" y="${BOARD.top}" width="496" height="${
-    BOARD.bottom - BOARD.top
-}" fill="tan" />
-        <rect x="1180" y="${BOARD.top}" width="80" height="${
-    BOARD.bottom - BOARD.top
-}" fill="tan" />
+        <rect x="20" y="${BOARD.top}" width="80" height="${BOARD.bottom - BOARD.top}" fill="tan" />
+        <rect x="104" y="${BOARD.top}" width="496" height="${BOARD.bottom - BOARD.top}" fill="tan" />
+        <rect x="680" y="${BOARD.top}" width="496" height="${BOARD.bottom - BOARD.top}" fill="tan" />
+        <rect x="1180" y="${BOARD.top}" width="80" height="${BOARD.bottom - BOARD.top}" fill="tan" />
 
-        <polygon points="120,${BOARD.top} 180,${BOARD.top} ${
-    POINT_CX[0]
-},320" fill="green" />
-        <polygon points="200,${BOARD.top} 260,${BOARD.top} ${
-    POINT_CX[1]
-},320" fill="black" />
-        <polygon points="280,${BOARD.top} 340,${BOARD.top} ${
-    POINT_CX[2]
-},320" fill="green" />
-        <polygon points="360,${BOARD.top} 420,${BOARD.top} ${
-    POINT_CX[3]
-},320" fill="black" />
-        <polygon points="440,${BOARD.top} 500,${BOARD.top} ${
-    POINT_CX[4]
-},320" fill="green" />
-        <polygon points="520,${BOARD.top} 580,${BOARD.top} ${
-    POINT_CX[5]
-},320" fill="black" />
+        <polygon points="120,${BOARD.top} 180,${BOARD.top} ${POINT_CX[0]},320" fill="green" />
+        <polygon points="200,${BOARD.top} 260,${BOARD.top} ${POINT_CX[1]},320" fill="black" />
+        <polygon points="280,${BOARD.top} 340,${BOARD.top} ${POINT_CX[2]},320" fill="green" />
+        <polygon points="360,${BOARD.top} 420,${BOARD.top} ${POINT_CX[3]},320" fill="black" />
+        <polygon points="440,${BOARD.top} 500,${BOARD.top} ${POINT_CX[4]},320" fill="green" />
+        <polygon points="520,${BOARD.top} 580,${BOARD.top} ${POINT_CX[5]},320" fill="black" />
 
-        <polygon points="700,${BOARD.top} 760,${BOARD.top} ${
-    POINT_CX[6]
-},320" fill="green" />
-        <polygon points="780,${BOARD.top} 840,${BOARD.top} ${
-    POINT_CX[7]
-},320" fill="black" />
-        <polygon points="860,${BOARD.top} 920,${BOARD.top} ${
-    POINT_CX[8]
-},320" fill="green" />
-        <polygon points="940,${BOARD.top} 1000,${BOARD.top}  ${
-    POINT_CX[9]
-},320" fill="black" />
-        <polygon points="1020,${BOARD.top} 1080,${BOARD.top} ${
-    POINT_CX[10]
-},320" fill="green" />
-        <polygon points="1100,${BOARD.top} 1160,20 ${
-    POINT_CX[11]
-},320" fill="black" />
+        <polygon points="700,${BOARD.top} 760,${BOARD.top} ${POINT_CX[6]},320" fill="green" />
+        <polygon points="780,${BOARD.top} 840,${BOARD.top} ${POINT_CX[7]},320" fill="black" />
+        <polygon points="860,${BOARD.top} 920,${BOARD.top} ${POINT_CX[8]},320" fill="green" />
+        <polygon points="940,${BOARD.top} 1000,${BOARD.top}  ${POINT_CX[9]},320" fill="black" />
+        <polygon points="1020,${BOARD.top} 1080,${BOARD.top} ${POINT_CX[10]},320" fill="green" />
+        <polygon points="1100,${BOARD.top} 1160,20 ${POINT_CX[11]},320" fill="black" />
 
-        <polygon points="120,${BOARD.bottom} 180,${BOARD.bottom} ${
-    POINT_CX[0]
-},400" fill="black" />
-        <polygon points="200,${BOARD.bottom} 260,${BOARD.bottom} ${
-    POINT_CX[1]
-},400" fill="green" />
-        <polygon points="280,${BOARD.bottom} 340,${BOARD.bottom} ${
-    POINT_CX[2]
-},400" fill="black" />
-        <polygon points="360,${BOARD.bottom} 420,${BOARD.bottom} ${
-    POINT_CX[3]
-},400" fill="green" />
-        <polygon points="440,${BOARD.bottom} 500,${BOARD.bottom} ${
-    POINT_CX[4]
-},400" fill="black" />
-        <polygon points="520,${BOARD.bottom} 580,${BOARD.bottom} ${
-    POINT_CX[5]
-},400" fill="green" />
+        <polygon points="120,${BOARD.bottom} 180,${BOARD.bottom} ${POINT_CX[0]},400" fill="black" />
+        <polygon points="200,${BOARD.bottom} 260,${BOARD.bottom} ${POINT_CX[1]},400" fill="green" />
+        <polygon points="280,${BOARD.bottom} 340,${BOARD.bottom} ${POINT_CX[2]},400" fill="black" />
+        <polygon points="360,${BOARD.bottom} 420,${BOARD.bottom} ${POINT_CX[3]},400" fill="green" />
+        <polygon points="440,${BOARD.bottom} 500,${BOARD.bottom} ${POINT_CX[4]},400" fill="black" />
+        <polygon points="520,${BOARD.bottom} 580,${BOARD.bottom} ${POINT_CX[5]},400" fill="green" />
 
-        <polygon points="700,${BOARD.bottom} 760,${BOARD.bottom} ${
-    POINT_CX[6]
-},400" fill="black" />
-        <polygon points="780,${BOARD.bottom} 840,${BOARD.bottom} ${
-    POINT_CX[7]
-},400" fill="green" />
-        <polygon points="860,${BOARD.bottom} 920,${BOARD.bottom} ${
-    POINT_CX[8]
-},400" fill="black" />
-        <polygon points="940,${BOARD.bottom} 1000,${BOARD.bottom} ${
-    POINT_CX[9]
-},400" fill="green" />
-        <polygon points="1020,${BOARD.bottom} 1080,${BOARD.bottom} ${
-    POINT_CX[10]
-},400" fill="black" />
-        <polygon points="1100,${BOARD.bottom} 1160,${BOARD.bottom} ${
-    POINT_CX[11]
-},400" fill="green" />
+        <polygon points="700,${BOARD.bottom} 760,${BOARD.bottom} ${POINT_CX[6]},400" fill="black" />
+        <polygon points="780,${BOARD.bottom} 840,${BOARD.bottom} ${POINT_CX[7]},400" fill="green" />
+        <polygon points="860,${BOARD.bottom} 920,${BOARD.bottom} ${POINT_CX[8]},400" fill="black" />
+        <polygon points="940,${BOARD.bottom} 1000,${BOARD.bottom} ${POINT_CX[9]},400" fill="green" />
+        <polygon points="1020,${BOARD.bottom} 1080,${BOARD.bottom} ${POINT_CX[10]},400" fill="black" />
+        <polygon points="1100,${BOARD.bottom} 1160,${BOARD.bottom} ${POINT_CX[11]},400" fill="green" />
     </svg>
 `;
 
