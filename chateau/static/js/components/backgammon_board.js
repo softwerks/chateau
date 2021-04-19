@@ -20,7 +20,7 @@ const CHECKER_ROWS = 10;
 const DICE = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
 const POINT_CX = [150, 230, 310, 390, 470, 550, 730, 810, 890, 970, 1050, 1130];
-const BOARD = { top: 20, middle: 640, bottom: 700 };
+const BOARD = { top: 20, middle: 640, bottom: 700, left: 60, right: 1220 };
 const DIRECTION = { up: -1, down: 1 };
 const CHECKER_FILL = ['white', 'dimgrey'];
 const CHECKER_STROKE = ['dimgrey', 'white'];
@@ -28,6 +28,7 @@ const CHECKER_RADIUS = 28;
 const CHECKER_STROKE_WIDTH = 4;
 const CHECKER_COMBINED_RADIUS = CHECKER_RADIUS + CHECKER_STROKE_WIDTH / 2;
 const MAX_CHECKERS = 5;
+const OFF = { width: 76, height: 16, padding: 4 };
 
 let template = document.createElement('template');
 template.innerHTML = `
@@ -133,38 +134,94 @@ template.innerHTML = `
     </div>
     <svg id="backgammon" viewBox="0 0 1280 720">
         <rect width="1280" height="720" fill="black" />
-        <rect x="20" y="20" width="80" height="680" fill="tan" />
-        <rect x="104" y="20" width="496" height="680" fill="tan" />
-        <rect x="680" y="20" width="496" height="680" fill="tan" />
-        <rect x="1180" y="20" width="80" height="680" fill="tan" />
+        <rect x="20" y="${BOARD.top}" width="80" height="${
+    BOARD.bottom - BOARD.top
+}" fill="tan" />
+        <rect x="104" y="${BOARD.top}" width="496" height="${
+    BOARD.bottom - BOARD.top
+}" fill="tan" />
+        <rect x="680" y="${BOARD.top}" width="496" height="${
+    BOARD.bottom - BOARD.top
+}" fill="tan" />
+        <rect x="1180" y="${BOARD.top}" width="80" height="${
+    BOARD.bottom - BOARD.top
+}" fill="tan" />
 
-        <polygon points="120,${BOARD.top} 180,${BOARD.top} ${POINT_CX[0]},320" fill="green" />
-        <polygon points="200,${BOARD.top} 260,${BOARD.top} ${POINT_CX[1]},320" fill="black" />
-        <polygon points="280,${BOARD.top} 340,${BOARD.top} ${POINT_CX[2]},320" fill="green" />
-        <polygon points="360,${BOARD.top} 420,${BOARD.top} ${POINT_CX[3]},320" fill="black" />
-        <polygon points="440,${BOARD.top} 500,${BOARD.top} ${POINT_CX[4]},320" fill="green" />
-        <polygon points="520,${BOARD.top} 580,${BOARD.top} ${POINT_CX[5]},320" fill="black" />
+        <polygon points="120,${BOARD.top} 180,${BOARD.top} ${
+    POINT_CX[0]
+},320" fill="green" />
+        <polygon points="200,${BOARD.top} 260,${BOARD.top} ${
+    POINT_CX[1]
+},320" fill="black" />
+        <polygon points="280,${BOARD.top} 340,${BOARD.top} ${
+    POINT_CX[2]
+},320" fill="green" />
+        <polygon points="360,${BOARD.top} 420,${BOARD.top} ${
+    POINT_CX[3]
+},320" fill="black" />
+        <polygon points="440,${BOARD.top} 500,${BOARD.top} ${
+    POINT_CX[4]
+},320" fill="green" />
+        <polygon points="520,${BOARD.top} 580,${BOARD.top} ${
+    POINT_CX[5]
+},320" fill="black" />
 
-        <polygon points="700,${BOARD.top} 760,${BOARD.top} ${POINT_CX[6]},320" fill="green" />
-        <polygon points="780,${BOARD.top} 840,${BOARD.top} ${POINT_CX[7]},320" fill="black" />
-        <polygon points="860,${BOARD.top} 920,${BOARD.top} ${POINT_CX[8]},320" fill="green" />
-        <polygon points="940,${BOARD.top} 1000,${BOARD.top}  ${POINT_CX[9]},320" fill="black" />
-        <polygon points="1020,${BOARD.top} 1080,${BOARD.top} ${POINT_CX[10]},320" fill="green" />
-        <polygon points="1100,${BOARD.top} 1160,20 ${POINT_CX[11]},320" fill="black" />
+        <polygon points="700,${BOARD.top} 760,${BOARD.top} ${
+    POINT_CX[6]
+},320" fill="green" />
+        <polygon points="780,${BOARD.top} 840,${BOARD.top} ${
+    POINT_CX[7]
+},320" fill="black" />
+        <polygon points="860,${BOARD.top} 920,${BOARD.top} ${
+    POINT_CX[8]
+},320" fill="green" />
+        <polygon points="940,${BOARD.top} 1000,${BOARD.top}  ${
+    POINT_CX[9]
+},320" fill="black" />
+        <polygon points="1020,${BOARD.top} 1080,${BOARD.top} ${
+    POINT_CX[10]
+},320" fill="green" />
+        <polygon points="1100,${BOARD.top} 1160,20 ${
+    POINT_CX[11]
+},320" fill="black" />
 
-        <polygon points="120,${BOARD.bottom} 180,${BOARD.bottom} ${POINT_CX[0]},400" fill="black" />
-        <polygon points="200,${BOARD.bottom} 260,${BOARD.bottom} ${POINT_CX[1]},400" fill="green" />
-        <polygon points="280,${BOARD.bottom} 340,${BOARD.bottom} ${POINT_CX[2]},400" fill="black" />
-        <polygon points="360,${BOARD.bottom} 420,${BOARD.bottom} ${POINT_CX[3]},400" fill="green" />
-        <polygon points="440,${BOARD.bottom} 500,${BOARD.bottom} ${POINT_CX[4]},400" fill="black" />
-        <polygon points="520,${BOARD.bottom} 580,${BOARD.bottom} ${POINT_CX[5]},400" fill="green" />
+        <polygon points="120,${BOARD.bottom} 180,${BOARD.bottom} ${
+    POINT_CX[0]
+},400" fill="black" />
+        <polygon points="200,${BOARD.bottom} 260,${BOARD.bottom} ${
+    POINT_CX[1]
+},400" fill="green" />
+        <polygon points="280,${BOARD.bottom} 340,${BOARD.bottom} ${
+    POINT_CX[2]
+},400" fill="black" />
+        <polygon points="360,${BOARD.bottom} 420,${BOARD.bottom} ${
+    POINT_CX[3]
+},400" fill="green" />
+        <polygon points="440,${BOARD.bottom} 500,${BOARD.bottom} ${
+    POINT_CX[4]
+},400" fill="black" />
+        <polygon points="520,${BOARD.bottom} 580,${BOARD.bottom} ${
+    POINT_CX[5]
+},400" fill="green" />
 
-        <polygon points="700,${BOARD.bottom} 760,${BOARD.bottom} ${POINT_CX[6]},400" fill="black" />
-        <polygon points="780,${BOARD.bottom} 840,${BOARD.bottom} ${POINT_CX[7]},400" fill="green" />
-        <polygon points="860,${BOARD.bottom} 920,${BOARD.bottom} ${POINT_CX[8]},400" fill="black" />
-        <polygon points="940,${BOARD.bottom} 1000,${BOARD.bottom} ${POINT_CX[9]},400" fill="green" />
-        <polygon points="1020,${BOARD.bottom} 1080,${BOARD.bottom} ${POINT_CX[10]},400" fill="black" />
-        <polygon points="1100,${BOARD.bottom} 1160,${BOARD.bottom} ${POINT_CX[11]},400" fill="green" />
+        <polygon points="700,${BOARD.bottom} 760,${BOARD.bottom} ${
+    POINT_CX[6]
+},400" fill="black" />
+        <polygon points="780,${BOARD.bottom} 840,${BOARD.bottom} ${
+    POINT_CX[7]
+},400" fill="green" />
+        <polygon points="860,${BOARD.bottom} 920,${BOARD.bottom} ${
+    POINT_CX[8]
+},400" fill="black" />
+        <polygon points="940,${BOARD.bottom} 1000,${BOARD.bottom} ${
+    POINT_CX[9]
+},400" fill="green" />
+        <polygon points="1020,${BOARD.bottom} 1080,${BOARD.bottom} ${
+    POINT_CX[10]
+},400" fill="black" />
+        <polygon points="1100,${BOARD.bottom} 1160,${BOARD.bottom} ${
+    POINT_CX[11]
+},400" fill="green" />
     </svg>
 `;
 
@@ -353,6 +410,42 @@ customElements.define(
                     BOARD.bottom - CHECKER_COMBINED_RADIUS,
                     DIRECTION.up
                 );
+
+            function drawOff(player, num) {
+                let direction = player == 0 ? DIRECTION.down : DIRECTION.up;
+                let fill = CHECKER_FILL[player];
+                let x = BOARD.right - OFF.width / 2;
+                let y;
+                if (player == 0) y = BOARD.top + OFF.padding;
+                else y = BOARD.bottom - (OFF.height + OFF.padding);
+
+                do {
+                    let off = document.createElementNS(
+                        'http://www.w3.org/2000/svg',
+                        'rect'
+                    );
+                    off.setAttribute('x', x);
+                    off.setAttribute('y', y);
+                    off.setAttribute('width', OFF.width);
+                    off.setAttribute('height', OFF.height);
+                    off.setAttribute('fill', fill);
+                    svg.appendChild(off);
+
+                    num--;
+                    y += (OFF.height + OFF.padding) * direction;
+                } while (num > 0);
+            }
+
+            const numOffPlayer0 =
+                this.match.player == 0
+                    ? this.match.player_off
+                    : this.match.opponent_off;
+            if (numOffPlayer0 > 0) drawOff(0, numOffPlayer0);
+            const numOffPlayer1 =
+                this.match.player == 1
+                    ? this.match.player_off
+                    : this.match.opponent_off;
+            if (numOffPlayer1 > 0) drawOff(1, numOffPlayer0);
 
             console.log(svg);
         }
