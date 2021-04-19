@@ -19,9 +19,9 @@ const HIGHLIGHT_1 = 'cornflowerblue';
 const CHECKER_ROWS = 10;
 const DICE = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
-const POINT_X = [150, 230, 310, 390, 470, 550, 730, 810, 890, 970, 1050, 1130];
-const POINT_Y = { top: 20, bottom: 700 };
-const POINT_DIRECTION = { up: -1, down: 1 };
+const POINT_CX = [150, 230, 310, 390, 470, 550, 730, 810, 890, 970, 1050, 1130];
+const BOARD = { top: 20, middle: 640, bottom: 700 };
+const DIRECTION = { up: -1, down: 1 };
 const CHECKER_FILL = ['white', 'dimgrey'];
 const CHECKER_STROKE = ['dimgrey', 'white'];
 const CHECKER_RADIUS = 28;
@@ -138,33 +138,33 @@ template.innerHTML = `
         <rect x="680" y="20" width="496" height="680" fill="tan" />
         <rect x="1180" y="20" width="80" height="680" fill="tan" />
 
-        <polygon points="120,${POINT_Y.top} 180,${POINT_Y.top} ${POINT_X[0]},320" fill="green" />
-        <polygon points="200,${POINT_Y.top} 260,${POINT_Y.top} ${POINT_X[1]},320" fill="black" />
-        <polygon points="280,${POINT_Y.top} 340,${POINT_Y.top} ${POINT_X[2]},320" fill="green" />
-        <polygon points="360,${POINT_Y.top} 420,${POINT_Y.top} ${POINT_X[3]},320" fill="black" />
-        <polygon points="440,${POINT_Y.top} 500,${POINT_Y.top} ${POINT_X[4]},320" fill="green" />
-        <polygon points="520,${POINT_Y.top} 580,${POINT_Y.top} ${POINT_X[5]},320" fill="black" />
+        <polygon points="120,${BOARD.top} 180,${BOARD.top} ${POINT_CX[0]},320" fill="green" />
+        <polygon points="200,${BOARD.top} 260,${BOARD.top} ${POINT_CX[1]},320" fill="black" />
+        <polygon points="280,${BOARD.top} 340,${BOARD.top} ${POINT_CX[2]},320" fill="green" />
+        <polygon points="360,${BOARD.top} 420,${BOARD.top} ${POINT_CX[3]},320" fill="black" />
+        <polygon points="440,${BOARD.top} 500,${BOARD.top} ${POINT_CX[4]},320" fill="green" />
+        <polygon points="520,${BOARD.top} 580,${BOARD.top} ${POINT_CX[5]},320" fill="black" />
 
-        <polygon points="700,${POINT_Y.top} 760,${POINT_Y.top} ${POINT_X[6]},320" fill="green" />
-        <polygon points="780,${POINT_Y.top} 840,${POINT_Y.top} ${POINT_X[7]},320" fill="black" />
-        <polygon points="860,${POINT_Y.top} 920,${POINT_Y.top} ${POINT_X[8]},320" fill="green" />
-        <polygon points="940,${POINT_Y.top} 1000,${POINT_Y.top}  ${POINT_X[9]},320" fill="black" />
-        <polygon points="1020,${POINT_Y.top} 1080,${POINT_Y.top} ${POINT_X[10]},320" fill="green" />
-        <polygon points="1100,${POINT_Y.top} 1160,20 ${POINT_X[11]},320" fill="black" />
+        <polygon points="700,${BOARD.top} 760,${BOARD.top} ${POINT_CX[6]},320" fill="green" />
+        <polygon points="780,${BOARD.top} 840,${BOARD.top} ${POINT_CX[7]},320" fill="black" />
+        <polygon points="860,${BOARD.top} 920,${BOARD.top} ${POINT_CX[8]},320" fill="green" />
+        <polygon points="940,${BOARD.top} 1000,${BOARD.top}  ${POINT_CX[9]},320" fill="black" />
+        <polygon points="1020,${BOARD.top} 1080,${BOARD.top} ${POINT_CX[10]},320" fill="green" />
+        <polygon points="1100,${BOARD.top} 1160,20 ${POINT_CX[11]},320" fill="black" />
 
-        <polygon points="120,${POINT_Y.bottom} 180,${POINT_Y.bottom} ${POINT_X[0]},400" fill="black" />
-        <polygon points="200,${POINT_Y.bottom} 260,${POINT_Y.bottom} ${POINT_X[1]},400" fill="green" />
-        <polygon points="280,${POINT_Y.bottom} 340,${POINT_Y.bottom} ${POINT_X[2]},400" fill="black" />
-        <polygon points="360,${POINT_Y.bottom} 420,${POINT_Y.bottom} ${POINT_X[3]},400" fill="green" />
-        <polygon points="440,${POINT_Y.bottom} 500,${POINT_Y.bottom} ${POINT_X[4]},400" fill="black" />
-        <polygon points="520,${POINT_Y.bottom} 580,${POINT_Y.bottom} ${POINT_X[5]},400" fill="green" />
+        <polygon points="120,${BOARD.bottom} 180,${BOARD.bottom} ${POINT_CX[0]},400" fill="black" />
+        <polygon points="200,${BOARD.bottom} 260,${BOARD.bottom} ${POINT_CX[1]},400" fill="green" />
+        <polygon points="280,${BOARD.bottom} 340,${BOARD.bottom} ${POINT_CX[2]},400" fill="black" />
+        <polygon points="360,${BOARD.bottom} 420,${BOARD.bottom} ${POINT_CX[3]},400" fill="green" />
+        <polygon points="440,${BOARD.bottom} 500,${BOARD.bottom} ${POINT_CX[4]},400" fill="black" />
+        <polygon points="520,${BOARD.bottom} 580,${BOARD.bottom} ${POINT_CX[5]},400" fill="green" />
 
-        <polygon points="700,${POINT_Y.bottom} 760,${POINT_Y.bottom} ${POINT_X[6]},400" fill="black" />
-        <polygon points="780,${POINT_Y.bottom} 840,${POINT_Y.bottom} ${POINT_X[7]},400" fill="green" />
-        <polygon points="860,${POINT_Y.bottom} 920,${POINT_Y.bottom} ${POINT_X[8]},400" fill="black" />
-        <polygon points="940,${POINT_Y.bottom} 1000,${POINT_Y.bottom} ${POINT_X[9]},400" fill="green" />
-        <polygon points="1020,${POINT_Y.bottom} 1080,${POINT_Y.bottom} ${POINT_X[10]},400" fill="black" />
-        <polygon points="1100,${POINT_Y.bottom} 1160,${POINT_Y.bottom} ${POINT_X[11]},400" fill="green" />
+        <polygon points="700,${BOARD.bottom} 760,${BOARD.bottom} ${POINT_CX[6]},400" fill="black" />
+        <polygon points="780,${BOARD.bottom} 840,${BOARD.bottom} ${POINT_CX[7]},400" fill="green" />
+        <polygon points="860,${BOARD.bottom} 920,${BOARD.bottom} ${POINT_CX[8]},400" fill="black" />
+        <polygon points="940,${BOARD.bottom} 1000,${BOARD.bottom} ${POINT_CX[9]},400" fill="green" />
+        <polygon points="1020,${BOARD.bottom} 1080,${BOARD.bottom} ${POINT_CX[10]},400" fill="black" />
+        <polygon points="1100,${BOARD.bottom} 1160,${BOARD.bottom} ${POINT_CX[11]},400" fill="green" />
     </svg>
 `;
 
@@ -315,19 +315,44 @@ customElements.define(
             };
 
             for (const half in halves) {
-                let direction =
-                    half == 'top' ? POINT_DIRECTION.down : POINT_DIRECTION.up;
-                let cy = POINT_Y[half] + CHECKER_COMBINED_RADIUS * direction;
+                let direction = half == 'top' ? DIRECTION.down : DIRECTION.up;
+                let cy = BOARD[half] + CHECKER_COMBINED_RADIUS * direction;
 
-                halves[half].forEach((num_checkers, index) => {
-                    if (num_checkers != 0) {
-                        let player = num_checkers > 0 ? 0 : 1;
-                        let num = Math.abs(num_checkers);
-                        let cx = POINT_X[index];
+                halves[half].forEach((numCheckers, index) => {
+                    if (numCheckers != 0) {
+                        let player = numCheckers > 0 ? 0 : 1;
+                        let num = Math.abs(numCheckers);
+                        let cx = POINT_CX[index];
                         drawCheckers(player, num, cx, cy, direction);
                     }
                 });
             }
+
+            const numBarPlayer0 =
+                this.match.player == 0
+                    ? this.position.player_bar
+                    : this.position.opponent_bar;
+            if (numBarPlayer0 != 0)
+                drawCheckers(
+                    0,
+                    numBarPlayer0,
+                    BOARD.middle,
+                    BOARD.top + CHECKER_COMBINED_RADIUS,
+                    DIRECTION.down
+                );
+
+            const numBarPlayer1 =
+                this.match.player == 1
+                    ? this.position.player_bar
+                    : this.position.opponent_bar;
+            if (numBarPlayer1 != 0)
+                drawCheckers(
+                    1,
+                    numBarPlayer1,
+                    BOARD.middle,
+                    BOARD.bottom - CHECKER_COMBINED_RADIUS,
+                    DIRECTION.up
+                );
 
             console.log(svg);
         }
