@@ -25,8 +25,10 @@ const BOARD = {
     middleX: 640,
     middleY: 360,
     bottom: 700,
-    left: 60,
-    right: 1220,
+    leftX: 352,
+    rightX: 928,
+    trayLeft: 60,
+    trayRight: 1220,
 };
 const DIRECTION = { up: -1, down: 1 };
 const CHECKER_FILL = ['white', 'dimgrey'];
@@ -44,6 +46,19 @@ const CUBE = {
     fill: 'black',
     text: 'white',
 };
+const DIE = {
+    width: 60,
+    height: 60,
+    top: 13,
+    middle: 30,
+    bottom: 47,
+    left: 13,
+    right: 47,
+    padding: 10,
+    radius: 8,
+    fill: 'black',
+};
+const PIP = { radius: 6, fill: 'white' };
 
 let template = document.createElement('template');
 // prettier-ignore
@@ -182,6 +197,75 @@ template.innerHTML = `
         <polygon points="940,${BOARD.bottom} 1000,${BOARD.bottom} ${POINT_CX[9]},400" fill="green" />
         <polygon points="1020,${BOARD.bottom} 1080,${BOARD.bottom} ${POINT_CX[10]},400" fill="black" />
         <polygon points="1100,${BOARD.bottom} 1160,${BOARD.bottom} ${POINT_CX[11]},400" fill="green" />
+    </svg>
+`;
+
+let die_1 = document.createElement('template');
+// prettier-ignore
+die_1.innerHTML = `
+    <svg width="${DIE.width}" height="${DIE.height}" viewBox ="0 0 ${DIE.width} ${DIE.height}">
+        <rect width="${DIE.width}" height="${DIE.height}" rx="${DIE.radius}" ry="${DIE.radius}" fill="${DIE.fill}" />
+        <circle cx="${DIE.middle}" cy="${DIE.middle}" r="${PIP.radius}" fill="${PIP.fill}" />
+    </svg>
+`;
+
+let die_2 = document.createElement('template');
+// prettier-ignore
+die_2.innerHTML = `
+    <svg width="${DIE.width}" height="${DIE.height}" viewBox ="0 0 ${DIE.width} ${DIE.height}">
+        <rect width="${DIE.width}" height="${DIE.height}" rx="${DIE.radius}" ry="${DIE.radius}" fill="${DIE.fill}" />
+        <circle cx="${DIE.left}" cy="${DIE.bottom}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.right}" cy="${DIE.top}" r="${PIP.radius}" fill="${PIP.fill}" />
+    </svg>
+`;
+
+let die_3 = document.createElement('template');
+// prettier-ignore
+die_3.innerHTML = `
+    <svg width="${DIE.width}" height="${DIE.height}" viewBox ="0 0 ${DIE.width} ${DIE.height}">
+        <rect width="${DIE.width}" height="${DIE.height}" rx="${DIE.radius}" ry="${DIE.radius}" fill="${DIE.fill}" />
+        <circle cx="${DIE.left}" cy="${DIE.bottom}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.middle}" cy="${DIE.middle}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.right}" cy="${DIE.top}" r="${PIP.radius}" fill="${PIP.fill}" />
+    </svg>
+`;
+
+let die_4 = document.createElement('template');
+// prettier-ignore
+die_4.innerHTML = `
+    <svg width="${DIE.width}" height="${DIE.height}" viewBox ="0 0 ${DIE.width} ${DIE.height}">
+        <rect width="${DIE.width}" height="${DIE.height}" rx="${DIE.radius}" ry="${DIE.radius}" fill="${DIE.fill}" />
+        <circle cx="${DIE.left}" cy="${DIE.top}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.left}" cy="${DIE.bottom}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.right}" cy="${DIE.top}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.right}" cy="${DIE.bottom}" r="${PIP.radius}" fill="${PIP.fill}" />
+    </svg>
+`;
+
+let die_5 = document.createElement('template');
+// prettier-ignore
+die_5.innerHTML = `
+    <svg width="${DIE.width}" height="${DIE.height}" viewBox ="0 0 ${DIE.width} ${DIE.height}">
+        <rect width="${DIE.width}" height="${DIE.height}" rx="${DIE.radius}" ry="${DIE.radius}" fill="${DIE.fill}" />
+        <circle cx="${DIE.left}" cy="${DIE.top}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.left}" cy="${DIE.bottom}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.middle}" cy="${DIE.middle}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.right}" cy="${DIE.top}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.right}" cy="${DIE.bottom}" r="${PIP.radius}" fill="${PIP.fill}" />
+    </svg>
+`;
+
+let die_6 = document.createElement('template');
+// prettier-ignore
+die_6.innerHTML = `
+    <svg width="${DIE.width}" height="${DIE.height}" viewBox ="0 0 ${DIE.width} ${DIE.height}">
+        <rect width="${DIE.width}" height="${DIE.height}" rx="${DIE.radius}" ry="${DIE.radius}" fill="${DIE.fill}" />
+        <circle cx="${DIE.left}" cy="${DIE.top}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.left}" cy="${DIE.middle}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.left}" cy="${DIE.bottom}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.right}" cy="${DIE.top}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.right}" cy="${DIE.middle}" r="${PIP.radius}" fill="${PIP.fill}" />
+        <circle cx="${DIE.right}" cy="${DIE.bottom}" r="${PIP.radius}" fill="${PIP.fill}" />
     </svg>
 `;
 
@@ -374,7 +458,7 @@ customElements.define(
             function drawOff(player, num) {
                 let direction = player == 0 ? DIRECTION.down : DIRECTION.up;
                 let fill = CHECKER_FILL[player];
-                let x = BOARD.right - OFF.width / 2;
+                let x = BOARD.trayRight - OFF.width / 2;
                 let y;
                 if (player == 0) y = BOARD.top + OFF.padding;
                 else y = BOARD.bottom - (OFF.height + OFF.padding);
@@ -416,7 +500,7 @@ customElements.define(
                 'http://www.w3.org/2000/svg',
                 'rect'
             );
-            cube.setAttribute('x', BOARD.left - CUBE.width / 2);
+            cube.setAttribute('x', BOARD.trayLeft - CUBE.width / 2);
             cube.setAttribute('y', y);
             cube.setAttribute('rx', CUBE.radius);
             cube.setAttribute('ry', CUBE.radius);
@@ -432,7 +516,7 @@ customElements.define(
                 'http://www.w3.org/2000/svg',
                 'text'
             );
-            label.setAttribute('x', BOARD.left);
+            label.setAttribute('x', BOARD.trayLeft);
             label.setAttribute('y', y + CUBE.height / 2);
             label.setAttribute('text-anchor', 'middle');
             label.setAttribute('alignment-baseline', 'middle');
@@ -440,6 +524,45 @@ customElements.define(
             let text = document.createTextNode(cubeValue);
             label.appendChild(text);
             svg.appendChild(label);
+
+            this.match.dice.forEach((pips, index) => {
+                let x;
+                if (index == 0)
+                    x =
+                        (this.match.player == 0 ? BOARD.leftX : BOARD.rightX) -
+                        (DIE.width + DIE.padding);
+                else
+                    x =
+                        (this.match.player == 0 ? BOARD.leftX : BOARD.rightX) +
+                        DIE.padding;
+                let die;
+                switch (pips) {
+                    case 1:
+                        die = die_1.content.cloneNode(true);
+                        break;
+                    case 2:
+                        die = die_2.content.cloneNode(true);
+                        break;
+                    case 3:
+                        die = die_3.content.cloneNode(true);
+                        break;
+                    case 4:
+                        die = die_4.content.cloneNode(true);
+                        break;
+                    case 5:
+                        die = die_5.content.cloneNode(true);
+                        break;
+                    case 6:
+                        die = die_6.content.cloneNode(true);
+                        break;
+                }
+                die.firstElementChild.setAttribute('x', x);
+                die.firstElementChild.setAttribute(
+                    'y',
+                    BOARD.middleY - DIE.height / 2
+                );
+                svg.appendChild(die);
+            });
 
             console.log(svg);
         }
