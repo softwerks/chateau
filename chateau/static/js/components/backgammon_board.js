@@ -12,13 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const CHECKER_0 = '🔴';
-const CHECKER_1 = '🔵';
-const HIGHLIGHT_0 = 'crimson';
-const HIGHLIGHT_1 = 'cornflowerblue';
-const CHECKER_ROWS = 10;
-const DICE = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-
 const POINT_CX = [150, 230, 310, 390, 470, 550, 730, 810, 890, 970, 1050, 1130];
 const BOARD = {
     top: 20,
