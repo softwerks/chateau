@@ -60,6 +60,27 @@ const DIE = {
 };
 const PIP = { radius: 6, fill: 'white' };
 
+function b64ToBytes(b64) {
+    return Array.from(atob(b64), (c) => c.charCodeAt(0));
+}
+
+function bytesToBits(bytes) {
+    return bytes
+        .map((b) => [...b.toString(2).padStart(8, '0')].reverse().join(''))
+        .join('');
+}
+
+function bitsToInt(bits, start, end) {
+    return parseInt([...bits.slice(start, end)].reverse().join(''), 2);
+}
+
+function sumArray(array) {
+    return array.reduce(
+        (accumulator, currentValue) => accumulator + currentValue,
+        0
+    );
+}
+
 let template = document.createElement('template');
 // prettier-ignore
 template.innerHTML = `
@@ -298,6 +319,7 @@ customElements.define(
                     case 'update':
                         this.game = JSON.parse(msg.game);
                         console.log(this.game);
+                        this.decode(this.game.gnubg_id);
                         this.reset();
                         break;
                 }
@@ -344,6 +366,63 @@ customElements.define(
                         break;
                 }
             });
+        }
+
+        decode(id) {
+            const [positionId, matchId] = id.split(':');
+            const position = this.decodePosition(positionId);
+            const match = this.decodeMatch(matchId);
+
+            return { position: position, match: match };
+        }
+
+        decodePosition(positionId) {
+            const positionBytes = b64ToBytes(positionId);
+            const positionKey = bytesToBits(positionBytes);
+            const checkers = positionKey
+                .split(0)
+                .slice(0, 50)
+                .map((pos) => sumArray([...pos].map((n) => parseInt(n))));
+            const opponentPoints = checkers.slice(0, 24).reverse();
+            const opponentBar = checkers[24];
+            const opponentOff = 15 - sumArray(opponentPoints) - opponentBar;
+            const playerPoints = checkers.slice(25, 49);
+            const playerBar = checkers[49];
+            const playerOff = 15 - sumArray(playerPoints) - playerBar;
+            const boardPoints = playerPoints.map(
+                (n, i) => n - opponentPoints[i]
+            );
+
+            return {
+                boardPoints: boardPoints,
+                playerBar: playerBar,
+                playerOff: playerOff,
+                opponentBar: opponentBar,
+                opponentOff: opponentOff,
+            };
+        }
+
+        decodeMatch(matchId) {
+            const matchBytes = b64ToBytes(matchId);
+            const matchKey = bytesToBits(matchBytes);
+
+            return {
+                cube_value: 2 ** bitsToInt(matchKey, 0, 4),
+                cube_holder: bitsToInt(matchKey, 4, 6),
+                player: bitsToInt(matchKey, 6, 7),
+                crawford: Boolean(bitsToInt(matchKey, 7, 8)),
+                game_state: bitsToInt(matchKey, 8, 11),
+                turn: bitsToInt(matchKey, 11, 12),
+                double: Boolean(bitsToInt(matchKey, 12, 13)),
+                resign: bitsToInt(matchKey, 13, 15),
+                dice: [
+                    bitsToInt(matchKey, 15, 18),
+                    bitsToInt(matchKey, 18, 21),
+                ],
+                length: bitsToInt(matchKey, 21, 36),
+                player_0_score: bitsToInt(matchKey, 36, 51),
+                player_1_score: bitsToInt(matchKey, 51, 66),
+            };
         }
 
         reset() {
