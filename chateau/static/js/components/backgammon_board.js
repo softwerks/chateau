@@ -229,6 +229,8 @@ customElements.define(
                         let game = this.decode(msg.id);
                         this.match = game.match;
                         this.position = game.position;
+                        console.log(this.match, this.position);
+                        this.generatePlays();
                         this.draw();
                         break;
                 }
@@ -290,6 +292,159 @@ customElements.define(
                 player_0_score: bitsToInt(matchKey, 36, 51),
                 player_1_score: bitsToInt(matchKey, 51, 66),
             };
+        }
+
+        generatePlays() {
+            function enter([...boardPoints], pips, playerBar) {
+                let destination = 24 - pips;
+                if (boardPoints[destination] >= -1) {
+                    playerBar--;
+
+                    if (boardPoints[destination] == -1)
+                        boardPoints[destination] = 1;
+                    else boardPoints[destination]++;
+
+                    return [boardPoints, playerBar];
+                }
+            }
+
+            function playerHome(boardPoints) {
+                return boardPoints
+                    .slice(0, 6)
+                    .map((numCheckers) => (numCheckers > 0 ? numCheckers : 0));
+            }
+
+            function off([...boardPoints], point, pips, playerOff) {
+                if (boardPoints[point] > 0) {
+                    let destination = point - pips;
+                    if (destination < 0) {
+                        if (
+                            sumArray(
+                                playerHome(boardPoints).slice(
+                                    point,
+                                    6 - (pips - point)
+                                )
+                            ) == 0
+                        ) {
+                            boardPoints[point]--;
+                            playerOff++;
+
+                            return [boardPoints, playerOff];
+                        }
+                    } else if (boardPoints[destination] >= -1) {
+                        if (boardPoints[destination] == -1)
+                            boardPoints[destination] = 1;
+                        else boardPoints[destination]++;
+
+                        return [boardPoints, playerOff];
+                    }
+                }
+            }
+
+            function move([...boardPoints], point, pips) {
+                if (boardPoints[point] > 0) {
+                    let destination = point - pips;
+                    if (destination >= 0 && boardPoints[destination] >= -1) {
+                        boardPoints[point]--;
+
+                        if (boardPoints[destination] == -1)
+                            boardPoints[destination] = 1;
+                        else boardPoints[destination]++;
+
+                        return boardPoints;
+                    }
+                }
+            }
+
+            function generate(
+                [...dice],
+                die,
+                [...boardPoints],
+                playerBar,
+                playerOff
+            ) {
+                if (die < dice.length) {
+                    let pips = dice[die];
+
+                    let newboardPoints;
+                    if (playerBar > 0) {
+                        [newboardPoints, playerBar] = enter(
+                            boardPoints,
+                            pips,
+                            playerBar
+                        );
+                        if (newboardPoints)
+                            generate(
+                                dice,
+                                die + 1,
+                                newboardPoints,
+                                playerBar,
+                                playerOff
+                            );
+                    } else if (
+                        sumArray(boardPoints.slice(0, 6)) + playerOff ==
+                        15
+                    ) {
+                        boardPoints
+                            .slice(0, 6)
+                            .forEach((numCheckers, point) => {
+                                [newboardPoints, playerOff] = off(
+                                    boardPoints,
+                                    point,
+                                    pips,
+                                    playerOff
+                                );
+                                if (newboardPoints)
+                                    generate(
+                                        dice,
+                                        die + 1,
+                                        newboardPoints,
+                                        playerBar,
+                                        playerOff
+                                    );
+                            });
+                    } else {
+                        boardPoints.forEach((numCheckers, point) => {
+                            newboardPoints = move(boardPoints, point, pips);
+                            if (newboardPoints)
+                                generate(
+                                    dice,
+                                    die + 1,
+                                    newboardPoints,
+                                    playerBar,
+                                    playerOff
+                                );
+                        });
+                    }
+                }
+            }
+
+            const doubles = this.match.dice[0] == this.match.dice[1];
+            const dice = doubles
+                ? [...this.match.dice, ...this.match.dice]
+                : this.match.dice;
+
+            generate(
+                dice,
+                0,
+                this.position.boardPoints,
+                this.position.playerBar,
+                this.position.playerOff
+            );
+            if (!doubles) {
+                generate(
+                    dice.reverse(),
+                    0,
+                    this.position.boardPoints,
+                    this.position.playerBar,
+                    this.position.playerOff
+                );
+            }
+
+            //remove smaller plays
+            //remove lower player
+
+            //return plays
         }
 
         draw() {
