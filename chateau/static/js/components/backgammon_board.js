@@ -357,16 +357,17 @@ customElements.define(
             }
 
             function generate(
-                [...dice],
-                die,
-                [...boardPoints],
+                boardPoints,
                 playerBar,
-                playerOff
+                playerOff,
+                dice,
+                die = 0,
+                moves = [],
+                plays = []
             ) {
-                if (die < dice.length) {
-                    let pips = dice[die];
+                let pips = dice[die];
 
-                    let newboardPoints;
+                if (pips) {
                     if (playerBar > 0) {
                         [newboardPoints, playerBar] = enter(
                             boardPoints,
@@ -375,19 +376,27 @@ customElements.define(
                         );
                         if (newboardPoints)
                             generate(
-                                dice,
-                                die + 1,
                                 newboardPoints,
                                 playerBar,
-                                playerOff
+                                playerOff,
+                                dice,
+                                die + 1,
+                                [
+                                    ...moves,
+                                    {
+                                        pips: pips,
+                                        source: 'bar',
+                                        destination: 24 - pips,
+                                    },
+                                ],
+                                plays
                             );
                     } else if (
-                        sumArray(boardPoints.slice(0, 6)) + playerOff ==
+                        sumArray(playerHome(boardPoints)) + playerOff ==
                         15
                     ) {
-                        boardPoints
-                            .slice(0, 6)
-                            .forEach((numCheckers, point) => {
+                        playerHome(boardPoints).forEach(
+                            (numCheckers, point) => {
                                 [newboardPoints, playerOff] = off(
                                     boardPoints,
                                     point,
@@ -396,55 +405,90 @@ customElements.define(
                                 );
                                 if (newboardPoints)
                                     generate(
-                                        dice,
-                                        die + 1,
                                         newboardPoints,
                                         playerBar,
-                                        playerOff
+                                        playerOff,
+                                        dice,
+                                        die + 1,
+                                        [
+                                            ...moves,
+                                            {
+                                                pips: pips,
+                                                source: point,
+                                                destination: 'off',
+                                            },
+                                        ],
+                                        plays
                                     );
-                            });
+                            }
+                        );
                     } else {
-                        boardPoints.forEach((numCheckers, point) => {
-                            newboardPoints = move(boardPoints, point, pips);
+                        boardPoints.forEach((checkers, point) => {
+                            let newboardPoints = move(boardPoints, point, pips);
                             if (newboardPoints)
                                 generate(
-                                    dice,
-                                    die + 1,
                                     newboardPoints,
                                     playerBar,
-                                    playerOff
+                                    playerOff,
+                                    dice,
+                                    die + 1,
+                                    [
+                                        ...moves,
+                                        {
+                                            pips: pips,
+                                            source: point,
+                                            destination: point - pips,
+                                        },
+                                    ],
+                                    plays
                                 );
                         });
                     }
                 }
+
+                if (moves.length) plays.push(moves);
+
+                return plays;
             }
 
             const doubles = this.match.dice[0] == this.match.dice[1];
             const dice = doubles
                 ? [...this.match.dice, ...this.match.dice]
-                : this.match.dice;
+                : [...this.match.dice];
 
-            generate(
-                dice,
-                0,
-                this.position.boardPoints,
+            let plays = generate(
+                [...this.position.boardPoints],
                 this.position.playerBar,
-                this.position.playerOff
+                this.position.playerOff,
+                dice
             );
-            if (!doubles) {
-                generate(
-                    dice.reverse(),
-                    0,
-                    this.position.boardPoints,
-                    this.position.playerBar,
-                    this.position.playerOff
-                );
+
+            // let reversed = generate([...this.position.boardPoints], this.position.playerBar, this.position.playerOff, dice.reverse());
+
+            let maxMoves = Math.max(...plays.map((play) => play.length));
+            if (maxMoves == 1) {
+                let maxPips = Math.max(...this.match.dice);
+                plays = plays.filter((play) => play[0].pips == maxPips);
+            } else {
+                plays = plays.filter((play) => play.length == maxMoves);
             }
 
-            //remove smaller plays
-            //remove lower player
+            const tree = plays.reduce((tree, play) => {
+                let prev = tree;
+                for (let depth = 0; depth < play.length; depth++) {
+                    let move = play[depth];
+                    prev.moves = prev.moves || {};
+                    let node = (prev.moves[move.source] =
+                        prev.moves[move.source] || {});
+                    node.pips = move.pips;
+                    node.destination = move.destination;
+                    prev = node;
+                }
+                return tree;
+            }, {});
 
-            //return plays
+            console.log(plays);
+            console.log(tree);
         }
 
         draw() {
