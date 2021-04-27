@@ -500,31 +500,49 @@ customElements.define(
         }
 
         drawPoints() {
-            let normalized_points;
-            if (this.match.player == 0)
-                normalized_points = this.position.boardPoints;
-            else
-                normalized_points = this.position.boardPoints
-                    .map((n) => (n != 0 ? -n : n))
-                    .reverse();
+            let annotatedPoints = this.position.boardPoints.map(
+                (numCheckers, index) => {
+                    const player = (numCheckers) => {
+                        if (this.match.player == 0)
+                            return numCheckers > 0 ? 0 : 1;
+                        else return numCheckers > 0 ? 1 : 0;
+                    };
+
+                    return {
+                        index: index,
+                        player: numCheckers == 0 ? null : player(numCheckers),
+                        numCheckers: Math.abs(numCheckers),
+                    };
+                }
+            );
+
+            let normalizedPoints =
+                this.match.player == 0
+                    ? annotatedPoints
+                    : annotatedPoints.reverse();
 
             const halves = {
-                top: normalized_points
-                    .slice(0, normalized_points.length / 2)
+                top: normalizedPoints
+                    .slice(0, normalizedPoints.length / 2)
                     .reverse(),
-                bottom: normalized_points.slice(normalized_points.length / 2),
+                bottom: normalizedPoints.slice(normalizedPoints.length / 2),
             };
 
             for (const half in halves) {
                 let direction = half == 'top' ? DIRECTION.down : DIRECTION.up;
                 let cy = BOARD[half] + CHECKER_COMBINED_RADIUS * direction;
 
-                halves[half].forEach((numCheckers, index) => {
-                    if (numCheckers != 0) {
-                        let player = numCheckers > 0 ? 0 : 1;
-                        let num = Math.abs(numCheckers);
+                halves[half].forEach((point, index) => {
+                    if (point.numCheckers != 0) {
                         let cx = POINT_CX[index];
-                        this.drawCheckers(player, num, cx, cy, direction);
+                        this.drawCheckers(
+                            point.index,
+                            point.player,
+                            point.numCheckers,
+                            cx,
+                            cy,
+                            direction
+                        );
                     }
                 });
             }
@@ -537,6 +555,7 @@ customElements.define(
                     : this.position.opponent_bar;
             if (numBarPlayer0 != 0)
                 this.drawCheckers(
+                    'bar',
                     0,
                     numBarPlayer0,
                     BOARD.middleX,
@@ -550,6 +569,7 @@ customElements.define(
                     : this.position.opponent_bar;
             if (numBarPlayer1 != 0)
                 this.drawCheckers(
+                    'bar',
                     1,
                     numBarPlayer1,
                     BOARD.middleX,
@@ -558,7 +578,7 @@ customElements.define(
                 );
         }
 
-        drawCheckers(player, num, cx, cy, direction) {
+        drawCheckers(location, player, num, cx, cy, direction) {
             const svg = this.shadowRoot.querySelector('svg');
 
             let fill = CHECKER_FILL[player];
@@ -575,6 +595,9 @@ customElements.define(
                 checker.setAttribute('fill', fill);
                 checker.setAttribute('stroke', stroke);
                 checker.setAttribute('stroke-width', CHECKER_STROKE_WIDTH);
+                checker.dataset.location = location;
+                checker.dataset.player = player;
+                checker.onclick = this.move;
                 svg.appendChild(checker);
 
                 if (i == MAX_CHECKERS) {
@@ -720,6 +743,13 @@ customElements.define(
                 );
                 svg.appendChild(die);
             });
+        }
+
+        move(event) {
+            const source = event.target.dataset.location;
+            const player = event.target.dataset.player;
+
+            console.log(source, player);
         }
     }
 );
