@@ -230,7 +230,7 @@ customElements.define(
                         this.match = game.match;
                         this.position = game.position;
                         console.log(this.match, this.position);
-                        this.plays = this.generatePlays();
+                        [this.plays, this.reversedPlays] = this.generatePlays();
                         console.log(this.plays);
                         this.moveList = [];
                         this.clear();
@@ -475,34 +475,50 @@ customElements.define(
                 dice
             );
 
-            // let reversed = generate([...this.position.boardPoints], this.position.playerBar, this.position.playerOff, dice.reverse());
+            let reversedPlays = generate(
+                [...this.position.boardPoints],
+                this.position.playerBar,
+                this.position.playerOff,
+                dice.reverse()
+            );
 
-            let maxMoves = Math.max(...plays.map((play) => play.length));
+            let maxMoves = Math.max(
+                ...plays.map((play) => play.length),
+                ...reversedPlays.map((play) => play.length)
+            );
             if (maxMoves == 1) {
                 let maxPips = Math.max(...this.match.dice);
                 plays = plays.filter((play) => play[0].pips == maxPips);
+                reversedPlays = reversedPlays.filter(
+                    (play) => play[0].pips == maxPips
+                );
             } else {
                 plays = plays.filter((play) => play.length == maxMoves);
+                reversedPlays = reversedPlays.filter(
+                    (play) => play.length == maxMoves
+                );
             }
 
-            const tree = plays.reduce((tree, play) => {
-                let prev = tree;
-                for (let depth = 0; depth < play.length; depth++) {
-                    let move = play[depth];
-                    prev.moves = prev.moves || {};
-                    let node = (prev.moves[move.source] =
-                        prev.moves[move.source] || {});
-                    node.pips = move.pips;
-                    node.destination = move.destination;
-                    prev = node;
-                }
-                return tree;
-            }, {});
+            function tree(plays) {
+                return plays.reduce((tree, play) => {
+                    let prev = tree;
+                    for (let depth = 0; depth < play.length; depth++) {
+                        let move = play[depth];
+                        prev.moves = prev.moves || {};
+                        let node = (prev.moves[move.source] =
+                            prev.moves[move.source] || {});
+                        node.pips = move.pips;
+                        node.destination = move.destination;
+                        prev = node;
+                    }
+                    return tree;
+                }, {});
+            }
 
             console.log(plays);
-            console.log(tree);
+            console.log(tree(plays));
 
-            return tree;
+            return [tree(plays), tree(reversedPlays)];
         }
 
         draw() {
@@ -763,6 +779,9 @@ customElements.define(
                     BOARD.middleY - DIE.height / 2
                 );
                 die.firstElementChild.className.baseVal = 'foreground';
+                die.firstElementChild.addEventListener('click', (event) => {
+                    this.reverseDice(event);
+                });
                 svg.appendChild(die);
             });
         }
@@ -822,6 +841,19 @@ customElements.define(
             if (this.match.dice[0] != 0) return;
 
             this.websocket.send(JSON.stringify({ opcode: 'roll' }));
+        }
+
+        reverseDice(event) {
+            if (this.player != this.match.player) return;
+
+            if (this.moveList.length) return;
+
+            this.match.dice.reverse();
+            [this.plays, this.reversedPlays] = [this.reversedPlays, this.plays];
+            console.log(this.plays);
+
+            this.clear();
+            this.draw();
         }
     }
 );
