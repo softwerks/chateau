@@ -93,8 +93,8 @@ template.innerHTML = `
     <svg id="backgammon" viewBox="0 0 1280 720">
         <rect width="1280" height="720" fill="black" />
         <rect x="20" y="${BOARD.top}" width="80" height="${BOARD.bottom - BOARD.top}" fill="tan" />
-        <rect x="104" y="${BOARD.top}" width="496" height="${BOARD.bottom - BOARD.top}" fill="tan" />
-        <rect x="680" y="${BOARD.top}" width="496" height="${BOARD.bottom - BOARD.top}" fill="tan" />
+        <rect class="field" x="104" y="${BOARD.top}" width="496" height="${BOARD.bottom - BOARD.top}" fill="tan" />
+        <rect class="field" x="680" y="${BOARD.top}" width="496" height="${BOARD.bottom - BOARD.top}" fill="tan" />
         <rect x="1180" y="${BOARD.top}" width="80" height="${BOARD.bottom - BOARD.top}" fill="tan" />
 
         <polygon points="120,${BOARD.top} 180,${BOARD.top} ${POINT_CX[0]},320" fill="green" />
@@ -230,11 +230,23 @@ customElements.define(
                         this.match = game.match;
                         this.position = game.position;
                         console.log(this.match, this.position);
-                        this.generatePlays();
+                        this.plays = this.generatePlays();
+                        console.log(this.plays);
+                        this.moveList = [];
+                        this.clear();
                         this.draw();
                         break;
                 }
             });
+
+            this.shadowRoot
+                .querySelector('svg')
+                .querySelectorAll('.field')
+                .forEach((field) => {
+                    field.addEventListener('click', (event) => {
+                        this.roll(event);
+                    });
+                });
         }
 
         decode(id) {
@@ -489,6 +501,8 @@ customElements.define(
 
             console.log(plays);
             console.log(tree);
+
+            return tree;
         }
 
         draw() {
@@ -496,7 +510,7 @@ customElements.define(
             this.drawBar();
             this.drawOff();
             this.drawCube();
-            this.drawDice();
+            if (this.match.dice[0] != 0) this.drawDice();
         }
 
         drawPoints() {
@@ -597,7 +611,10 @@ customElements.define(
                 checker.setAttribute('stroke-width', CHECKER_STROKE_WIDTH);
                 checker.dataset.location = location;
                 checker.dataset.player = player;
-                checker.onclick = this.move;
+                checker.onclick = checker.addEventListener('click', (event) => {
+                    this.move(event);
+                });
+                checker.className.baseVal = 'foreground';
                 svg.appendChild(checker);
 
                 if (i == MAX_CHECKERS) {
@@ -614,6 +631,7 @@ customElements.define(
                         label.setAttribute('fill', 'black');
                         let text = document.createTextNode(remaining_checkers);
                         label.appendChild(text);
+                        label.className.baseVal = 'foreground';
                         svg.appendChild(label);
                     }
                     break;
@@ -657,6 +675,7 @@ customElements.define(
                 off.setAttribute('width', OFF.width);
                 off.setAttribute('height', OFF.height);
                 off.setAttribute('fill', fill);
+                off.className.baseVal = 'foreground';
                 svg.appendChild(off);
 
                 num--;
@@ -683,6 +702,7 @@ customElements.define(
             cube.setAttribute('width', CUBE.width);
             cube.setAttribute('height', CUBE.height);
             cube.setAttribute('fill', CUBE.fill);
+            cube.className.baseVal = 'foreground';
             svg.appendChild(cube);
             const cubeValue =
                 this.match.cube_holder == 3
@@ -699,6 +719,7 @@ customElements.define(
             label.setAttribute('fill', CUBE.text);
             let text = document.createTextNode(cubeValue);
             label.appendChild(text);
+            label.className.baseVal = 'foreground';
             svg.appendChild(label);
         }
 
@@ -741,15 +762,66 @@ customElements.define(
                     'y',
                     BOARD.middleY - DIE.height / 2
                 );
+                die.firstElementChild.className.baseVal = 'foreground';
                 svg.appendChild(die);
             });
+        }
+
+        clear() {
+            const svg = this.shadowRoot.querySelector('svg');
+            const foreground = svg.querySelectorAll('.foreground');
+            foreground.forEach((e) => e.parentNode.removeChild(e));
         }
 
         move(event) {
             const source = event.target.dataset.location;
             const player = event.target.dataset.player;
 
-            console.log(source, player);
+            if (player != this.match.player || this.player != this.match.player)
+                return;
+
+            const moves = this.plays?.moves;
+            if (moves) {
+                if (moves[source]) {
+                    const destination = moves[source].destination;
+
+                    if (source == 'bar') this.position.playerBar--;
+                    else this.position.boardPoints[Number.parseInt(source)]--;
+
+                    if (Number.isInteger(destination)) {
+                        if (this.position.boardPoints[destination] > 0)
+                            this.position.boardPoints[destination]++;
+                        else {
+                            this.position.boardPoints[destination] = 1;
+                            this.position.opponentOff++;
+                        }
+                    } else this.position.playerOff++;
+
+                    this.moveList.push(Number.parseInt(source), destination);
+                    this.plays = this.plays.moves[source];
+
+                    if (!this.plays?.moves)
+                        this.websocket.send(
+                            JSON.stringify({
+                                opcode: 'move',
+                                move: this.moveList.map((n) =>
+                                    Number.isInteger(n) ? n : null
+                                ),
+                            })
+                        );
+
+                    this.clear();
+                    this.draw();
+                }
+            }
+        }
+
+        roll(event) {
+            if (this.player != this.match.player) return;
+
+            if (this.match.dice[0] != 0) return;
+
+            this.websocket.send(JSON.stringify({ opcode: 'roll' }));
         }
     }
 );
