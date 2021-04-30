@@ -226,6 +226,7 @@ customElements.define(
                         this.player = msg.player;
                         break;
                     case 'update':
+                        console.log(msg.id);
                         let game = this.decode(msg.id);
                         this.match = game.match;
                         this.position = game.position;
@@ -316,41 +317,47 @@ customElements.define(
                         boardPoints[destination] = 1;
                     else boardPoints[destination]++;
 
-                    return [boardPoints, playerBar];
+                    return [boardPoints, playerBar, destination];
                 }
+
+                return [null, null, null];
+            }
+
+            function home(boardPoints) {
+                return boardPoints.slice(0, 6);
             }
 
             function playerHome(boardPoints) {
-                return boardPoints
-                    .slice(0, 6)
-                    .map((numCheckers) => (numCheckers > 0 ? numCheckers : 0));
+                return home(boardPoints).map((numCheckers) =>
+                    numCheckers > 0 ? numCheckers : 0
+                );
             }
 
             function off([...boardPoints], point, pips, playerOff) {
                 if (boardPoints[point] > 0) {
                     let destination = point - pips;
                     if (destination < 0) {
-                        if (
-                            sumArray(
-                                playerHome(boardPoints).slice(
-                                    point,
-                                    6 - (pips - point)
-                                )
-                            ) == 0
-                        ) {
+                        let numCheckersHigherPoints = sumArray(
+                            playerHome(boardPoints).slice(point + 1, pips)
+                        );
+                        if (destination == -1 || numCheckersHigherPoints == 0) {
                             boardPoints[point]--;
                             playerOff++;
 
-                            return [boardPoints, playerOff];
+                            return [boardPoints, playerOff, 'off'];
                         }
                     } else if (boardPoints[destination] >= -1) {
+                        boardPoints[point]--;
+
                         if (boardPoints[destination] == -1)
                             boardPoints[destination] = 1;
                         else boardPoints[destination]++;
 
-                        return [boardPoints, playerOff];
+                        return [boardPoints, playerOff, destination];
                     }
                 }
+
+                return [null, null, null];
             }
 
             function move([...boardPoints], point, pips) {
@@ -363,9 +370,11 @@ customElements.define(
                             boardPoints[destination] = 1;
                         else boardPoints[destination]++;
 
-                        return boardPoints;
+                        return [boardPoints, destination];
                     }
                 }
+
+                return [null, null];
             }
 
             function generate(
@@ -379,17 +388,18 @@ customElements.define(
             ) {
                 let pips = dice[die];
 
+                let newBoardPoints, newPlayerBar, newPlayerOff, destination;
                 if (pips) {
                     if (playerBar > 0) {
-                        [newboardPoints, playerBar] = enter(
+                        [newBoardPoints, newPlayerBar, destination] = enter(
                             boardPoints,
                             pips,
                             playerBar
                         );
-                        if (newboardPoints)
+                        if (newBoardPoints)
                             generate(
-                                newboardPoints,
-                                playerBar,
+                                newBoardPoints,
+                                newPlayerBar,
                                 playerOff,
                                 dice,
                                 die + 1,
@@ -398,7 +408,7 @@ customElements.define(
                                     {
                                         pips: pips,
                                         source: 'bar',
-                                        destination: 24 - pips,
+                                        destination: destination,
                                     },
                                 ],
                                 plays
@@ -407,39 +417,41 @@ customElements.define(
                         sumArray(playerHome(boardPoints)) + playerOff ==
                         15
                     ) {
-                        playerHome(boardPoints).forEach(
-                            (numCheckers, point) => {
-                                [newboardPoints, playerOff] = off(
-                                    boardPoints,
-                                    point,
-                                    pips,
-                                    playerOff
+                        home(boardPoints).forEach((numCheckers, point) => {
+                            [newBoardPoints, newPlayerOff, destination] = off(
+                                boardPoints,
+                                point,
+                                pips,
+                                playerOff
+                            );
+                            if (newBoardPoints)
+                                generate(
+                                    newBoardPoints,
+                                    playerBar,
+                                    newPlayerOff,
+                                    dice,
+                                    die + 1,
+                                    [
+                                        ...moves,
+                                        {
+                                            pips: pips,
+                                            source: point,
+                                            destination: destination,
+                                        },
+                                    ],
+                                    plays
                                 );
-                                if (newboardPoints)
-                                    generate(
-                                        newboardPoints,
-                                        playerBar,
-                                        playerOff,
-                                        dice,
-                                        die + 1,
-                                        [
-                                            ...moves,
-                                            {
-                                                pips: pips,
-                                                source: point,
-                                                destination: 'off',
-                                            },
-                                        ],
-                                        plays
-                                    );
-                            }
-                        );
+                        });
                     } else {
                         boardPoints.forEach((checkers, point) => {
-                            let newboardPoints = move(boardPoints, point, pips);
-                            if (newboardPoints)
+                            [newBoardPoints, destination] = move(
+                                boardPoints,
+                                point,
+                                pips
+                            );
+                            if (newBoardPoints)
                                 generate(
-                                    newboardPoints,
+                                    newBoardPoints,
                                     playerBar,
                                     playerOff,
                                     dice,
@@ -449,7 +461,7 @@ customElements.define(
                                         {
                                             pips: pips,
                                             source: point,
-                                            destination: point - pips,
+                                            destination: destination,
                                         },
                                     ],
                                     plays
@@ -488,10 +500,17 @@ customElements.define(
             );
             if (maxMoves == 1) {
                 let maxPips = Math.max(...this.match.dice);
-                plays = plays.filter((play) => play[0].pips == maxPips);
-                reversedPlays = reversedPlays.filter(
+
+                let higherPlays = plays.filter(
                     (play) => play[0].pips == maxPips
                 );
+                if (higherPlays.length) plays = higerPlays;
+
+                let higherReversedPlays = reversedPlays.filter(
+                    (play) => play[0].pips == maxPips
+                );
+                if (higherReversedPlays.length)
+                    reversedPlays = higherReversedPlays;
             } else {
                 plays = plays.filter((play) => play.length == maxMoves);
                 reversedPlays = reversedPlays.filter(
@@ -581,8 +600,8 @@ customElements.define(
         drawBar() {
             const numBarPlayer0 =
                 this.match.player == 0
-                    ? this.position.player_bar
-                    : this.position.opponent_bar;
+                    ? this.position.playerBar
+                    : this.position.opponentBar;
             if (numBarPlayer0 != 0)
                 this.drawCheckers(
                     'bar',
@@ -595,8 +614,8 @@ customElements.define(
 
             const numBarPlayer1 =
                 this.match.player == 1
-                    ? this.position.player_bar
-                    : this.position.opponent_bar;
+                    ? this.position.playerBar
+                    : this.position.opponentBar;
             if (numBarPlayer1 != 0)
                 this.drawCheckers(
                     'bar',
@@ -660,15 +679,15 @@ customElements.define(
         drawOff() {
             const numOffPlayer0 =
                 this.match.player == 0
-                    ? this.match.player_off
-                    : this.match.opponent_off;
+                    ? this.position.playerOff
+                    : this.position.opponentOff;
             if (numOffPlayer0 > 0) this.drawTray(0, numOffPlayer0);
 
             const numOffPlayer1 =
                 this.match.player == 1
-                    ? this.match.player_off
-                    : this.match.opponent_off;
-            if (numOffPlayer1 > 0) this.drawTray(1, numOffPlayer0);
+                    ? this.position.playerOff
+                    : this.position.opponentOff;
+            if (numOffPlayer1 > 0) this.drawTray(1, numOffPlayer1);
         }
 
         drawTray(player, num) {
@@ -808,16 +827,18 @@ customElements.define(
                     else this.position.boardPoints[Number.parseInt(source)]--;
 
                     if (Number.isInteger(destination)) {
-                        if (this.position.boardPoints[destination] > 0)
+                        if (this.position.boardPoints[destination] >= 0)
                             this.position.boardPoints[destination]++;
                         else {
                             this.position.boardPoints[destination] = 1;
-                            this.position.opponentOff++;
+                            this.position.opponentBar++;
                         }
                     } else this.position.playerOff++;
 
                     this.moveList.push(Number.parseInt(source), destination);
                     this.plays = this.plays.moves[source];
+
+                    console.log(this.plays);
 
                     if (!this.plays?.moves)
                         this.websocket.send(
