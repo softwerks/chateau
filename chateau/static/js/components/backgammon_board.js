@@ -25,6 +25,7 @@ const BOARD = {
 };
 const DIRECTION = { up: -1, down: 1 };
 const CHECKER_FILL = ['white', 'dimgrey'];
+const CHECKER_TEXT_FILL = ['black', 'white'];
 const CHECKER_STROKE = ['dimgrey', 'white'];
 const CHECKER_RADIUS = 28;
 const CHECKER_STROKE_WIDTH = 4;
@@ -653,6 +654,7 @@ customElements.define(
                 svg.appendChild(checker);
 
                 if (i == MAX_CHECKERS) {
+                    let textFill = CHECKER_TEXT_FILL[player];
                     let remaining_checkers = num - i;
                     if (remaining_checkers > 0) {
                         let label = document.createElementNS(
@@ -661,9 +663,9 @@ customElements.define(
                         );
                         label.setAttribute('x', cx);
                         label.setAttribute('y', cy);
-                        label.setAttribute('text-anchor', 'middleX');
-                        label.setAttribute('alignment-baseline', 'middleX');
-                        label.setAttribute('fill', 'black');
+                        label.setAttribute('text-anchor', 'middle');
+                        label.setAttribute('alignment-baseline', 'middle');
+                        label.setAttribute('fill', textFill);
                         let text = document.createTextNode(remaining_checkers);
                         label.appendChild(text);
                         label.className.baseVal = 'foreground';
