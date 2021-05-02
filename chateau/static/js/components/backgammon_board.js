@@ -301,8 +301,8 @@ customElements.define(
             const matchKey = bytesToBits(matchBytes);
 
             return {
-                cube_value: 2 ** bitsToInt(matchKey, 0, 4),
-                cube_holder: bitsToInt(matchKey, 4, 6),
+                cubeValue: 2 ** bitsToInt(matchKey, 0, 4),
+                cubeHolder: bitsToInt(matchKey, 4, 6),
                 player: bitsToInt(matchKey, 6, 7),
                 crawford: Boolean(bitsToInt(matchKey, 7, 8)),
                 gameState: bitsToInt(matchKey, 8, 11),
@@ -737,9 +737,8 @@ customElements.define(
             const svg = this.shadowRoot.querySelector('svg');
 
             let y;
-            if (this.match.cube_holder == 3)
-                y = BOARD.middleY - CUBE.height / 2;
-            else if (this.match.cube_holder == 0) y = BOARD.top + CUBE.padding;
+            if (this.match.cubeHolder == 3) y = BOARD.middleY - CUBE.height / 2;
+            else if (this.match.cubeHolder == 0) y = BOARD.top + CUBE.padding;
             else y = BOARD.bottom - (CUBE.height + CUBE.padding);
             let cube = document.createElementNS(
                 'http://www.w3.org/2000/svg',
@@ -755,9 +754,9 @@ customElements.define(
             cube.className.baseVal = 'foreground';
             svg.appendChild(cube);
             const cubeValue =
-                this.match.cube_holder == 3
+                this.match.cubeHolder == 3
                     ? 64
-                    : Math.pow(2, this.match.cube_value);
+                    : Math.pow(2, this.match.cubeValue);
             let label = document.createElementNS(
                 'http://www.w3.org/2000/svg',
                 'text'
