@@ -31,6 +31,7 @@ const CHECKER_RADIUS = 28;
 const CHECKER_STROKE_WIDTH = 4;
 const CHECKER_COMBINED_RADIUS = CHECKER_RADIUS + CHECKER_STROKE_WIDTH / 2;
 const MAX_CHECKERS = 5;
+const CHECKER_FONT_SIZE = '2rem';
 const OFF = { width: 76, height: 16, padding: 4 };
 const CUBE = {
     width: 60,
@@ -39,6 +40,7 @@ const CUBE = {
     radius: 8,
     fill: 'black',
     text: 'white',
+    fontSize: '2rem',
 };
 const DIE = {
     width: 60,
@@ -53,6 +55,7 @@ const DIE = {
     fill: 'black',
 };
 const PIP = { radius: 6, fill: 'white' };
+const SCORE = { x: 1200, height: 120, fontSize: '4rem' };
 
 function b64ToBytes(b64) {
     return Array.from(atob(b64), (c) => c.charCodeAt(0));
@@ -87,7 +90,6 @@ template.innerHTML = `
 
         text {
             font-weight: bold;
-            font-size: 2rem;
             pointer-events: none;
         }
     </style>
@@ -97,6 +99,8 @@ template.innerHTML = `
         <rect class="field" x="104" y="${BOARD.top}" width="426" height="${BOARD.bottom - BOARD.top}" fill="tan" />
         <rect class="field" x="610" y="${BOARD.top}" width="426" height="${BOARD.bottom - BOARD.top}" fill="tan" />
         <rect x="1040" y="${BOARD.top}" width="80" height="${BOARD.bottom - BOARD.top}" fill="tan" />
+        <rect x="1144" y="${BOARD.top + 4}" width="112" height="112" rx="8" ry="8" fill="${CHECKER_FILL[0]}" stroke="${CHECKER_STROKE[0]}" stroke-width="8" />
+        <rect x="1144" y="${BOARD.bottom - 112 - 4}" width="112" height="112" rx="8" ry="8" fill="${CHECKER_FILL[1]}" stroke="${CHECKER_STROKE[1]}" stroke-width="8" />
 
         <polygon points="110,${BOARD.top} 170,${BOARD.top} ${POINT_CX[0]},320" fill="green" />
         <polygon points="180,${BOARD.top} 240,${BOARD.top} ${POINT_CX[1]},320" fill="black" />
@@ -303,8 +307,8 @@ customElements.define(
                     bitsToInt(matchKey, 18, 21),
                 ],
                 length: bitsToInt(matchKey, 21, 36),
-                player_0_score: bitsToInt(matchKey, 36, 51),
-                player_1_score: bitsToInt(matchKey, 51, 66),
+                player0Score: bitsToInt(matchKey, 36, 51),
+                player1Score: bitsToInt(matchKey, 51, 66),
             };
         }
 
@@ -546,6 +550,7 @@ customElements.define(
             this.drawBar();
             this.drawOff();
             this.drawCube();
+            this.drawScore();
             if (this.match.dice[0] != 0) this.drawDice();
         }
 
@@ -666,6 +671,7 @@ customElements.define(
                         label.setAttribute('text-anchor', 'middle');
                         label.setAttribute('alignment-baseline', 'middle');
                         label.setAttribute('fill', textFill);
+                        label.setAttribute('font-size', CHECKER_FONT_SIZE);
                         let text = document.createTextNode(remaining_checkers);
                         label.appendChild(text);
                         label.className.baseVal = 'foreground';
@@ -754,10 +760,39 @@ customElements.define(
             label.setAttribute('text-anchor', 'middle');
             label.setAttribute('alignment-baseline', 'middle');
             label.setAttribute('fill', CUBE.text);
+            label.setAttribute('font-size', CUBE.fontSize);
             let text = document.createTextNode(cubeValue);
             label.appendChild(text);
             label.className.baseVal = 'foreground';
             svg.appendChild(label);
+        }
+
+        drawScore() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            [this.match.player0Score, this.match.player1Score].forEach(
+                (score, player) => {
+                    let label = document.createElementNS(
+                        'http://www.w3.org/2000/svg',
+                        'text'
+                    );
+                    label.setAttribute('x', SCORE.x);
+                    label.setAttribute(
+                        'y',
+                        player == 0
+                            ? BOARD.top + SCORE.height / 2
+                            : BOARD.bottom - SCORE.height / 2
+                    );
+                    label.setAttribute('text-anchor', 'middle');
+                    label.setAttribute('alignment-baseline', 'middle');
+                    label.setAttribute('fill', CHECKER_TEXT_FILL[player]);
+                    label.setAttribute('font-size', SCORE.fontSize);
+                    let text = document.createTextNode(score);
+                    label.appendChild(text);
+                    label.className.baseVal = 'foreground';
+                    svg.appendChild(label);
+                }
+            );
         }
 
         drawDice() {
