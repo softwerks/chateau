@@ -95,6 +95,11 @@ template.innerHTML = `
             flex-direction: column;
         }
 
+        svg {
+            max-height: 100vh;
+            max-width: 100vw;
+        }
+
         text {
             font-weight: bold;
             pointer-events: none;
