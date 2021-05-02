@@ -55,7 +55,14 @@ const DIE = {
     fill: 'black',
 };
 const PIP = { radius: 6, fill: 'white' };
-const SCORE = { x: 1200, height: 120, fontSize: '4rem', highlight: 'gold' };
+const SCORE = {
+    x: 1200,
+    height: 120,
+    fontSize: '4rem',
+    fill: ['white', 'dimgrey'],
+    stroke: ['dimgrey', 'white'],
+    highlight: 'gold',
+};
 
 function b64ToBytes(b64) {
     return Array.from(atob(b64), (c) => c.charCodeAt(0));
@@ -99,8 +106,8 @@ template.innerHTML = `
         <rect class="field" x="104" y="${BOARD.top}" width="426" height="${BOARD.bottom - BOARD.top}" fill="tan" />
         <rect class="field" x="610" y="${BOARD.top}" width="426" height="${BOARD.bottom - BOARD.top}" fill="tan" />
         <rect x="1040" y="${BOARD.top}" width="80" height="${BOARD.bottom - BOARD.top}" fill="tan" />
-        <rect class="score0" x="1144" y="${BOARD.top + 4}" width="112" height="112" rx="8" ry="8" fill="${CHECKER_FILL[0]}" stroke="${CHECKER_STROKE[0]}" stroke-width="8" />
-        <rect class="score1" x="1144" y="${BOARD.bottom - 112 - 4}" width="112" height="112" rx="8" ry="8" fill="${CHECKER_FILL[1]}" stroke="${CHECKER_STROKE[1]}" stroke-width="8" />
+        <rect class="score0" x="1144" y="${BOARD.top + 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[0]}" stroke="${SCORE.stroke[0]}" stroke-width="8" />
+        <rect class="score1" x="1144" y="${BOARD.bottom - 112 - 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[1]}" stroke="${SCORE.stroke[1]}" stroke-width="8" />
 
         <polygon points="110,${BOARD.top} 170,${BOARD.top} ${POINT_CX[0]},320" fill="green" />
         <polygon points="180,${BOARD.top} 240,${BOARD.top} ${POINT_CX[1]},320" fill="black" />
@@ -298,7 +305,7 @@ customElements.define(
                 cube_holder: bitsToInt(matchKey, 4, 6),
                 player: bitsToInt(matchKey, 6, 7),
                 crawford: Boolean(bitsToInt(matchKey, 7, 8)),
-                game_state: bitsToInt(matchKey, 8, 11),
+                gameState: bitsToInt(matchKey, 8, 11),
                 turn: bitsToInt(matchKey, 11, 12),
                 double: Boolean(bitsToInt(matchKey, 12, 13)),
                 resign: bitsToInt(matchKey, 13, 15),
@@ -794,16 +801,27 @@ customElements.define(
                 }
             );
 
-            if (this.match.player == 0)
-                svg.querySelector('.score0').setAttribute(
-                    'stroke',
-                    SCORE.highlight
-                );
-            else if (this.match.player == 1)
-                svg.querySelector('.score1').setAttribute(
-                    'stroke',
-                    SCORE.highlight
-                );
+            if (this.match.gameState > 0) {
+                if (this.match.player == 0) {
+                    svg.querySelector('.score0').setAttribute(
+                        'stroke',
+                        SCORE.highlight
+                    );
+                    svg.querySelector('.score1').setAttribute(
+                        'stroke',
+                        SCORE.stroke[1]
+                    );
+                } else if (this.match.player == 1) {
+                    svg.querySelector('.score1').setAttribute(
+                        'stroke',
+                        SCORE.highlight
+                    );
+                    svg.querySelector('.score0').setAttribute(
+                        'stroke',
+                        SCORE.stroke[0]
+                    );
+                }
+            }
         }
 
         drawDice() {
