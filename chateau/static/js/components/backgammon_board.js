@@ -63,6 +63,7 @@ const SCORE = {
     stroke: ['dimgrey', 'white'],
     highlight: 'gold',
 };
+const PIP_COUNT = { offsetY: 32, fill: 'white', fontSize: '1rem' };
 
 function b64ToBytes(b64) {
     return Array.from(atob(b64), (c) => c.charCodeAt(0));
@@ -564,6 +565,7 @@ customElements.define(
             this.drawOff();
             this.drawCube();
             this.drawScore();
+            this.drawPipCount();
             if (this.match.dice[0] != 0) this.drawDice();
         }
 
@@ -827,6 +829,52 @@ customElements.define(
                     );
                 }
             }
+        }
+
+        drawPipCount() {
+            const svg = this.shadowRoot.querySelector('svg');
+            const pipCountPlayer = this.position.boardPoints
+                .map((n) => (n > 0 ? n : 0))
+                .reduce(
+                    (count, numCheckers, point) =>
+                        count + (point + 1) * numCheckers,
+                    0
+                );
+            const pipCountOpponent = this.position.boardPoints
+                .map((n) => (n < 0 ? Math.abs(n) : 0))
+                .reverse()
+                .reduce(
+                    (count, numCheckers, point) =>
+                        count + (point + 1) * numCheckers,
+                    0
+                );
+
+            const pipCount0 =
+                this.match.player == 0 ? pipCountPlayer : pipCountOpponent;
+            const pipCount1 =
+                this.match.player == 1 ? pipCountPlayer : pipCountOpponent;
+
+            [pipCount0, pipCount1].forEach((pipCount, player) => {
+                let label = document.createElementNS(
+                    'http://www.w3.org/2000/svg',
+                    'text'
+                );
+                label.setAttribute('x', BOARD.middleX);
+                label.setAttribute(
+                    'y',
+                    player == 0
+                        ? BOARD.middleY - PIP_COUNT.offsetY
+                        : BOARD.middleY + PIP_COUNT.offsetY
+                );
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('alignment-baseline', 'middle');
+                label.setAttribute('fill', PIP_COUNT.fill);
+                label.setAttribute('font-size', PIP_COUNT.fontSize);
+                let text = document.createTextNode(pipCount);
+                label.appendChild(text);
+                label.className.baseVal = 'foreground';
+                svg.appendChild(label);
+            });
         }
 
         drawDice() {
