@@ -103,6 +103,7 @@ template.innerHTML = `
         text {
             font-weight: bold;
             pointer-events: none;
+            user-select: none;
         }
     </style>
     <svg id="backgammon" viewBox="0 0 1280 720">
