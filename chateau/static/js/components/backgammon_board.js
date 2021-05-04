@@ -64,6 +64,16 @@ const SCORE = {
     highlight: 'gold',
 };
 const PIP_COUNT = { offsetY: 32, fill: 'white', fontSize: '1rem' };
+const BUTTON = {
+    width: 60,
+    height: 60,
+    padding: 40,
+    radius: 8,
+    acceptFill: 'green',
+    rejectFill: 'red',
+    stroke: 'black',
+    strokeWidth: 8,
+};
 
 function b64ToBytes(b64) {
     return Array.from(atob(b64), (c) => c.charCodeAt(0));
@@ -215,6 +225,16 @@ die_6.innerHTML = `
     </svg>
 `;
 
+let reject = document.createElement('template');
+// prettier-ignore
+reject.innerHTML = `
+    <svg width="${BUTTON.width}" height="${BUTTON.height}" viewBox ="0 0 ${BUTTON.width} ${BUTTON.height}">
+        <rect width="${BUTTON.width}" height="${BUTTON.height}" rx="${BUTTON.radius}" ry="${BUTTON.radius}" fill="${BUTTON.rejectFill}" />
+        <circle cx="${BUTTON.width / 2}" cy="${BUTTON.height / 2}" r="22" fill="none" stroke="${BUTTON.stroke}" stroke-width="${BUTTON.strokeWidth}" />
+        <path d="M16 16 L44 44" stroke="${BUTTON.stroke}" stroke-width="${BUTTON.strokeWidth}" />
+    </svg>
+`;
+
 customElements.define(
     'backgammon-board',
     class extends HTMLElement {
@@ -240,6 +260,7 @@ customElements.define(
 
             this.websocket.addEventListener('message', (event) => {
                 const msg = JSON.parse(event.data);
+                console.log(msg);
                 switch (msg.code) {
                     case 'player':
                         this.player = msg.player;
@@ -667,7 +688,7 @@ customElements.define(
                 checker.setAttribute('stroke-width', CHECKER_STROKE_WIDTH);
                 checker.dataset.location = location;
                 checker.dataset.player = player;
-                checker.onclick = checker.addEventListener('click', (event) => {
+                checker.addEventListener('click', (event) => {
                     this.move(event);
                 });
                 checker.className.baseVal = 'foreground';
@@ -744,32 +765,47 @@ customElements.define(
         drawCube() {
             const svg = this.shadowRoot.querySelector('svg');
 
-            let y;
-            if (this.match.cubeHolder == 3) y = BOARD.middleY - CUBE.height / 2;
-            else if (this.match.cubeHolder == 0) y = BOARD.top + CUBE.padding;
-            else y = BOARD.bottom - (CUBE.height + CUBE.padding);
             let cube = document.createElementNS(
                 'http://www.w3.org/2000/svg',
                 'rect'
             );
-            cube.setAttribute('x', BOARD.trayLeft - CUBE.width / 2);
+            let x;
+            if (!this.match.double) {
+                x = BOARD.trayLeft;
+            } else {
+                if (this.match.player == 0)
+                    x = BOARD.rightX + CUBE.width / 2 + BUTTON.padding;
+                else x = BOARD.leftX + CUBE.width / 2 + BUTTON.padding;
+            }
+            cube.setAttribute('x', x - CUBE.width / 2);
+
+            let y;
+            if (this.match.cubeHolder == 3 || this.match.double)
+                y = BOARD.middleY - CUBE.height / 2;
+            else if (this.match.cubeHolder == 0) y = BOARD.top + CUBE.padding;
+            else y = BOARD.bottom - (CUBE.height + CUBE.padding);
             cube.setAttribute('y', y);
+
             cube.setAttribute('rx', CUBE.radius);
             cube.setAttribute('ry', CUBE.radius);
             cube.setAttribute('width', CUBE.width);
             cube.setAttribute('height', CUBE.height);
             cube.setAttribute('fill', CUBE.fill);
+            cube.addEventListener('click', (event) => {
+                this.double(event);
+            });
             cube.className.baseVal = 'foreground';
             svg.appendChild(cube);
-            const cubeValue =
-                this.match.cubeHolder == 3
-                    ? 64
-                    : Math.pow(2, this.match.cubeValue);
+            const cubeValue = this.match.double
+                ? this.match.cubeValue * 2
+                : this.match.cubeValue == 1
+                ? 64
+                : this.match.cubeValue;
             let label = document.createElementNS(
                 'http://www.w3.org/2000/svg',
                 'text'
             );
-            label.setAttribute('x', BOARD.trayLeft);
+            label.setAttribute('x', x);
             label.setAttribute('y', y + CUBE.height / 2);
             label.setAttribute('text-anchor', 'middle');
             label.setAttribute('alignment-baseline', 'middle');
@@ -779,6 +815,23 @@ customElements.define(
             label.appendChild(text);
             label.className.baseVal = 'foreground';
             svg.appendChild(label);
+
+            if (this.match.double) {
+                let rejectButton = reject.content.cloneNode(true);
+                rejectButton.firstElementChild.setAttribute(
+                    'x',
+                    x - BUTTON.width * 1.5 - BUTTON.padding * 2
+                );
+                rejectButton.firstElementChild.setAttribute('y', y);
+                rejectButton.firstElementChild.className.baseVal = 'foreground';
+                rejectButton.firstElementChild.addEventListener(
+                    'click',
+                    (event) => {
+                        this.rejectDouble(event);
+                    }
+                );
+                svg.appendChild(rejectButton);
+            }
         }
 
         drawScore() {
@@ -809,7 +862,7 @@ customElements.define(
             );
 
             if (this.match.gameState > 0) {
-                if (this.match.player == 0) {
+                if (this.match.turn == 0) {
                     svg.querySelector('.score0').setAttribute(
                         'stroke',
                         SCORE.highlight
@@ -818,7 +871,7 @@ customElements.define(
                         'stroke',
                         SCORE.stroke[1]
                     );
-                } else if (this.match.player == 1) {
+                } else if (this.match.turn == 1) {
                     svg.querySelector('.score1').setAttribute(
                         'stroke',
                         SCORE.highlight
@@ -994,6 +1047,34 @@ customElements.define(
 
             this.clear();
             this.draw();
+        }
+
+        double(event) {
+            if (this.match.double) return this.acceptDouble(event);
+
+            if (this.player != this.match.player) return;
+
+            if (
+                this.match.cubeHolder != 3 &&
+                this.match.cubeHolder != this.match.player
+            )
+                return;
+
+            if (this.match.dice[0] != 0) return;
+
+            if (this.match.double == true) return;
+
+            this.websocket.send(JSON.stringify({ opcode: 'double' }));
+        }
+
+        acceptDouble(event) {
+            if (this.player != this.match.turn) return;
+
+            this.websocket.send(JSON.stringify({ opcode: 'accept' }));
+        }
+
+        rejectDouble(event) {
+            console.log('reject double');
         }
     }
 );
