@@ -1074,7 +1074,11 @@ customElements.define(
         }
 
         rejectDouble(event) {
-            console.log('reject double');
+            if (this.player != this.match.turn) return;
+
+            if (!this.match.double) return;
+
+            this.websocket.send(JSON.stringify({ opcode: 'reject' }));
         }
     }
 );
