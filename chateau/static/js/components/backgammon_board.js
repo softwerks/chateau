@@ -544,7 +544,7 @@ customElements.define(
                 let higherPlays = plays.filter(
                     (play) => play[0].pips == maxPips
                 );
-                if (higherPlays.length) plays = higerPlays;
+                if (higherPlays.length) plays = higherPlays;
 
                 let higherReversedPlays = reversedPlays.filter(
                     (play) => play[0].pips == maxPips
