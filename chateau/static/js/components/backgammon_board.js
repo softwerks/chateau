@@ -263,19 +263,10 @@ customElements.define(
                 console.log(msg);
                 switch (msg.code) {
                     case 'player':
-                        this.player = msg.player;
+                        this.player(msg);
                         break;
                     case 'update':
-                        console.log(msg.id);
-                        let game = this.decode(msg.id);
-                        this.match = game.match;
-                        this.position = game.position;
-                        console.log(this.match, this.position);
-                        [this.plays, this.reversedPlays] = this.generatePlays();
-                        console.log(this.plays);
-                        this.moveList = [];
-                        this.clear();
-                        this.draw();
+                        this.update(msg);
                         break;
                 }
             });
@@ -288,6 +279,28 @@ customElements.define(
                         this.roll(event);
                     });
                 });
+        }
+
+        player(msg) {
+            this.player = msg.player;
+        }
+
+        update(msg) {
+            let game = this.decode(msg.id);
+            this.match = game.match;
+            this.position = game.position;
+            console.log(this.match, this.position);
+            if (this.match.gameState == 1 && this.player == this.match.player) {
+                [this.plays, this.reversedPlays] = this.generatePlays();
+                if (!this.plays.length && !this.reversedPlays.length)
+                    setTimeout(() => {
+                        this.skip();
+                    }, 2000);
+                console.log(this.plays);
+            }
+            this.moveList = [];
+            this.clear();
+            this.draw();
         }
 
         decode(id) {
@@ -573,9 +586,6 @@ customElements.define(
                     return tree;
                 }, {});
             }
-
-            console.log(plays);
-            console.log(tree(plays));
 
             return [tree(plays), tree(reversedPlays)];
         }
@@ -1079,6 +1089,10 @@ customElements.define(
             if (!this.match.double) return;
 
             this.websocket.send(JSON.stringify({ opcode: 'reject' }));
+        }
+
+        skip() {
+            this.websocket.send(JSON.stringify({ opcode: 'skip' }));
         }
     }
 );
