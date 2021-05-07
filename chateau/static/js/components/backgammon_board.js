@@ -130,12 +130,19 @@ template.innerHTML = `
     </style>
     <svg id="backgammon" viewBox="0 0 1280 720">
         <rect width="1280" height="720" fill="black" />
+        <rect class="score0" x="1144" y="${BOARD.top + 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[0]}" stroke="${SCORE.stroke[0]}" stroke-width="8" />
+        <rect class="score1" x="1144" y="${BOARD.bottom - 112 - 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[1]}" stroke="${SCORE.stroke[1]}" stroke-width="8" />
+    </svg>
+`;
+
+let boardTemplate = document.createElement('template');
+// prettier-ignore
+boardTemplate.innerHTML = `
+    <svg id="backgammon" viewBox="0 0 1280 720">
         <rect x="20" y="${BOARD.top}" width="80" height="${BOARD.bottom - BOARD.top}" fill="tan" />
         <rect class="field" x="104" y="${BOARD.top}" width="426" height="${BOARD.bottom - BOARD.top}" fill="tan" />
         <rect class="field" x="610" y="${BOARD.top}" width="426" height="${BOARD.bottom - BOARD.top}" fill="tan" />
         <rect x="1040" y="${BOARD.top}" width="80" height="${BOARD.bottom - BOARD.top}" fill="tan" />
-        <rect class="score0" x="1144" y="${BOARD.top + 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[0]}" stroke="${SCORE.stroke[0]}" stroke-width="8" />
-        <rect class="score1" x="1144" y="${BOARD.bottom - 112 - 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[1]}" stroke="${SCORE.stroke[1]}" stroke-width="8" />
 
         <polygon points="110,${BOARD.top} 170,${BOARD.top} ${POINT_CX[0]},320" fill="green" />
         <polygon points="180,${BOARD.top} 240,${BOARD.top} ${POINT_CX[1]},320" fill="black" />
@@ -658,6 +665,7 @@ customElements.define(
                 this.drawMenu();
                 this.drawExit();
             } else {
+                this.drawBoard();
                 this.drawPoints();
                 this.drawBar();
                 this.drawOff();
@@ -695,6 +703,14 @@ customElements.define(
             let menu = menuTemplate.content.cloneNode(true);
             menu.firstElementChild.className.baseVal = 'foreground';
             svg.appendChild(menu);
+        }
+
+        drawBoard() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            let board = boardTemplate.content.cloneNode(true);
+            board.firstElementChild.className.baseVal = 'foreground';
+            svg.appendChild(board);
         }
 
         drawPoints() {
