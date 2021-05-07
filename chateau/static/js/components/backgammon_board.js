@@ -684,6 +684,7 @@ customElements.define(
                 this.drawCube();
                 this.drawPipCount();
                 if (this.match.dice[0] != 0) this.drawDice();
+                if (this.match.gameState == 2) this.drawGameOver();
             }
             this.drawScore();
         }
@@ -1109,6 +1110,29 @@ customElements.define(
                     this.reverseDice(event);
                 });
                 svg.appendChild(die);
+            });
+        }
+
+        drawGameOver() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            ['GAME', 'OVER'].forEach((word, index) => {
+                let label = document.createElementNS(
+                    'http://www.w3.org/2000/svg',
+                    'text'
+                );
+                label.setAttribute(
+                    'x',
+                    index == 0 ? BOARD.leftX : BOARD.rightX
+                );
+                label.setAttribute('y', BOARD.middleY);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('alignment-baseline', 'middle');
+                label.setAttribute('font-size', '4rem');
+                let text = document.createTextNode(word);
+                label.appendChild(text);
+                label.className.baseVal = 'foreground';
+                svg.appendChild(label);
             });
         }
 
