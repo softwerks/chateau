@@ -88,6 +88,13 @@ const HAMBURGER = {
     barHeight: 10,
     barFill: 'black',
 };
+const MENU_ITEM = {
+    width: 440,
+    height: 80,
+    radius: 8,
+    fill: 'black',
+    stroke: 'white',
+};
 
 function b64ToBytes(b64) {
     return Array.from(atob(b64), (c) => c.charCodeAt(0));
@@ -209,13 +216,14 @@ menuTemplate.innerHTML = `
 let exit = document.createElement('template');
 // prettier-ignore
 exit.innerHTML = `
-    <svg width="${BUTTON.width}" height="${BUTTON.height}" viewBox ="0 0 ${BUTTON.width} ${BUTTON.height}">
-        <rect width="${BUTTON.width}" height="${BUTTON.height}" rx="${BUTTON.radius}" ry="${BUTTON.radius}" fill="${BUTTON.defaultFill}" />
-        <path d="M30 16 L36 16 L36 20" stroke="grey" stroke-width="2" />
-        <path d="M30 46 L36 46 L36 42" stroke="grey" stroke-width="2" />
-        <polygon points="8,16 8,46, 30,54, 30,6" fill="white" />
-        <path d="M36 30 L48 30" stroke="white" stroke-width="${BUTTON.strokeWidth}" />
-        <polygon points="42,20 42,40, 56,30" fill="white" />
+    <svg width="${MENU_ITEM.width}" height="${MENU_ITEM.height}" viewBox ="0 0 ${MENU_ITEM.width} ${MENU_ITEM.height}">
+        <rect width="${MENU_ITEM.width}" height="${MENU_ITEM.height}" rx="${MENU_ITEM.radius}" ry="${MENU_ITEM.radius}" fill="${MENU_ITEM.fill}" />
+        <path d="M30 16 L40 16 L40 22" stroke="grey" stroke-width="4" />
+        <path d="M30 64 L40 64 L40 58" stroke="grey" stroke-width="4" />
+        <polygon points="8,16 8,64, 30,74, 30,6" fill="white" />
+        <path d="M36 40 L56 40" stroke="white" stroke-width="16" />
+        <polygon points="54,20 54,60, 72,40" fill="white" />
+        <text x="260" y="40" fill="white" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Leave game</text>
     </svg>
 `;
 
@@ -351,6 +359,7 @@ customElements.define(
 
         close(msg) {
             this.websocket.close(1000);
+            window.location.href = '/';
         }
 
         player(msg) {
@@ -1109,12 +1118,11 @@ customElements.define(
             let exitButton = exit.content.cloneNode(true);
             exitButton.firstElementChild.setAttribute(
                 'x',
-                (this.player == 0 ? BOARD.leftX : BOARD.rightX) -
-                    BUTTON.width / 2
+                BOARD.middleX - MENU_ITEM.width / 2
             );
             exitButton.firstElementChild.setAttribute(
                 'y',
-                BOARD.middleY - BUTTON.height / 2
+                BOARD.middleY - MENU_ITEM.height / 2
             );
             exitButton.firstElementChild.className.baseVal = 'foreground';
             exitButton.firstElementChild.addEventListener('click', (event) => {
