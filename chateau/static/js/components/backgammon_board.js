@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const POINT_CX = [140, 210, 280, 350, 420, 490, 650, 720, 790, 860, 930, 1000];
+const POINT_CX = [120, 190, 260, 330, 400, 470, 630, 700, 770, 840, 910, 980];
 const BOARD = {
+    width: 1100,
+    height: 680,
+    padding: 20,
     top: 20,
     middleX: 570,
     middleY: 360,
@@ -138,39 +141,39 @@ template.innerHTML = `
 let boardTemplate = document.createElement('template');
 // prettier-ignore
 boardTemplate.innerHTML = `
-    <svg id="backgammon" viewBox="0 0 1280 720">
-        <rect x="20" y="${BOARD.top}" width="80" height="${BOARD.bottom - BOARD.top}" fill="tan" />
-        <rect class="field" x="104" y="${BOARD.top}" width="426" height="${BOARD.bottom - BOARD.top}" fill="tan" />
-        <rect class="field" x="610" y="${BOARD.top}" width="426" height="${BOARD.bottom - BOARD.top}" fill="tan" />
-        <rect x="1040" y="${BOARD.top}" width="80" height="${BOARD.bottom - BOARD.top}" fill="tan" />
+    <svg x="${BOARD.padding}" y="${BOARD.padding}" width="${BOARD.width}" height="${BOARD.height}" viewBox="0 0 ${BOARD.width} ${BOARD.height}">
+        <rect x="0" y="0" width="80" height="${BOARD.height}" fill="tan" />
+        <rect class="field" x="84" y="0" width="426" height="${BOARD.height}" fill="tan" />
+        <rect class="field" x="590" y="0" width="426" height="${BOARD.height}" fill="tan" />
+        <rect x="1020" y="0" width="80" height="${BOARD.height}" fill="tan" />
 
-        <polygon points="110,${BOARD.top} 170,${BOARD.top} ${POINT_CX[0]},320" fill="green" />
-        <polygon points="180,${BOARD.top} 240,${BOARD.top} ${POINT_CX[1]},320" fill="black" />
-        <polygon points="250,${BOARD.top} 310,${BOARD.top} ${POINT_CX[2]},320" fill="green" />
-        <polygon points="320,${BOARD.top} 380,${BOARD.top} ${POINT_CX[3]},320" fill="black" />
-        <polygon points="390,${BOARD.top} 450,${BOARD.top} ${POINT_CX[4]},320" fill="green" />
-        <polygon points="460,${BOARD.top} 520,${BOARD.top} ${POINT_CX[5]},320" fill="black" />
+        <polygon points="90,0 150,0 ${POINT_CX[0]},300" fill="green" />
+        <polygon points="160,0 220,0 ${POINT_CX[1]},300" fill="black" />
+        <polygon points="230,0 290,0 ${POINT_CX[2]},300" fill="green" />
+        <polygon points="300,0 360,0 ${POINT_CX[3]},300" fill="black" />
+        <polygon points="370,0 430,0 ${POINT_CX[4]},300" fill="green" />
+        <polygon points="440,0 500,0 ${POINT_CX[5]},300" fill="black" />
 
-        <polygon points="620,${BOARD.top} 680,${BOARD.top} ${POINT_CX[6]},320" fill="green" />
-        <polygon points="690,${BOARD.top} 750,${BOARD.top} ${POINT_CX[7]},320" fill="black" />
-        <polygon points="760,${BOARD.top} 820,${BOARD.top} ${POINT_CX[8]},320" fill="green" />
-        <polygon points="830,${BOARD.top} 890,${BOARD.top}  ${POINT_CX[9]},320" fill="black" />
-        <polygon points="900,${BOARD.top} 960,${BOARD.top} ${POINT_CX[10]},320" fill="green" />
-        <polygon points="970,${BOARD.top} 1030,20 ${POINT_CX[11]},320" fill="black" />
+        <polygon points="600,0 660,0 ${POINT_CX[6]},300" fill="green" />
+        <polygon points="670,0 730,0 ${POINT_CX[7]},300" fill="black" />
+        <polygon points="740,0 800,0 ${POINT_CX[8]},300" fill="green" />
+        <polygon points="810,0 870,0  ${POINT_CX[9]},300" fill="black" />
+        <polygon points="880,0 940,0 ${POINT_CX[10]},300" fill="green" />
+        <polygon points="950,0 1010,0 ${POINT_CX[11]},300" fill="black" />
 
-        <polygon points="110,${BOARD.bottom} 170,${BOARD.bottom} ${POINT_CX[0]},400" fill="black" />
-        <polygon points="180,${BOARD.bottom} 240,${BOARD.bottom} ${POINT_CX[1]},400" fill="green" />
-        <polygon points="250,${BOARD.bottom} 310,${BOARD.bottom} ${POINT_CX[2]},400" fill="black" />
-        <polygon points="320,${BOARD.bottom} 380,${BOARD.bottom} ${POINT_CX[3]},400" fill="green" />
-        <polygon points="390,${BOARD.bottom} 450,${BOARD.bottom} ${POINT_CX[4]},400" fill="black" />
-        <polygon points="460,${BOARD.bottom} 520,${BOARD.bottom} ${POINT_CX[5]},400" fill="green" />
+        <polygon points="90,${BOARD.height} 150,${BOARD.height} ${POINT_CX[0]},380" fill="black" />
+        <polygon points="160,${BOARD.height} 220,${BOARD.height} ${POINT_CX[1]},380" fill="green" />
+        <polygon points="230,${BOARD.height} 290,${BOARD.height} ${POINT_CX[2]},380" fill="black" />
+        <polygon points="300,${BOARD.height} 360,${BOARD.height} ${POINT_CX[3]},380" fill="green" />
+        <polygon points="370,${BOARD.height} 430,${BOARD.height} ${POINT_CX[4]},380" fill="black" />
+        <polygon points="440,${BOARD.height} 500,${BOARD.height} ${POINT_CX[5]},380" fill="green" />
 
-        <polygon points="620,${BOARD.bottom} 680,${BOARD.bottom} ${POINT_CX[6]},400" fill="black" />
-        <polygon points="690,${BOARD.bottom} 750,${BOARD.bottom} ${POINT_CX[7]},400" fill="green" />
-        <polygon points="760,${BOARD.bottom} 820,${BOARD.bottom} ${POINT_CX[8]},400" fill="black" />
-        <polygon points="830,${BOARD.bottom} 890,${BOARD.bottom} ${POINT_CX[9]},400" fill="green" />
-        <polygon points="900,${BOARD.bottom} 960,${BOARD.bottom} ${POINT_CX[10]},400" fill="black" />
-        <polygon points="970,${BOARD.bottom} 1030,${BOARD.bottom} ${POINT_CX[11]},400" fill="green" />
+        <polygon points="600,${BOARD.height} 660,${BOARD.height} ${POINT_CX[6]},380" fill="black" />
+        <polygon points="670,${BOARD.height} 730,${BOARD.height} ${POINT_CX[7]},380" fill="green" />
+        <polygon points="740,${BOARD.height} 800,${BOARD.height} ${POINT_CX[8]},380" fill="black" />
+        <polygon points="810,${BOARD.height} 870,${BOARD.height} ${POINT_CX[9]},380" fill="green" />
+        <polygon points="880,${BOARD.height} 940,${BOARD.height} ${POINT_CX[10]},380" fill="black" />
+        <polygon points="950,${BOARD.height} 1010,${BOARD.height} ${POINT_CX[11]},380" fill="green" />
     </svg>
 `;
 
@@ -748,7 +751,7 @@ customElements.define(
 
                 halves[half].forEach((point, index) => {
                     if (point.numCheckers != 0) {
-                        let cx = POINT_CX[index];
+                        let cx = POINT_CX[index] + BOARD.padding;
                         this.drawCheckers(
                             point.index,
                             point.player,
