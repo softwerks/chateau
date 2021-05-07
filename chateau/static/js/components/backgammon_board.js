@@ -68,8 +68,8 @@ const SCORE = {
 };
 const PIP_COUNT = { offsetY: 32, fill: 'white', fontSize: '1rem' };
 const BUTTON = {
-    width: 320,
-    height: 80,
+    width: 60,
+    height: 60,
     padding: 40,
     radius: 8,
     defaultFill: 'black',
