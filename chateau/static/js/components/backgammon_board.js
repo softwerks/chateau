@@ -65,14 +65,25 @@ const SCORE = {
 };
 const PIP_COUNT = { offsetY: 32, fill: 'white', fontSize: '1rem' };
 const BUTTON = {
-    width: 60,
-    height: 60,
+    width: 320,
+    height: 80,
     padding: 40,
     radius: 8,
+    defaultFill: 'black',
     acceptFill: 'green',
     rejectFill: 'red',
     stroke: 'black',
     strokeWidth: 8,
+};
+const HAMBURGER = {
+    width: 80,
+    height: 80,
+    radius: 8,
+    fill: 'grey',
+    highlight: 'white',
+    barWidth: 60,
+    barHeight: 10,
+    barFill: 'black',
 };
 
 function b64ToBytes(b64) {
@@ -153,6 +164,48 @@ template.innerHTML = `
         <polygon points="830,${BOARD.bottom} 890,${BOARD.bottom} ${POINT_CX[9]},400" fill="green" />
         <polygon points="900,${BOARD.bottom} 960,${BOARD.bottom} ${POINT_CX[10]},400" fill="black" />
         <polygon points="970,${BOARD.bottom} 1030,${BOARD.bottom} ${POINT_CX[11]},400" fill="green" />
+    </svg>
+`;
+
+let hamburgerOpen = document.createElement('template');
+// prettier-ignore
+hamburgerOpen.innerHTML = `
+    <svg width="${HAMBURGER.width}" height="${HAMBURGER.height}" viewBox ="0 0 ${HAMBURGER.width} ${HAMBURGER.height}">
+        <rect width="${HAMBURGER.width}" height="${HAMBURGER.height}" rx="${HAMBURGER.radius}" ry="${HAMBURGER.radius}" fill="${HAMBURGER.fill}" />
+        <rect x="10" y="15" width="${HAMBURGER.barWidth}" height="${HAMBURGER.barHeight}" fill="${HAMBURGER.barFill}" />
+        <rect x="10" y="35" width="${HAMBURGER.barWidth}" height="${HAMBURGER.barHeight}" fill="${HAMBURGER.barFill}" />
+        <rect x="10" y="55" width="${HAMBURGER.barWidth}" height="${HAMBURGER.barHeight}" fill="${HAMBURGER.barFill}" />
+    </svg>
+`;
+
+let hamburgerClose = document.createElement('template');
+// prettier-ignore
+hamburgerClose.innerHTML = `
+    <svg width="${HAMBURGER.width}" height="${HAMBURGER.height}" viewBox ="0 0 ${HAMBURGER.width} ${HAMBURGER.height}">
+        <rect width="${HAMBURGER.width}" height="${HAMBURGER.height}" rx="${HAMBURGER.radius}" ry="${HAMBURGER.radius}" fill="${HAMBURGER.fill}" />
+        <path d="M16 16 L64 64" stroke="${HAMBURGER.barFill}" stroke-width="8" />
+        <path d="M16 64 L64 16" stroke="${HAMBURGER.barFill}" stroke-width="8" />
+    </svg>
+`;
+
+let menuTemplate = document.createElement('template');
+// prettier-ignore
+menuTemplate.innerHTML = `
+    <svg x="${BOARD.top}" y="${BOARD.top}" width="1100" height="${BOARD.bottom - BOARD.top}" viewBox ="0 0 1100 ${BOARD.bottom - BOARD.top}">
+        <rect width="1100" height="${BOARD.bottom - BOARD.top}" fill="grey" />
+    </svg>
+`;
+
+let exit = document.createElement('template');
+// prettier-ignore
+exit.innerHTML = `
+    <svg width="${BUTTON.width}" height="${BUTTON.height}" viewBox ="0 0 ${BUTTON.width} ${BUTTON.height}">
+        <rect width="${BUTTON.width}" height="${BUTTON.height}" rx="${BUTTON.radius}" ry="${BUTTON.radius}" fill="${BUTTON.defaultFill}" />
+        <path d="M30 16 L36 16 L36 20" stroke="grey" stroke-width="2" />
+        <path d="M30 46 L36 46 L36 42" stroke="grey" stroke-width="2" />
+        <polygon points="8,16 8,46, 30,54, 30,6" fill="white" />
+        <path d="M36 30 L48 30" stroke="white" stroke-width="${BUTTON.strokeWidth}" />
+        <polygon points="42,20 42,40, 56,30" fill="white" />
     </svg>
 `;
 
@@ -244,6 +297,8 @@ customElements.define(
             this.attachShadow({ mode: 'open' });
             this.shadowRoot.appendChild(template.content.cloneNode(true));
 
+            this.menuOpen = false;
+
             this.connect();
             this.bindEvents();
         }
@@ -262,6 +317,9 @@ customElements.define(
                 const msg = JSON.parse(event.data);
                 console.log(msg);
                 switch (msg.code) {
+                    case 'close':
+                        this.close(msg);
+                        break;
                     case 'player':
                         this.player(msg);
                         break;
@@ -279,6 +337,10 @@ customElements.define(
                         this.roll(event);
                     });
                 });
+        }
+
+        close(msg) {
+            this.websocket.close(1000);
         }
 
         player(msg) {
@@ -591,13 +653,48 @@ customElements.define(
         }
 
         draw() {
-            this.drawPoints();
-            this.drawBar();
-            this.drawOff();
-            this.drawCube();
+            this.drawHamburger();
+            if (this.menuOpen) {
+                this.drawMenu();
+                this.drawExit();
+            } else {
+                this.drawPoints();
+                this.drawBar();
+                this.drawOff();
+                this.drawCube();
+                this.drawPipCount();
+                if (this.match.dice[0] != 0) this.drawDice();
+            }
             this.drawScore();
-            this.drawPipCount();
-            if (this.match.dice[0] != 0) this.drawDice();
+        }
+
+        drawHamburger() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            let hamburger = this.menuOpen
+                ? hamburgerClose.content.cloneNode(true)
+                : hamburgerOpen.content.cloneNode(true);
+            hamburger.firstElementChild.setAttribute(
+                'x',
+                SCORE.x - HAMBURGER.width / 2
+            );
+            hamburger.firstElementChild.setAttribute(
+                'y',
+                BOARD.middleY - HAMBURGER.height / 2
+            );
+            hamburger.firstElementChild.className.baseVal = 'foreground';
+            hamburger.firstElementChild.addEventListener('click', (event) => {
+                this.toggleMenu(event);
+            });
+            svg.appendChild(hamburger);
+        }
+
+        drawMenu() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            let menu = menuTemplate.content.cloneNode(true);
+            menu.firstElementChild.className.baseVal = 'foreground';
+            svg.appendChild(menu);
         }
 
         drawPoints() {
@@ -987,6 +1084,32 @@ customElements.define(
             });
         }
 
+        drawExit() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            let exitButton = exit.content.cloneNode(true);
+            exitButton.firstElementChild.setAttribute(
+                'x',
+                (this.player == 0 ? BOARD.leftX : BOARD.rightX) -
+                    BUTTON.width / 2
+            );
+            exitButton.firstElementChild.setAttribute(
+                'y',
+                BOARD.middleY - BUTTON.height / 2
+            );
+            exitButton.firstElementChild.className.baseVal = 'foreground';
+            exitButton.firstElementChild.addEventListener('click', (event) => {
+                this.exit(event);
+            });
+            svg.appendChild(exitButton);
+        }
+
+        toggleMenu(event) {
+            this.menuOpen = this.menuOpen ? false : true;
+            this.clear();
+            this.draw();
+        }
+
         clear() {
             const svg = this.shadowRoot.querySelector('svg');
             const foreground = svg.querySelectorAll('.foreground');
@@ -1093,6 +1216,10 @@ customElements.define(
 
         skip() {
             this.websocket.send(JSON.stringify({ opcode: 'skip' }));
+        }
+
+        exit(event) {
+            this.websocket.send(JSON.stringify({ opcode: 'exit' }));
         }
     }
 );
