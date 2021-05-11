@@ -346,15 +346,6 @@ customElements.define(
                         break;
                 }
             });
-
-            this.shadowRoot
-                .querySelector('svg')
-                .querySelectorAll('.field')
-                .forEach((field) => {
-                    field.addEventListener('click', (event) => {
-                        this.roll(event);
-                    });
-                });
         }
 
         close(msg) {
@@ -371,7 +362,11 @@ customElements.define(
             this.match = game.match;
             this.position = game.position;
             console.log(this.match, this.position);
-            if (this.match.gameState == 1 && this.player == this.match.player) {
+            if (
+                this.match.gameState == 1 &&
+                this.match.dice[0] != 0 &&
+                this.player == this.match.player
+            ) {
                 [this.plays, this.reversedPlays] = this.generatePlays();
                 if (!this.plays.length && !this.reversedPlays.length)
                     setTimeout(() => {
@@ -723,6 +718,13 @@ customElements.define(
 
             let board = boardTemplate.content.cloneNode(true);
             board.firstElementChild.className.baseVal = 'foreground';
+            board.firstElementChild
+                .querySelectorAll('.field')
+                .forEach((field) => {
+                    field.addEventListener('click', (event) => {
+                        this.roll(event);
+                    });
+                });
             svg.appendChild(board);
         }
 
