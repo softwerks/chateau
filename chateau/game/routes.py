@@ -17,12 +17,16 @@ from typing import Union
 import flask
 import werkzeug
 
-from chateau.play import blueprint
+from chateau.game import blueprint
 
 
-@blueprint.route("custom")
-def custom() -> Union[werkzeug.wrappers.Response, str]:
-    game_id: str = flask.g.session.game_id()
-    if game_id is None:
-        game_id = flask.g.session.new_custom_game()
-    return flask.redirect(flask.url_for("game.game", game_id=game_id), code=303)
+@blueprint.route("<string(length=12):game_id>")
+def game(game_id: str) -> Union[werkzeug.wrappers.Response, str]:
+    if flask.g.session.game_exists(game_id):
+        token: str = flask.g.session.websocket_token()
+        return flask.render_template(
+            "play/game.html",
+            websocket_url=f"{flask.current_app.config['WEBSOCKET_URL']}/{game_id}?token={token}",
+        )
+    else:
+        flask.abort(404)

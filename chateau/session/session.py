@@ -1,4 +1,4 @@
-# Copyright 2020 Softwerks LLC
+# Copyright 2021 Softwerks LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@ import datetime
 import secrets
 import time
 from typing import Dict, List, Optional, Set, Union
-import uuid
 
 import backgammon
 import flask
@@ -170,22 +169,22 @@ class Session:
         self.store.setex("websocket:" + token, 10, self.token)
         return token
 
-    def game_id(self) -> Optional[uuid.UUID]:
+    def game_id(self) -> Optional[str]:
         """Return the user's game ID."""
         if self.authenticated:
             assert self.data.user_id is not None
             game_id: Optional[bytes] = self.store.hget("games", self.data.user_id)
-            return uuid.UUID(game_id.decode()) if game_id is not None else None
+            return game_id.decode() if game_id is not None else None
         else:
             return self.data.game_id
 
-    def _add_to_game_index(self, game_id: uuid.UUID) -> None:
+    def _add_to_game_index(self, game_id: str) -> None:
         """Add the user's game to the index."""
         assert self.data.user_id is not None
-        self.store.hset("games", self.data.user_id, str(game_id))
+        self.store.hset("games", self.data.user_id, game_id)
 
     @staticmethod
-    def _game_key(game_id: uuid.UUID) -> str:
+    def _game_key(game_id: str) -> str:
         """Return the game key."""
         return f"game:{game_id}"
 
@@ -194,14 +193,14 @@ class Session:
         """Return the player key."""
         return f"player_{player}"
 
-    def game_exists(self, game_id: uuid.UUID) -> bool:
+    def game_exists(self, game_id: str) -> bool:
         """Verify that the game exists."""
         return bool(self.store.exists(self._game_key(game_id)))
 
-    def new_custom_game(self) -> uuid.UUID:
+    def new_custom_game(self) -> str:
         """Create a new custom game."""
         assert self.game_id() is None
-        game_id: uuid.UUID = uuid.uuid4()
+        game_id: str = secrets.token_urlsafe(9)
         game_key: str = self._game_key(game_id)
         game: backgammon.Backgammon = backgammon.Backgammon()
         pipeline: redis.client.Pipeline = self.store.pipeline()

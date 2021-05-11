@@ -1,4 +1,4 @@
-# Copyright 2020 Softwerks LLC
+# Copyright 2021 Softwerks LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 
 import datetime
 from typing import Dict, Optional
-import uuid
 
 from dateutil import tz
 from werkzeug import useragents
@@ -48,10 +47,10 @@ class SessionData:
         return float(self._data[b"created"].decode())
 
     @property
-    def game_id(self) -> Optional[uuid.UUID]:
+    def game_id(self) -> Optional[str]:
         game_id: Optional[str] = self._property(b"game_id")
         if game_id is not None:
-            return uuid.UUID(game_id)
+            return game_id
         return None
 
     @property

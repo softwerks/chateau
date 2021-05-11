@@ -1,4 +1,4 @@
-# Copyright 2020 Softwerks LLC
+# Copyright 2021 Softwerks LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import redis
 
 import chateau.auth
 import chateau.database
+import chateau.game
 import chateau.play
 import chateau.session
 import chateau.settings
@@ -44,6 +45,7 @@ def create_app() -> flask.app.Flask:
         return flask.render_template("index.html")
 
     app.register_blueprint(chateau.auth.blueprint, url_prefix="/auth")
+    app.register_blueprint(chateau.game.blueprint, url_prefix="/game")
     app.register_blueprint(chateau.play.blueprint, url_prefix="/play")
     app.register_blueprint(chateau.settings.blueprint, url_prefix="/settings")
 
