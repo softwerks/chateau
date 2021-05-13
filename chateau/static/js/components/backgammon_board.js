@@ -328,7 +328,7 @@ customElements.define(
 
         bindEvents() {
             this.websocket.addEventListener('open', (event) => {
-                this.websocket.send(JSON.stringify({ opcode: 'join' }));
+                this.websocket.send(JSON.stringify({ opcode: 'connect' }));
             });
 
             this.websocket.addEventListener('message', (event) => {
