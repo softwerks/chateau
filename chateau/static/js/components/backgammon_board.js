@@ -95,6 +95,12 @@ const MENU_ITEM = {
     fill: 'black',
     stroke: 'white',
 };
+const STATUS = {
+    color: {
+        disconnected: 'red',
+        connected: 'green',
+    },
+};
 
 function b64ToBytes(b64) {
     return Array.from(atob(b64), (c) => c.charCodeAt(0));
@@ -142,6 +148,8 @@ template.innerHTML = `
         <rect width="1280" height="720" fill="black" />
         <rect class="score0" x="1144" y="${BOARD.top + 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[0]}" stroke="${SCORE.stroke[0]}" stroke-width="8" />
         <rect class="score1" x="1144" y="${BOARD.bottom - 112 - 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[1]}" stroke="${SCORE.stroke[1]}" stroke-width="8" />
+        <rect class="status0" x="1144" y="140" width="112" height="8" fill="${STATUS.color.disconnected}" />
+        <rect class="status1" x="1144" y="576" width="112" height="8" fill="${STATUS.color.disconnected}" />
     </svg>
 `;
 
@@ -341,6 +349,9 @@ customElements.define(
                     case 'player':
                         this.player(msg);
                         break;
+                    case 'status':
+                        this.status(msg);
+                        break;
                     case 'update':
                         this.update(msg);
                         break;
@@ -355,6 +366,20 @@ customElements.define(
 
         player(msg) {
             this.player = msg.player;
+        }
+
+        status(msg) {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            [0, 1].forEach((player) => {
+                const color = msg[player]
+                    ? STATUS.color[msg[player]]
+                    : STATUS.color.disconnected;
+                svg.querySelector(`.status${player}`).setAttribute(
+                    'fill',
+                    color
+                );
+            });
         }
 
         update(msg) {
