@@ -148,8 +148,8 @@ template.innerHTML = `
         <rect width="1280" height="720" fill="black" />
         <rect class="score0" x="1144" y="${BOARD.top + 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[0]}" stroke="${SCORE.stroke[0]}" stroke-width="8" />
         <rect class="score1" x="1144" y="${BOARD.bottom - 112 - 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[1]}" stroke="${SCORE.stroke[1]}" stroke-width="8" />
-        <rect class="status0" x="1144" y="140" width="112" height="8" fill="${STATUS.color.disconnected}" />
-        <rect class="status1" x="1144" y="576" width="112" height="8" fill="${STATUS.color.disconnected}" />
+        <circle class="status0" cx="1200" cy="160" r="8" fill="${STATUS.color.disconnected}" />
+        <circle class="status1" cx="1200" cy="560" r="8" fill="${STATUS.color.disconnected}" />
     </svg>
 `;
 
