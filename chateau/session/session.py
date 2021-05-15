@@ -12,199 +12,83 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import datetime
+import dataclasses
 import secrets
 import time
-from typing import Dict, List, Optional, Set, Union
+from typing import List, Optional
 
-import backgammon
 import flask
-import redis
-
-from chateau.session.data import SessionData
+import redis.client
 
 
+@dataclasses.dataclass
 class Session:
     """Session data persisted between requests."""
 
-    authenticated: bool
-    data: SessionData
-    key: str
-    store: redis.Redis
+    address: str
+    authenticated: bool = dataclasses.field(init=False)
+    created: str
+    id_: str = dataclasses.field(init=False)
+    last_seen: str
     token: str
+    user_agent: str
+    game_id: Optional[str] = None
+    time_zone: Optional[str] = None
+    user_id: Optional[str] = None
 
-    @staticmethod
-    def _key(token: str) -> str:
-        """Return the session store key."""
-        return f"session:{token}"
-
-    def __init__(self, store: redis.Redis) -> None:
-        def valid() -> bool:
-            """Return the status of the user's session."""
-            return (
-                False
-                if flask.session.get("id") is None
-                or not self.store.exists(f"session:{flask.session['id']}")
-                else True
-            )
-
-        def update_timestamp() -> None:
-            """Update the user's last seen timestamp."""
-            self.store.hset(self.key, "last_seen", time.time())
-
-        def load() -> None:
-            """Load the user's session."""
-            self.data = SessionData(self.store.hgetall(self.key))
-            self.authenticated = (
-                True if self.data.session_type == "authenticated" else False
-            )
-
-        self.store = store
-        if not valid():
-            self.new()
-        self.token = flask.session["id"]
-        self.key = self._key(self.token)
-        update_timestamp()
-        load()
-
-    @staticmethod
-    def _index_key(user_id: str) -> str:
-        """Return the index key."""
-        return f"user:sessions:{user_id}"
-
-    def _add_to_index(self, user_id: str, token: str) -> None:
-        """Add the session to the user's index."""
-        self.store.sadd(self._index_key(user_id), token)
-
-    def _remove_from_index(self, user_id: str, token: str) -> None:
-        """Remove the session from the user's index."""
-        self.store.srem(self._index_key(user_id), token)
-
-    def new(
-        self,
-        *,
-        session_type: str = "anonymous",
-        user_id: Optional[int] = None,
-        time_zone: Optional[str] = None,
-    ) -> None:
-        """Create a new session."""
-
-        def get_address() -> str:
-            """Return the user's IP address."""
-            if flask.request.headers.get("X-Real-IP") is not None:
-                return flask.request.headers["X-Real-IP"]
-            else:
-                return flask.request.remote_addr
-
-        token: str = secrets.token_urlsafe()
-
-        session_data: Dict[str, str] = {}
-        session_data["session_type"] = session_type
-        if user_id is not None:
-            session_data["user_id"] = str(user_id)
-        if time_zone is not None:
-            session_data["time_zone"] = time_zone
-        session_data["address"] = get_address()
-        session_data["user_agent"] = flask.request.user_agent.string
-        session_data["created"] = str(time.time())
-
-        session_key: str = self._key(token)
-        pipe: redis.client.Pipeline = self.store.pipeline()
-        for key, value in session_data.items():
-            assert isinstance(value, str)
-            pipe.hset(session_key, key, value)
-        pipe.expire(session_key, datetime.timedelta(days=30))
-        pipe.execute()
-
-        if user_id is not None:
-            self._add_to_index(str(user_id), token)
-
-        flask.session.clear()
-        flask.session["id"] = token
-
-    def delete(self) -> None:
-        """Delete the session."""
-        if self.authenticated:
-            assert self.data.user_id is not None
-            self._remove_from_index(self.data.user_id, self.token)
-        self.store.delete(self.key)
-        flask.session.clear()
-
-    def _tokens_in_index(self) -> Set[str]:
-        """Return all of the authenticated user's session tokens."""
-        if self.authenticated:
-            assert self.data.user_id is not None
-            sessions: Set[str] = set()
-            for token in self.store.smembers(self._index_key(self.data.user_id)):
-                assert isinstance(token, bytes)
-                sessions.add(token.decode())
-            return sessions
+    def __post_init__(self) -> None:
+        if self.user_id is not None:
+            self.authenticated = True
+            self.id_ = self.user_id
         else:
-            raise ValueError("Anonymous sessions are not indexed.")
+            self.authenticated = False
+            self.id_ = self.token
 
-    def all(self) -> List[SessionData]:
+        if self.authenticated:
+            self.game_id = flask.g.redis.hget("games", self.id_)
+
+        self.last_seen = str(time.time())
+        flask.g.redis.hset(f"session:{self.token}", "last_seen", self.last_seen)
+
+    def all(self) -> List["Session"]:
         """Return a list of the user's sessions."""
         if self.authenticated:
             return [
-                SessionData(self.store.hgetall(self._key(token)))
-                for token in self._tokens_in_index()
+                Session(token=token, **flask.g.redis.hgetall(f"session:{token}"))
+                for token in flask.g.redis.smembers(f"user:sessions:{self.user_id}")
             ]
         else:
-            return [self.data]
-
-    def delete_all(self) -> None:
-        """Delete all of the authenticated user's sessions."""
-        if self.authenticated:
-            for token in self._tokens_in_index():
-                self.store.delete(self._key(token))
-            assert self.data.user_id is not None
-            self.store.delete(self._index_key(self.data.user_id))
-        else:
-            self.delete()
-        flask.session.clear()
+            return [self]
 
     def websocket_token(self) -> str:
         """Return a token that can be used to establish a websocket connection."""
         token: str = secrets.token_urlsafe()
-        self.store.setex("websocket:" + token, 10, self.token)
+
+        flask.g.redis.setex(f"websocket:{token}", 10, self.token)
+
         return token
 
-    def game_id(self) -> Optional[str]:
-        """Return the user's game ID."""
+    def delete_all(self) -> None:
+        """Delete all of the user's sessions."""
         if self.authenticated:
-            assert self.data.user_id is not None
-            game_id: Optional[bytes] = self.store.hget("games", self.data.user_id)
-            return game_id.decode() if game_id is not None else None
+            pipeline: redis.client.Pipeline = flask.g.redis.pipeline()
+
+            for token in flask.g.redis.smembers(f"user:sessions:{self.user_id}"):
+                pipeline.delete(f"session:{token}")
+
+            pipeline.delete(f"user:sessions:{self.user_id}")
+
+            pipeline.execute()
+
+            flask.session.clear()
         else:
-            return self.data.game_id
+            self.delete()
 
-    def _add_to_game_index(self, game_id: str) -> None:
-        """Add the user's game to the index."""
-        assert self.data.user_id is not None
-        self.store.hset("games", self.data.user_id, game_id)
+    def delete(self) -> None:
+        """Delete the session (log out)."""
+        if self.authenticated and self.user_id is not None:
+            flask.g.redis.srem(f"user:sessions:{self.user_id}", self.token)
 
-    @staticmethod
-    def _game_key(game_id: str) -> str:
-        """Return the game key."""
-        return f"game:{game_id}"
+        flask.g.redis.delete(f"session:{self.token}")
 
-    @staticmethod
-    def _player_key(player: int) -> str:
-        """Return the player key."""
-        return f"player_{player}"
-
-    def game_exists(self, game_id: str) -> bool:
-        """Verify that the game exists."""
-        return bool(self.store.exists(self._game_key(game_id)))
-
-    def new_custom_game(self) -> str:
-        """Create a new custom game."""
-        assert self.game_id() is None
-        game_id: str = secrets.token_urlsafe(9)
-        game_key: str = self._game_key(game_id)
-        game: backgammon.Backgammon = backgammon.Backgammon()
-        pipeline: redis.client.Pipeline = self.store.pipeline()
-        pipeline.hset(game_key, "position", game.position.encode())
-        pipeline.hset(game_key, "match", game.match.encode())
-        pipeline.execute()
-        return game_id
+        flask.session.clear()

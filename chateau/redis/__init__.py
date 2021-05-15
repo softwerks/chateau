@@ -12,25 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union
+from functools import partial
+from typing import Optional
 
 import flask
-import werkzeug
-
-from chateau.game import blueprint
+from redis import Redis
 
 
-@blueprint.route("<string(length=12):game_id>")
-def game(game_id: str) -> Union[werkzeug.wrappers.Response, str]:
-    if game_exists(game_id):
-        token: str = flask.g.session.websocket_token()
-        return flask.render_template(
-            "play/game.html",
-            websocket_url=f"{flask.current_app.config['WEBSOCKET_URL']}/{game_id}?token={token}",
-        )
-    else:
-        flask.abort(404)
+def init_app(app: flask.app.Flask, redis: Redis) -> None:
+    """Initialize the app."""
+    app.before_request(partial(before, redis))
 
 
-def game_exists(game_id: str) -> bool:
-    return bool(flask.g.redis.exists(f"game:{game_id}"))
+def before(redis: Redis) -> None:
+    """Add redis to global."""
+    if "redis" not in flask.g:
+        flask.g.redis = redis

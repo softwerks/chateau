@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union
+import secrets
+from typing import Optional, Union
 
+import backgammon
 import flask
 import werkzeug
 
@@ -22,7 +24,20 @@ from chateau.play import blueprint
 
 @blueprint.route("custom")
 def custom() -> Union[werkzeug.wrappers.Response, str]:
-    game_id: str = flask.g.session.game_id()
+    game_id: Optional[str] = flask.g.session.game_id
     if game_id is None:
-        game_id = flask.g.session.new_custom_game()
+        game_id = new_custom_game()
     return flask.redirect(flask.url_for("game.game", game_id=game_id), code=303)
+
+
+def new_custom_game() -> str:
+    game_id: str = secrets.token_urlsafe(9)
+
+    position: str = backgammon.backgammon.STARTING_POSITION_ID
+    match: str = backgammon.backgammon.STARTING_MATCH_ID
+
+    flask.g.redis.hset(
+        f"game:{game_id}", mapping={"position": position, "match": match}
+    )
+
+    return game_id

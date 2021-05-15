@@ -14,12 +14,13 @@
 
 import flask
 import psycopg2.pool
-import redis
+from redis import Redis
 
 import chateau.auth
 import chateau.database
 import chateau.game
 import chateau.play
+import chateau.redis
 import chateau.session
 import chateau.settings
 
@@ -37,8 +38,10 @@ def create_app() -> flask.app.Flask:
     )
     chateau.database.init_app(app, database_connection_pool)
 
-    session_store: redis.Redis = redis.Redis.from_url(app.config["SESSION_URL"])
-    chateau.session.init_app(app, session_store)
+    redis: Redis = Redis.from_url(app.config["SESSION_URL"], decode_responses=True)
+    chateau.redis.init_app(app, redis)
+
+    chateau.session.init_app(app)
 
     @app.route("/")
     def index() -> str:

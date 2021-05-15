@@ -24,7 +24,7 @@ from werkzeug import useragents
 from chateau import database
 from chateau.settings import blueprint
 from chateau.settings import forms
-from chateau.session.data import SessionData
+from chateau.session import Session
 
 
 @blueprint.route("menu")
@@ -44,19 +44,27 @@ def security() -> str:
 
 @blueprint.route("delete", methods=["GET", "POST"])
 def delete() -> Union[werkzeug.wrappers.Response, str]:
+    password_is_valid: bool
+    user_id: Optional[int]
     error: Optional[str] = None
+
     form: flask_wtf.FlaskForm = forms.create_delete_form(
         flask.current_app.config["PASSWORD_MAX_LENGTH"]
     )
+
     if form.validate_on_submit():
         try:
+            password: str = form.password.data
             password_is_valid, user_id = database.auth.validate_password(
-                password=form.password.data
-            )  # type: bool, Optional[int]
+                password=password
+            )
+
             if password_is_valid:
                 if user_id is not None:
                     database.auth.delete_user(user_id)
+
                 flask.g.session.delete_all()
+
                 return flask.redirect(flask.url_for("index"))
             else:
                 error = "Invalid password."
@@ -65,24 +73,22 @@ def delete() -> Union[werkzeug.wrappers.Response, str]:
     return flask.render_template("settings/delete.html", form=form, error=error)
 
 
-def browser_os(session_data: SessionData) -> str:
-    browser: Optional[str] = session_data.browser
-    if browser is not None:
-        browser = browser.title()
-    else:
-        browser = "Unknown"
+def browser_os(session: Session) -> str:
+    browser: Optional[str] = useragents.UserAgent(session.user_agent).browser
+    os: Optional[str] = useragents.UserAgent(session.user_agent).platform
 
-    os: Optional[str] = session_data.os
-    if os is not None:
-        os = os.title()
-    else:
-        os = "Unknown OS"
-
-    return browser + " on " + os
+    return (
+        browser.title()
+        if browser
+        else "Unknown" + " on " + os.title()
+        if os
+        else "Unknown OS"
+    )
 
 
-def local_time(timestamp: float) -> str:
-    tzinfo = flask.g.session.data.time_zone
-    time: datetime = datetime.fromtimestamp(timestamp)
+def local_time(timestamp: str) -> str:
+    tzinfo = tz.gettz(flask.g.session.time_zone if flask.g.session.time_zone else "UTC")
+    time: datetime = datetime.fromtimestamp(float(timestamp))
     local: datetime = time.astimezone(tzinfo)
+
     return local.strftime("%c")
