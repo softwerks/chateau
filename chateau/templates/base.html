@@ -24,11 +24,13 @@
         </a>
         <ul id="navbar-links">
             {% if g.session.authenticated %}
+            {#
             <li><a href="{{ url_for('auth.logout') }}">Log out</a></li>
             <li><a href="{{ url_for('settings.menu') }}">Settings</a></li>
             {% else %}
             <li><a href="{{ url_for('auth.signup') }}">Create a free account</a></li>
             <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
+            #}
             {% endif %}
             <li><a href="{{ url_for('play.custom') }}">Play</a></li>
         </ul>
