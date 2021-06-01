@@ -1,0 +1,38 @@
+.auth .error {
+    font-weight: bold;
+    color: red;
+    text-align: center;
+}
+
+.auth form {
+    max-width: 24rem;
+    margin: auto;
+    padding: 0.5rem;
+}
+
+.auth h1 {
+    text-align: center;
+}
+
+.auth .g-recaptcha {
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem 0;
+}
+
+.auth label[for="username"],
+.auth label[for="password"] {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.auth .optin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth .submit {
+    display: flex;
+    justify-content: center;
+}

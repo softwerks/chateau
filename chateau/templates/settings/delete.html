@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="settings">
+    <form action="{{ url_for('settings.delete') }}" method="post">
+        <h1>Delete your account</h1>
+        {% if error is not none %}<div class="error">{{ error }}</div>{% endif %}
+        {{ form.csrf_token }}
+        <div class="password">
+            {{ form.password.label }}<span><a href="{{ url_for('auth.reset') }}" tabindex='-1'>Forgot your password?</a></span>
+            <div class="field">
+                {{ form.password(autocomplete="current-password", maxlength=config["PASSWORD_MAX_LENGTH"]) }}
+                <password-toggle password-input="{{ form.password.id }}"></password-toggle>
+            </div>
+        </div>
+        <div class="delete">
+            <button type="submit">Delete account</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth">
+    <form action="{{ url_for('auth.reset') }}" method="post">
+        <h1>Reset password</h1>
+        {{ form.csrf_token }}
+        {{ form.username.label }}
+        {{ form.username(type="email") }}
+        {{ form.recaptcha }}
+        <div class="submit">
+            <button type="submit">Reset password</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

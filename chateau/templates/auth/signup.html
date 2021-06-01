@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth">
+    <form action="{{ url_for('auth.signup') }}" method="post">
+        <h1>Create an account</h1>
+        {{ form.csrf_token }}
+        {{ form.username.label }}
+        {{ form.username(type="email") }}
+        <div class="password">
+            {{ form.password.label }}
+            <password-meter password-input="{{ form.password.id }}"></password-meter>
+            <div class="field">
+                {{ form.password(autocomplete="new-password", minlength=config["PASSWORD_MIN_LENGTH"], maxlength=config["PASSWORD_MAX_LENGTH"]) }}
+                <password-toggle password-input="{{ form.password.id }}"></password-toggle>
+            </div>
+        </div>
+        <label class="optin" for="{{ form.optin.label.field_id }}">
+            {{ form.optin }}
+            {{ form.optin.label.text }}
+        </label>
+        {{ form.recaptcha }}
+        <p>By creating an account, you agree to the <a href="https://docs.bkgmn.net/legal/terms.html">Terms of Service</a> and <a href="https://docs.bkgmn.net/legal/privacy.html">Privacy Policy</a>.</p>
+        <div class="submit">
+            <button type="submit">Create account</button>
+        </div>
+        <p>Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+    </form>
+</div>
+{% endblock %}

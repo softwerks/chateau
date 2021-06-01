@@ -33,5 +33,14 @@ setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.7",
-    install_requires=["email_validator", "flask", "psycopg2", "Flask-WTF",],
+    install_requires=[
+        "backgammon",
+        "email_validator",
+        "flask",
+        "Flask-WTF",
+        "hiredis",
+        "psycopg2",
+        "python-dateutil",
+        "redis",
+    ],
 )
