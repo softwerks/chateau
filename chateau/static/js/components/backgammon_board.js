@@ -492,7 +492,7 @@ customElements.define(
                     let destination = point - pips;
                     if (destination < 0) {
                         let numCheckersHigherPoints = sumArray(
-                            playerHome(boardPoints).slice(point + 1, pips)
+                            playerHome(boardPoints).slice(point + 1, 6)
                         );
                         if (destination == -1 || numCheckersHigherPoints == 0) {
                             boardPoints[point]--;
