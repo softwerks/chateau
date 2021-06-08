@@ -133,7 +133,40 @@ template.innerHTML = `
             flex-direction: column;
         }
 
-        svg {
+        #shareurl p {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #shareurl button {
+            background: rgb(26, 115, 232);
+            border-radius: 0.25rem;
+            border: 2px solid rgb(26, 115, 232);
+            box-sizing: border-box;
+            color: #fff;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+        }
+
+        #shareurl input[type="text"] {
+            -webkit-appearance: none;
+            border-radius: 0.25rem;
+            border: 2px solid rgb(193, 193, 193);
+            box-sizing: border-box;
+            line-height: normal;
+            margin: 0.5rem 0;
+            padding: 0.5rem 1rem;
+            text-align: center;
+        }
+
+        #shareurl input[type="text"]:focus {
+            border-radius: 0.25rem;
+            border: 2px solid rgb(77, 144, 254);
+            outline-width: 0;
+        }
+
+        #backgammon {
+            display: none;
             max-height: 100vh;
             max-width: 100vw;
         }
@@ -144,6 +177,11 @@ template.innerHTML = `
             user-select: none;
         }
     </style>
+    <div id="shareurl">
+        <p>Share this URL with a friend to start the game:</p>
+        <input type="text" id="url" size="${ location.href.length }" value="${ location.href }" readonly>
+        <button id="copyurl">Copy</button>
+    </div>
     <svg id="backgammon" viewBox="0 0 1280 720">
         <rect width="1280" height="720" fill="black" />
         <rect class="score0" x="1144" y="${BOARD.top + 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[0]}" stroke="${SCORE.stroke[0]}" stroke-width="8" />
@@ -335,6 +373,14 @@ customElements.define(
         }
 
         bindEvents() {
+            this.shadowRoot
+                .querySelector('#copyurl')
+                .addEventListener('click', (event) => {
+                    const url = this.shadowRoot.querySelector('#url');
+                    url.select();
+                    document.execCommand('copy');
+                });
+
             this.websocket.addEventListener('open', (event) => {
                 this.websocket.send(JSON.stringify({ opcode: 'connect' }));
             });
@@ -692,21 +738,27 @@ customElements.define(
         }
 
         draw() {
-            this.drawHamburger();
-            if (this.menuOpen) {
-                this.drawMenu();
-                this.drawExit();
-            } else {
-                this.drawBoard();
-                this.drawPoints();
-                this.drawBar();
-                this.drawOff();
-                this.drawCube();
-                this.drawPipCount();
-                if (this.match.dice[0] != 0) this.drawDice();
-                if (this.match.gameState == 2) this.drawGameOver();
+            if (this.match.gameState != 0) {
+                this.shadowRoot.querySelector('#shareurl').style.display =
+                    'none';
+                this.shadowRoot.querySelector('#backgammon').style.display =
+                    'block';
+                this.drawHamburger();
+                if (this.menuOpen) {
+                    this.drawMenu();
+                    this.drawExit();
+                } else {
+                    this.drawBoard();
+                    this.drawPoints();
+                    this.drawBar();
+                    this.drawOff();
+                    this.drawCube();
+                    this.drawPipCount();
+                    if (this.match.dice[0] != 0) this.drawDice();
+                    if (this.match.gameState == 2) this.drawGameOver();
+                }
+                this.drawScore();
             }
-            this.drawScore();
         }
 
         drawHamburger() {
