@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union
+from typing import Tuple, Union
+import urllib.parse
 
 import flask
 import werkzeug
@@ -24,9 +25,20 @@ from chateau.game import blueprint
 def game(game_id: str) -> Union[werkzeug.wrappers.Response, str]:
     if game_exists(game_id):
         token: str = flask.g.session.websocket_token()
+
+        websocket_url: str
+        if flask.current_app.config["DEBUG"]:
+            websocket_url = f"ws://localhost:5555/socket/play/{game_id}?token={token}"
+        else:
+            url: urllib.parse.ParseResult = urllib.parse.urlparse(flask.request.url)
+            scheme: str = "wss" if url.scheme == "https" else "ws"
+            websocket_url = (
+                f"{scheme}://{url.netloc}/socket/play/{game_id}?token={token}"
+            )
+
         return flask.render_template(
             "play/game.html",
-            websocket_url=f"{flask.current_app.config['WEBSOCKET_URL']}/{game_id}?token={token}",
+            websocket_url=websocket_url,
         )
     else:
         flask.abort(404)
