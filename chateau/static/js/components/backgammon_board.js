@@ -165,6 +165,17 @@ template.innerHTML = `
             outline-width: 0;
         }
 
+        .copygroup {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        #copyurl {
+            margin: 0 0.5rem 0 0.5rem;
+        }
+
         #backgammon {
             display: none;
             max-height: 100vh;
@@ -179,8 +190,10 @@ template.innerHTML = `
     </style>
     <div id="shareurl">
         <p>Share this URL with a friend to start the game:</p>
-        <input type="text" id="url" size="${ location.href.length }" value="${ location.href }" readonly>
-        <button id="copyurl">Copy</button>
+        <div class="copygroup">
+            <input type="text" id="url" size="${ location.href.length }" value="${ location.href }" readonly>
+            <button id="copyurl">Copy</button>
+        </div>
     </div>
     <svg id="backgammon" viewBox="0 0 1280 720">
         <rect width="1280" height="720" fill="black" />
