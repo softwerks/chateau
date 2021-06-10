@@ -145,6 +145,7 @@ template.innerHTML = `
             box-sizing: border-box;
             color: #fff;
             cursor: pointer;
+            margin: 0 0.5rem 0 0.5rem;
             padding: 0.5rem 1rem;
         }
 
@@ -165,15 +166,11 @@ template.innerHTML = `
             outline-width: 0;
         }
 
-        .copygroup {
+        #shareurl div {
             display: flex;
             align-items: baseline;
             flex-wrap: wrap;
             justify-content: center;
-        }
-
-        #copyurl {
-            margin: 0 0.5rem 0 0.5rem;
         }
 
         #backgammon {
@@ -190,7 +187,7 @@ template.innerHTML = `
     </style>
     <div id="shareurl">
         <p>Share this URL with a friend to start the game:</p>
-        <div class="copygroup">
+        <div>
             <input type="text" id="url" size="${ location.href.length }" value="${ location.href }" readonly>
             <button id="copyurl">Copy</button>
         </div>
