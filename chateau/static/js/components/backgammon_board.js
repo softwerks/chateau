@@ -899,7 +899,9 @@ customElements.define(
                 checker.setAttribute('cy', cy);
                 checker.setAttribute('r', CHECKER_RADIUS);
                 checker.setAttribute('fill', fill);
-                checker.setAttribute('stroke', stroke);
+                if (this.plays?.moves && location in this.plays.moves)
+                    checker.setAttribute('stroke', 'gold');
+                else checker.setAttribute('stroke', stroke);
                 checker.setAttribute('stroke-width', CHECKER_STROKE_WIDTH);
                 checker.dataset.location = location;
                 checker.dataset.player = player;
