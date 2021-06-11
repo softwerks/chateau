@@ -95,6 +95,13 @@ const MENU_ITEM = {
     fill: 'black',
     stroke: 'white',
 };
+const ROLL_DOUBLE = {
+    width: 200,
+    height: 60,
+    radius: 8,
+    fill: 'black',
+    stroke: 'white',
+};
 const STATUS = {
     color: {
         disconnected: 'red',
@@ -280,6 +287,24 @@ exit.innerHTML = `
         <path d="M36 40 L56 40" stroke="white" stroke-width="16" />
         <polygon points="54,20 54,60, 72,40" fill="white" />
         <text x="260" y="40" fill="white" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Leave game</text>
+    </svg>
+`;
+
+let rollButtonTemplate = document.createElement('template');
+// prettier-ignore
+rollButtonTemplate.innerHTML = `
+    <svg width="${ROLL_DOUBLE.width}" height="${ROLL_DOUBLE.height}" viewBox ="0 0 ${ROLL_DOUBLE.width} ${ROLL_DOUBLE.height}">
+        <rect width="${ROLL_DOUBLE.width}" height="${ROLL_DOUBLE.height}" rx="${ROLL_DOUBLE.radius}" ry="${ROLL_DOUBLE.radius}" fill="${ROLL_DOUBLE.fill}" />
+        <text x="${ROLL_DOUBLE.width / 2}" y="${ROLL_DOUBLE.height / 2}" fill="gold" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Roll</text>
+    </svg>
+`;
+
+let doubleButtonTemplate = document.createElement('template');
+// prettier-ignore
+doubleButtonTemplate.innerHTML = `
+    <svg width="${ROLL_DOUBLE.width}" height="${ROLL_DOUBLE.height}" viewBox ="0 0 ${ROLL_DOUBLE.width} ${ROLL_DOUBLE.height}">
+        <rect width="${ROLL_DOUBLE.width}" height="${ROLL_DOUBLE.height}" rx="${ROLL_DOUBLE.radius}" ry="${ROLL_DOUBLE.radius}" fill="${ROLL_DOUBLE.fill}" />
+        <text x="${ROLL_DOUBLE.width / 2}" y="${ROLL_DOUBLE.height / 2}" fill="gold" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Double</text>
     </svg>
 `;
 
@@ -764,6 +789,12 @@ customElements.define(
                     this.drawOff();
                     this.drawCube();
                     this.drawPipCount();
+                    if (
+                        this.player == this.match.player &&
+                        this.match.dice[0] == 0 &&
+                        !this.match.double
+                    )
+                        this.drawRollDouble();
                     if (this.match.dice[0] != 0) this.drawDice();
                     if (this.match.gameState == 2) this.drawGameOver();
                 }
@@ -805,13 +836,6 @@ customElements.define(
 
             let board = boardTemplate.content.cloneNode(true);
             board.firstElementChild.className.baseVal = 'foreground';
-            board.firstElementChild
-                .querySelectorAll('.field')
-                .forEach((field) => {
-                    field.addEventListener('click', (event) => {
-                        this.roll(event);
-                    });
-                });
             svg.appendChild(board);
         }
 
@@ -1018,9 +1042,10 @@ customElements.define(
             cube.setAttribute('width', CUBE.width);
             cube.setAttribute('height', CUBE.height);
             cube.setAttribute('fill', CUBE.fill);
-            cube.addEventListener('click', (event) => {
-                this.double(event);
-            });
+            if (this.match.double)
+                cube.addEventListener('click', (event) => {
+                    this.acceptDouble(event);
+                });
             cube.className.baseVal = 'foreground';
             svg.appendChild(cube);
             const cubeValue = this.match.double
@@ -1155,6 +1180,48 @@ customElements.define(
                 label.className.baseVal = 'foreground';
                 svg.appendChild(label);
             });
+        }
+
+        drawRollDouble() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            let rollButton = rollButtonTemplate.content.cloneNode(true);
+            rollButton.firstElementChild.setAttribute(
+                'x',
+                BOARD.rightX - ROLL_DOUBLE.width / 2
+            );
+            rollButton.firstElementChild.setAttribute(
+                'y',
+                BOARD.middleY - ROLL_DOUBLE.height / 2
+            );
+            rollButton.firstElementChild.className.baseVal = 'foreground';
+            rollButton.firstElementChild.addEventListener('click', (event) => {
+                this.roll(event);
+            });
+            svg.appendChild(rollButton);
+
+            if (
+                this.match.cubeHolder == 3 ||
+                this.match.cubeHolder == this.match.player
+            ) {
+                let doubleButton = doubleButtonTemplate.content.cloneNode(true);
+                doubleButton.firstElementChild.setAttribute(
+                    'x',
+                    BOARD.leftX - ROLL_DOUBLE.width / 2
+                );
+                doubleButton.firstElementChild.setAttribute(
+                    'y',
+                    BOARD.middleY - ROLL_DOUBLE.height / 2
+                );
+                doubleButton.firstElementChild.className.baseVal = 'foreground';
+                doubleButton.firstElementChild.addEventListener(
+                    'click',
+                    (event) => {
+                        this.double(event);
+                    }
+                );
+                svg.appendChild(doubleButton);
+            }
         }
 
         drawDice() {
@@ -1325,8 +1392,6 @@ customElements.define(
         }
 
         double(event) {
-            if (this.match.double) return this.acceptDouble(event);
-
             if (this.player != this.match.player) return;
 
             if (
