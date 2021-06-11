@@ -95,7 +95,7 @@ const MENU_ITEM = {
     fill: 'black',
     stroke: 'white',
 };
-const ROLL_DOUBLE = {
+const ROLL_DOUBLE_SKIP = {
     width: 200,
     height: 60,
     radius: 8,
@@ -293,18 +293,27 @@ exit.innerHTML = `
 let rollButtonTemplate = document.createElement('template');
 // prettier-ignore
 rollButtonTemplate.innerHTML = `
-    <svg width="${ROLL_DOUBLE.width}" height="${ROLL_DOUBLE.height}" viewBox ="0 0 ${ROLL_DOUBLE.width} ${ROLL_DOUBLE.height}">
-        <rect width="${ROLL_DOUBLE.width}" height="${ROLL_DOUBLE.height}" rx="${ROLL_DOUBLE.radius}" ry="${ROLL_DOUBLE.radius}" fill="${ROLL_DOUBLE.fill}" />
-        <text x="${ROLL_DOUBLE.width / 2}" y="${ROLL_DOUBLE.height / 2}" fill="gold" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Roll</text>
+    <svg width="${ROLL_DOUBLE_SKIP.width}" height="${ROLL_DOUBLE_SKIP.height}" viewBox ="0 0 ${ROLL_DOUBLE_SKIP.width} ${ROLL_DOUBLE_SKIP.height}">
+        <rect width="${ROLL_DOUBLE_SKIP.width}" height="${ROLL_DOUBLE_SKIP.height}" rx="${ROLL_DOUBLE_SKIP.radius}" ry="${ROLL_DOUBLE_SKIP.radius}" fill="${ROLL_DOUBLE_SKIP.fill}" />
+        <text x="${ROLL_DOUBLE_SKIP.width / 2}" y="${ROLL_DOUBLE_SKIP.height / 2}" fill="gold" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Roll</text>
     </svg>
 `;
 
 let doubleButtonTemplate = document.createElement('template');
 // prettier-ignore
 doubleButtonTemplate.innerHTML = `
-    <svg width="${ROLL_DOUBLE.width}" height="${ROLL_DOUBLE.height}" viewBox ="0 0 ${ROLL_DOUBLE.width} ${ROLL_DOUBLE.height}">
-        <rect width="${ROLL_DOUBLE.width}" height="${ROLL_DOUBLE.height}" rx="${ROLL_DOUBLE.radius}" ry="${ROLL_DOUBLE.radius}" fill="${ROLL_DOUBLE.fill}" />
-        <text x="${ROLL_DOUBLE.width / 2}" y="${ROLL_DOUBLE.height / 2}" fill="gold" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Double</text>
+    <svg width="${ROLL_DOUBLE_SKIP.width}" height="${ROLL_DOUBLE_SKIP.height}" viewBox ="0 0 ${ROLL_DOUBLE_SKIP.width} ${ROLL_DOUBLE_SKIP.height}">
+        <rect width="${ROLL_DOUBLE_SKIP.width}" height="${ROLL_DOUBLE_SKIP.height}" rx="${ROLL_DOUBLE_SKIP.radius}" ry="${ROLL_DOUBLE_SKIP.radius}" fill="${ROLL_DOUBLE_SKIP.fill}" />
+        <text x="${ROLL_DOUBLE_SKIP.width / 2}" y="${ROLL_DOUBLE_SKIP.height / 2}" fill="gold" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Double</text>
+    </svg>
+`;
+
+let skipButtonTemplate = document.createElement('template');
+// prettier-ignore
+skipButtonTemplate.innerHTML = `
+    <svg width="${ROLL_DOUBLE_SKIP.width}" height="${ROLL_DOUBLE_SKIP.height}" viewBox ="0 0 ${ROLL_DOUBLE_SKIP.width} ${ROLL_DOUBLE_SKIP.height}">
+        <rect width="${ROLL_DOUBLE_SKIP.width}" height="${ROLL_DOUBLE_SKIP.height}" rx="${ROLL_DOUBLE_SKIP.radius}" ry="${ROLL_DOUBLE_SKIP.radius}" fill="${ROLL_DOUBLE_SKIP.fill}" />
+        <text x="${ROLL_DOUBLE_SKIP.width / 2}" y="${ROLL_DOUBLE_SKIP.height / 2}" fill="gold" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Skip</text>
     </svg>
 `;
 
@@ -474,10 +483,6 @@ customElements.define(
                 this.player == this.match.player
             ) {
                 [this.plays, this.reversedPlays] = this.generatePlays();
-                if (!this.plays.length && !this.reversedPlays.length)
-                    setTimeout(() => {
-                        this.skip();
-                    }, 2000);
                 console.log(this.plays);
             }
             this.moveList = [];
@@ -796,6 +801,13 @@ customElements.define(
                     )
                         this.drawRollDouble();
                     if (this.match.dice[0] != 0) this.drawDice();
+                    if (
+                        this.player == this.match.player &&
+                        this.match.dice[0] != 0 &&
+                        !this.plays?.moves &&
+                        !this.reversedPlays?.moves
+                    )
+                        this.drawSkip();
                     if (this.match.gameState == 2) this.drawGameOver();
                 }
                 this.drawScore();
@@ -1188,11 +1200,11 @@ customElements.define(
             let rollButton = rollButtonTemplate.content.cloneNode(true);
             rollButton.firstElementChild.setAttribute(
                 'x',
-                BOARD.rightX - ROLL_DOUBLE.width / 2
+                BOARD.rightX - ROLL_DOUBLE_SKIP.width / 2
             );
             rollButton.firstElementChild.setAttribute(
                 'y',
-                BOARD.middleY - ROLL_DOUBLE.height / 2
+                BOARD.middleY - ROLL_DOUBLE_SKIP.height / 2
             );
             rollButton.firstElementChild.className.baseVal = 'foreground';
             rollButton.firstElementChild.addEventListener('click', (event) => {
@@ -1207,11 +1219,11 @@ customElements.define(
                 let doubleButton = doubleButtonTemplate.content.cloneNode(true);
                 doubleButton.firstElementChild.setAttribute(
                     'x',
-                    BOARD.leftX - ROLL_DOUBLE.width / 2
+                    BOARD.leftX - ROLL_DOUBLE_SKIP.width / 2
                 );
                 doubleButton.firstElementChild.setAttribute(
                     'y',
-                    BOARD.middleY - ROLL_DOUBLE.height / 2
+                    BOARD.middleY - ROLL_DOUBLE_SKIP.height / 2
                 );
                 doubleButton.firstElementChild.className.baseVal = 'foreground';
                 doubleButton.firstElementChild.addEventListener(
@@ -1269,6 +1281,26 @@ customElements.define(
                 });
                 svg.appendChild(die);
             });
+        }
+
+        drawSkip() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            let skipButton = skipButtonTemplate.content.cloneNode(true);
+            skipButton.firstElementChild.setAttribute(
+                'x',
+                (this.match.player == 0 ? BOARD.rightX : BOARD.leftX) -
+                    ROLL_DOUBLE_SKIP.width / 2
+            );
+            skipButton.firstElementChild.setAttribute(
+                'y',
+                BOARD.middleY - ROLL_DOUBLE_SKIP.height / 2
+            );
+            skipButton.firstElementChild.className.baseVal = 'foreground';
+            skipButton.firstElementChild.addEventListener('click', (event) => {
+                this.skip(event);
+            });
+            svg.appendChild(skipButton);
         }
 
         drawGameOver() {
