@@ -28,3 +28,8 @@
     </form>
 </div>
 {% endblock %}
+
+{% block javascript %}
+<script src="{{ url_for('static', filename='js/components/password_meter.js') }}"></script>
+<script src="{{ url_for('static', filename='js/components/password_toggle.js') }}"></script>
+{% endblock %}

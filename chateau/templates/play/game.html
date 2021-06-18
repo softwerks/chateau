@@ -3,3 +3,7 @@
 {% block content %}
 <backgammon-board websocketURL="{{ websocket_url }}"></backgammon-board>
 {% endblock %}
+
+{% block javascript %}
+<script src="{{ url_for('static', filename='js/components/backgammon_board.js') }}"></script>
+{% endblock %}

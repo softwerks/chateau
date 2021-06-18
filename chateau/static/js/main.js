@@ -12,11 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import './components/password_meter.js';
-import './components/password_toggle.js';
-import './components/news_feed.js';
-import './components/backgammon_board.js';
-
 const navbarToggle = document.getElementById('navbar-toggle');
 const navbarLinks = document.getElementById('navbar-links');
 navbarToggle.addEventListener('click', (e) => {

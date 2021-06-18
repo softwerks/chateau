@@ -6,3 +6,7 @@
     <news-feed url="https://blog.bkgmn.net/feed.xml">Loading...</news-feed>
 </div>
 {% endblock %}
+
+{% block javascript %}
+<script src="{{ url_for('static', filename='js/components/news_feed.js') }}"></script>
+{% endblock %}
