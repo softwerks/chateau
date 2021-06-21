@@ -19,6 +19,7 @@ from redis import Redis
 # import chateau.auth
 import chateau.database
 import chateau.game
+import chateau.metrics
 import chateau.play
 import chateau.redis
 import chateau.session
@@ -43,6 +44,8 @@ def create_app() -> flask.app.Flask:
     chateau.redis.init_app(app, redis)
 
     chateau.session.init_app(app)
+
+    chateau.metrics.init_app(app)
 
     @app.route("/")
     def index() -> str:
