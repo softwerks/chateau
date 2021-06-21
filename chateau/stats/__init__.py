@@ -23,9 +23,9 @@ import flask
 import redis
 
 
-blueprint = flask.Blueprint("metrics", __name__)
+blueprint = flask.Blueprint("stats", __name__)
 
-import chateau.metrics.routes
+import chateau.stats.routes
 
 
 def init_app(app: flask.app.Flask) -> None:
@@ -41,12 +41,12 @@ def _before() -> None:
 
 def _after(response: flask.Response) -> flask.Response:
     if response.status_code < HTTPStatus.BAD_REQUEST:
-        _store_metrics()
+        _store_stats()
 
     return response
 
 
-def _store_metrics() -> None:
+def _store_stats() -> None:
     now: datetime = datetime.now(timezone.utc)
     date: str = now.strftime("%Y-%m-%d")
     expire: int = int(

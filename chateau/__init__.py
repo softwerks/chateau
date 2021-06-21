@@ -19,7 +19,7 @@ from redis import Redis
 # import chateau.auth
 import chateau.database
 import chateau.game
-import chateau.metrics
+import chateau.stats
 import chateau.play
 import chateau.redis
 import chateau.session
@@ -45,7 +45,7 @@ def create_app() -> flask.app.Flask:
 
     chateau.session.init_app(app)
 
-    chateau.metrics.init_app(app)
+    chateau.stats.init_app(app)
 
     @app.route("/")
     def index() -> str:
@@ -53,7 +53,7 @@ def create_app() -> flask.app.Flask:
 
     # app.register_blueprint(chateau.auth.blueprint, url_prefix="/auth")
     app.register_blueprint(chateau.game.blueprint, url_prefix="/game")
-    app.register_blueprint(chateau.metrics.blueprint, url_prefix="/metrics")
+    app.register_blueprint(chateau.stats.blueprint, url_prefix="/stats")
     app.register_blueprint(chateau.play.blueprint, url_prefix="/play")
     # app.register_blueprint(chateau.settings.blueprint, url_prefix="/settings")
 
