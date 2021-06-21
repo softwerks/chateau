@@ -800,7 +800,8 @@ customElements.define(
                         !this.match.double
                     )
                         this.drawRollDouble();
-                    if (this.match.dice[0] != 0) this.drawDice();
+                    if (this.match.dice[0] != 0 && this.match.gameState == 1)
+                        this.drawDice();
                     if (
                         this.player == this.match.player &&
                         this.match.dice[0] != 0 &&
