@@ -64,6 +64,7 @@ def _store_metrics() -> None:
     _store_os(pipeline, date, expire)
     _store_referrer(pipeline, date, expire)
     _store_response_time(pipeline, url)
+    _update_visitor_count(pipeline, date, expire)
 
     pipeline.execute()
 
@@ -123,3 +124,11 @@ def _store_response_time(
     key: str = f"stats:perf:{url.path}"
     pipeline.lpush(key, response_time)
     pipeline.ltrim(key, 0, 99)
+
+
+def _update_visitor_count(
+    pipeline: redis.client.Pipeline, date: str, expire: int
+) -> None:
+    key: str = f"stats:visitors:{date}"
+    pipeline.pfadd(key, flask.g.session.id_)
+    pipeline.expire(key, expire)
