@@ -803,6 +803,7 @@ customElements.define(
                     if (this.match.dice[0] != 0 && this.match.gameState == 1)
                         this.drawDice();
                     if (
+                        this.match.gameState == 1 &&
                         this.player == this.match.player &&
                         this.match.dice[0] != 0 &&
                         !this.plays?.moves &&
