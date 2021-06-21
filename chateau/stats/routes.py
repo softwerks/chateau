@@ -22,9 +22,11 @@ from chateau.stats import blueprint
 
 @blueprint.route("")
 def dashboard() -> str:
-    visitors: int = flask.g.redis.pfcount(f"stats:visitors:{_today()}")
+    today: str = _today()
+    visitors: int = flask.g.redis.pfcount(f"stats:visitors:{today}")
+    views: int = flask.g.redis.get(f"stats:views:{today}")
 
-    return flask.render_template("stats/dashboard.html", visitors=visitors)
+    return flask.render_template("stats/dashboard.html", visitors=visitors, views=views)
 
 
 @blueprint.route("details")

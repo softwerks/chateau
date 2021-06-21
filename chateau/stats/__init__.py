@@ -65,6 +65,7 @@ def _store_stats() -> None:
     _store_referrer(pipeline, date, expire)
     _store_response_time(pipeline, url)
     _update_visitor_count(pipeline, date, expire)
+    _update_page_views(pipeline, date, expire)
 
     pipeline.execute()
 
@@ -131,4 +132,10 @@ def _update_visitor_count(
 ) -> None:
     key: str = f"stats:visitors:{date}"
     pipeline.pfadd(key, flask.g.session.id_)
+    pipeline.expire(key, expire)
+
+
+def _update_page_views(pipeline: redis.client.Pipeline, date: str, expire: int) -> None:
+    key: str = f"stats:views:{date}"
+    pipeline.incr(key)
     pipeline.expire(key, expire)
