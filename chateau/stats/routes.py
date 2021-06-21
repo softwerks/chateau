@@ -13,20 +13,30 @@
 # limitations under the License.
 
 from datetime import datetime, timezone
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import flask
+import flask_wtf
+import werkzeug
 
 from chateau.stats import blueprint
+from chateau.stats import forms
 
 
-@blueprint.route("")
-def dashboard() -> str:
+@blueprint.route("", methods=["GET", "POST"])
+def dashboard() -> Union[werkzeug.wrappers.Response, str]:
+    form: flask_wtf.FlaskForm = forms.DetailsForm()
+
+    if form.validate_on_submit():
+        return flask.redirect(flask.url_for("stats.details", date=form.date.data))
+
     today: str = _today()
     visitors: int = flask.g.redis.pfcount(f"stats:visitors:{today}")
     views: int = flask.g.redis.get(f"stats:views:{today}")
 
-    return flask.render_template("stats/dashboard.html", visitors=visitors, views=views)
+    return flask.render_template(
+        "stats/dashboard.html", form=form, visitors=visitors, views=views
+    )
 
 
 @blueprint.route("details")

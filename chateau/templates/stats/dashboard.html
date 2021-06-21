@@ -7,5 +7,13 @@
 
     <h1>Page Views</h1>
     <p>{{ views }}</p>
+
+    <form action="{{ url_for('stats.dashboard') }}" method="post">
+        {{ form.csrf_token }}
+        {{ form.date(type="date") }}
+        <div class="submit">
+            <button type="submit">View details</button>
+        </div>
+    </form>
 </div>
 {% endblock %}
