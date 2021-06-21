@@ -21,13 +21,22 @@ main {
 footer {
     margin: 1rem 0 1rem 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     font-size: 0.8rem;
 }
 
 footer a {
     color: #000000;
+}
+
+footer .legal a {
     margin: 0 1rem 0 1rem;
+}
+
+footer div:not(:last-child) {
+    margin-bottom: 0.5rem;
 }
 
 button {

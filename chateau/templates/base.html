@@ -40,9 +40,17 @@
         {% block content %}{% endblock %}
     </main>
     <footer>
+        <div class="legal">
             <a href="https://docs.bkgmn.net/legal/terms.html">Terms of Service</a>
             <span>|</span>
             <a href="https://docs.bkgmn.net/legal/privacy.html">Privacy Policy</a>
+        </div>
+        <div>
+            <a href="https://www.softwerks.com">&copy; Softwerks LLC</a>
+        </div>
+        <div>
+            <a href="https://github.com/softwerks">This site is open source.</a>
+        </div>
     </footer>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block javascript %}{% endblock %}
