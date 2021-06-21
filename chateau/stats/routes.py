@@ -20,10 +20,16 @@ import flask
 from chateau.stats import blueprint
 
 
+@blueprint.route("")
+def dashboard() -> str:
+    visitors: int = flask.g.redis.pfcount(f"stats:visitors:{_today()}")
+
+    return flask.render_template("stats/dashboard.html", visitors=visitors)
+
+
 @blueprint.route("details")
 def details() -> str:
-    today: str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    date: str = flask.request.args.get("date", today)
+    date: str = flask.request.args.get("date", _today())
 
     referrers: List[Tuple[str, float]] = flask.g.redis.zrange(
         f"stats:referrers:{date}", -10, -1, withscores=True
@@ -45,3 +51,7 @@ def details() -> str:
         browsers=browsers,
         os=os,
     )
+
+
+def _today() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
