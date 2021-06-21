@@ -23,6 +23,11 @@ import flask
 import redis
 
 
+blueprint = flask.Blueprint("metrics", __name__)
+
+import chateau.metrics.routes
+
+
 def init_app(app: flask.app.Flask) -> None:
     """Initialize the app."""
     app.before_request(_before)

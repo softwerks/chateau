@@ -53,6 +53,7 @@ def create_app() -> flask.app.Flask:
 
     # app.register_blueprint(chateau.auth.blueprint, url_prefix="/auth")
     app.register_blueprint(chateau.game.blueprint, url_prefix="/game")
+    app.register_blueprint(chateau.metrics.blueprint, url_prefix="/metrics")
     app.register_blueprint(chateau.play.blueprint, url_prefix="/play")
     # app.register_blueprint(chateau.settings.blueprint, url_prefix="/settings")
 
