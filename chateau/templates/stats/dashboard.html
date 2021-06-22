@@ -2,10 +2,13 @@
 
 {% block content %}
 <div>
-    <h1>Unique Visitors</h1>
+    <h1>Current players</h1>
+    <p>{{ connected }}</p>
+
+    <h1>Unique visitors</h1>
     <p>{{ visitors }}</p>
 
-    <h1>Page Views</h1>
+    <h1>Page views</h1>
     <p>{{ views }}</p>
 
     <form action="{{ url_for('stats.dashboard') }}" method="post">

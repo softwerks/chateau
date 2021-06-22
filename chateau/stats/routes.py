@@ -31,11 +31,16 @@ def dashboard() -> Union[werkzeug.wrappers.Response, str]:
         return flask.redirect(flask.url_for("stats.details", date=form.date.data))
 
     today: str = _today()
+    connected: int = flask.g.redis.get("stats:connected")
     visitors: int = flask.g.redis.pfcount(f"stats:visitors:{today}")
     views: int = flask.g.redis.get(f"stats:views:{today}")
 
     return flask.render_template(
-        "stats/dashboard.html", form=form, visitors=visitors, views=views
+        "stats/dashboard.html",
+        form=form,
+        connected=connected,
+        visitors=visitors,
+        views=views,
     )
 
 
