@@ -8,7 +8,7 @@
             <th>Source</th>
             <th>Count</th>
         </thead>
-        {% for r in referrers %}
+        {% for r in referrers|reverse %}
         <tr>
             <td><img src="https://icons.duckduckgo.com/ip3/{{ r[0] }}.ico" width="16" height="16">{{ r[0] }}</td>
             <td>{{ r[1]|int }}</td>
@@ -23,7 +23,7 @@
             <th>Page</th>
             <th>Views</th>
         </thead>
-        {% for p in pages %}
+        {% for p in pages|reverse %}
         <tr>
             <td>{{ p[0] }}</td>
             <td>{{ p[1]|int }}</td>
@@ -38,7 +38,7 @@
             <th>Browser</th>
             <th>Count</th>
         </thead>
-        {% for b in browsers %}
+        {% for b in browsers|reverse %}
         <tr>
             <td>{{ b[0]|title }}</td>
             <td>{{ b[1]|int }}</td>
@@ -47,13 +47,13 @@
     </table>
 </div>
 <div>
-    <h1>Operating System</h1>
+    <h1>Operating system</h1>
     <table>
         <thead>
             <th>OS</th>
             <th>Count</th>
         </thead>
-        {% for o in os %}
+        {% for o in os|reverse %}
         <tr>
             <td>{{ o[0]|title }}</td>
             <td>{{ o[1]|int }}</td>
