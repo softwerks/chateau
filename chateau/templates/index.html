@@ -2,8 +2,18 @@
 
 {% block content %}
 <div class="index">
-    <h2>Latest news</h2>
-    <news-feed url="https://blog.bkgmn.net/feed.xml">Loading...</news-feed>
+    <div class="cover">
+        <div class="intro">
+            <div class="container">
+                <p class="dropcap">Welcome to the Backgammon Network! 🎲 Play backgammon online with friends and competitors from around the world.</p>
+                <p>No registration required, no ads. Free, open source.</p>
+            </div>
+        </div>
+    </div>
+    <div class="news">
+        <h2>Latest news</h2>
+        <news-feed url="https://blog.bkgmn.net/feed.xml">Loading...</news-feed>
+    </div>
 </div>
 {% endblock %}
 
