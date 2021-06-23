@@ -1,3 +1,9 @@
+.index button {
+    display: block;
+    font-weight: bold;
+    margin: 2rem auto;
+}
+
 .index .cover {
     background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4)),
         url("/static/img/art/rombouts_backgammon_players.jpg");
