@@ -1215,8 +1215,11 @@ customElements.define(
             svg.appendChild(rollButton);
 
             if (
-                this.match.cubeHolder == 3 ||
-                this.match.cubeHolder == this.match.player
+                this.match[`player${this.match.player}Score`] +
+                    this.match.cubeValue <
+                    this.match.length &&
+                (this.match.cubeHolder == 3 ||
+                    this.match.cubeHolder == this.match.player)
             ) {
                 let doubleButton = doubleButtonTemplate.content.cloneNode(true);
                 doubleButton.firstElementChild.setAttribute(
