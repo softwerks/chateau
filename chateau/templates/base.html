@@ -6,7 +6,10 @@
     <meta name="description" content="Play backgammon online with friends and competitors from around the world. No registration required, no ads. Free, open source.">
     <title>Backgammon Network</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/normalize.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/base.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    {% block css %}{% endblock %}
 </head>
 <body>
     <nav>

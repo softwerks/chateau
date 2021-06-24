@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/settings.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/password.css') }}" />
+{% endblock %}
+
 {% block content %}
 <div class="settings">
     <form action="{{ url_for('settings.delete') }}" method="post">
