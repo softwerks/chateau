@@ -1218,6 +1218,7 @@ customElements.define(
                 this.match[`player${this.match.player}Score`] +
                     this.match.cubeValue <
                     this.match.length &&
+                !this.match.crawford &&
                 (this.match.cubeHolder == 3 ||
                     this.match.cubeHolder == this.match.player)
             ) {
