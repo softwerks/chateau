@@ -5,6 +5,16 @@
     margin: 2rem auto;
 }
 
+.index ul {
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.index li {
+    list-style: none;
+    line-height: 1.5rem;
+}
+
 .index .cover {
     background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4)),
         url("/static/img/art/rombouts_backgammon_players.jpg");
@@ -28,6 +38,22 @@
 .index .intro .container {
     max-width: 24rem;
     margin: 0 1rem;
+}
+
+.index .features {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 1rem;
+}
+
+.index .features h2:first-child {
+    margin-top: 0;
+}
+
+.index .features p {
+    margin: 0;
+    max-width: 24rem;
 }
 
 .index .news {

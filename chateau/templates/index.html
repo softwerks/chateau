@@ -10,11 +10,26 @@
         <div class="intro">
             <div class="container">
                 <p class="dropcap">Welcome to the Backgammon Network! 🎲 Play backgammon online with friends and competitors from around the world.</p>
-                <p>No registration required, no ads. Free, open source.</p>
+                <p>No registration required, no ads, no third-party trackers. Free, open source.</p>
             </div>
         </div>
     </div>
     <button type="button" onclick="document.location='{{ url_for('play.custom') }}'">Play</button>
+    <div class="features">
+        <h2>Free</h2>
+        <p>Hi, I'm <a href="https://www.sambeirne.com">Sam</a>. 👋 I built the Backgammon Network to foster a community of players who share in the joy of backgammon. Multiplayer only and free of charge.</p>
+        <h2>Open source</h2>
+        <p>The Backgammon Network is open source, which means that anyone can read the code that powers this site and make contributions. Source code is available on  <a href="https://github.com/softwerks">GitHub.</a></p>
+        <ul>
+            <li><a href="https://github.com/softwerks/backgammon">🎲 Backgammon (rules engine)</a></li>
+            <li><a href="https://github.com/softwerks/chateau">🏰 Chateau (web server)</a></li>
+            <li><a href="https://github.com/softwerks/joust">🐎 Joust (websocket server)</a></li>
+        </ul>
+        <h2>No ads, no third-party trackers</h2>
+        <p>Your privacy matters. This site doesn't serve ads or use third-party trackers.</p>
+        <h2>No registration required</h2>
+        <p>Just stopping by? No problem! You can play and use most features on the Backgammon Network without creating an account.</p>
+    </div>
     <div class="news">
         <h2>Latest news</h2>
         <news-feed url="https://blog.bkgmn.net/feed.xml">Loading...</news-feed>
