@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import dataclasses
-import secrets
 import time
 from typing import List, Optional
 
@@ -59,14 +58,6 @@ class Session:
             ]
         else:
             return [self]
-
-    def websocket_token(self) -> str:
-        """Return a token that can be used to establish a websocket connection."""
-        token: str = secrets.token_urlsafe()
-
-        flask.g.redis.setex(f"websocket:{token}", 10, self.token)
-
-        return token
 
     def delete_all(self) -> None:
         """Delete all of the user's sessions."""

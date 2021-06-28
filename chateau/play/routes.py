@@ -20,6 +20,19 @@ import flask
 import werkzeug
 
 from chateau.play import blueprint
+from chateau import websocket
+
+
+@blueprint.route("")
+def menu() -> str:
+    return flask.render_template("play/menu.html")
+
+
+@blueprint.route("match")
+def match() -> str:
+    return flask.render_template(
+        "play/match.html", websocket_url=websocket.url(f"match")
+    )
 
 
 @blueprint.route("custom")

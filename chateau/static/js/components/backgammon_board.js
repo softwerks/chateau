@@ -413,7 +413,7 @@ customElements.define(
 
         connect() {
             const websocketURL = this.getAttribute('websocketURL');
-            this.websocket = new WebSocket(websocketURL);
+            this.websocket = new WebSocket(websocketURL, 'game');
         }
 
         bindEvents() {

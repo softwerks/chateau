@@ -12,26 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Tuple, Union
+import secrets
 import urllib.parse
 
 import flask
-import werkzeug
-
-from chateau.game import blueprint
-from chateau import websocket
 
 
-@blueprint.route("<string(length=12):game_id>")
-def game(game_id: str) -> Union[werkzeug.wrappers.Response, str]:
-    if game_exists(game_id):
-        return flask.render_template(
-            "game/game.html",
-            websocket_url=websocket.url(f"game/{game_id}"),
-        )
+def url(path: str) -> str:
+    websocket_url: str
+
+    if flask.current_app.config["DEBUG"]:
+        websocket_url = f"ws://localhost:5555/socket/{path}?token={_token()}"
     else:
-        flask.abort(404)
+        url: urllib.parse.ParseResult = urllib.parse.urlparse(flask.request.url)
+        scheme: str = "wss" if url.scheme == "https" else "ws"
+        websocket_url = f"{scheme}://{url.netloc}/socket/{path}?token={_token()}"
+
+    return websocket_url
 
 
-def game_exists(game_id: str) -> bool:
-    return bool(flask.g.redis.exists(f"game:{game_id}"))
+def _token() -> str:
+    token: str = secrets.token_urlsafe()
+
+    flask.g.redis.setex(f"websocket:{token}", 10, flask.g.session.token)
+
+    return token

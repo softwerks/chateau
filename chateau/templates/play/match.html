@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<match-maker websocketURL="{{ websocket_url }}"></match-maker>
+{% endblock %}
+
+{% block javascript %}
+<script src="{{ url_for('static', filename='js/components/match_maker.js') }}"></script>
+{% endblock %}
