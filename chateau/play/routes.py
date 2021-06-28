@@ -15,12 +15,14 @@
 import secrets
 from typing import Optional, Union
 
-import backgammon
 import flask
 import werkzeug
 
 from chateau.play import blueprint
 from chateau import websocket
+
+STARTING_POSITION_ID = "4HPwATDgc/ABMA"
+STARTING_MATCH_ID = "cAgAAAAAAAAA"
 
 
 @blueprint.route("")
@@ -46,11 +48,9 @@ def custom() -> Union[werkzeug.wrappers.Response, str]:
 def new_custom_game() -> str:
     game_id: str = secrets.token_urlsafe(9)
 
-    position: str = backgammon.backgammon.STARTING_POSITION_ID
-    match: str = backgammon.backgammon.STARTING_MATCH_ID
-
     flask.g.redis.hset(
-        f"game:{game_id}", mapping={"position": position, "match": match}
+        f"game:{game_id}",
+        mapping={"position": STARTING_POSITION_ID, "match": STARTING_MATCH_ID},
     )
 
     return game_id
