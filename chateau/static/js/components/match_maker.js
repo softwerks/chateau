@@ -179,14 +179,14 @@ customElements.define(
                 const msg = JSON.parse(event.data);
                 switch (msg.code) {
                     case 'found':
-                        this.redirect(msg);
+                        this.found(msg);
                         break;
                 }
             });
         }
 
-        found() {
-            console.log(msg);
+        found(msg) {
+            window.location.href = `/game/${msg.gameID}`;
         }
     }
 );
