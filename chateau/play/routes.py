@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import functools
 import secrets
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 import flask
 import werkzeug
@@ -25,12 +26,27 @@ STARTING_POSITION_ID = "4HPwATDgc/ABMA"
 STARTING_MATCH_ID = "cAgAAAAAAAAA"
 
 
+def _redirect_to_game(func: Callable) -> Callable:
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs) -> Callable:
+        game_id: Optional[str] = flask.g.session.game_id
+
+        if game_id is None:
+            return func(*args, **kwargs)
+        else:
+            return flask.redirect(flask.url_for("game.game", game_id=game_id), code=303)
+
+    return wrapper
+
+
 @blueprint.route("")
+@_redirect_to_game
 def menu() -> str:
     return flask.render_template("play/menu.html")
 
 
 @blueprint.route("match")
+@_redirect_to_game
 def match() -> str:
     return flask.render_template(
         "play/match.html", websocket_url=websocket.url(f"match")
@@ -38,11 +54,11 @@ def match() -> str:
 
 
 @blueprint.route("custom")
+@_redirect_to_game
 def custom() -> Union[werkzeug.wrappers.Response, str]:
-    game_id: Optional[str] = flask.g.session.game_id
-    if game_id is None:
-        game_id = new_custom_game()
-    return flask.redirect(flask.url_for("game.game", game_id=game_id), code=303)
+    return flask.redirect(
+        flask.url_for("game.game", game_id=new_custom_game()), code=303
+    )
 
 
 def new_custom_game() -> str:
