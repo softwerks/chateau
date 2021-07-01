@@ -160,6 +160,11 @@ template.innerHTML = `
             padding: 0.5rem 1rem;
         }
 
+        #shareurl button#leave {
+            background: rgb(176 0 32);
+            border: 2px solid rgb(176 0 32);
+        }
+
         #shareurl input[type="text"] {
             -webkit-appearance: none;
             border-radius: 0.25rem;
@@ -199,6 +204,9 @@ template.innerHTML = `
         <div>
             <input type="text" id="url" size="${ location.href.length }" value="${ location.href }" readonly>
             <button id="copyurl">Copy</button>
+        </div>
+        <div>
+            <button id="leave">Leave game</button>
         </div>
     </div>
     <svg id="backgammon" viewBox="0 0 1280 720">
@@ -425,6 +433,12 @@ customElements.define(
                     const url = this.shadowRoot.querySelector('#url');
                     url.select();
                     document.execCommand('copy');
+                });
+
+            this.shadowRoot
+                .querySelector('#leave')
+                .addEventListener('click', (event) => {
+                    this.exit();
                 });
 
             this.websocket.addEventListener('open', (event) => {
