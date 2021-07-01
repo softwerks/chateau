@@ -44,7 +44,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 1rem;
+    padding: 1rem;
+    color: white;
+    background: rgb(64 64 64);
+}
+
+.index .features a {
+    color: white;
+}
+
+.index .features h2 {
+    text-align: center;
 }
 
 .index .features h2:first-child {
@@ -54,6 +64,10 @@
 .index .features p {
     margin: 0;
     max-width: 24rem;
+}
+
+.index .features p a {
+    text-decoration: underline;
 }
 
 .index .news {
