@@ -138,11 +138,15 @@ template.innerHTML = `
             align-items: center;
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
         }
 
         #shareurl p {
             font-weight: bold;
             text-align: center;
+            margin-top: 0;
         }
 
         #shareurl button {
@@ -152,7 +156,7 @@ template.innerHTML = `
             box-sizing: border-box;
             color: #fff;
             cursor: pointer;
-            margin: 0 0.5rem 0 0.5rem;
+            margin: 0.5rem 0.5rem 0 0.5rem;
             padding: 0.5rem 1rem;
         }
 
@@ -162,7 +166,6 @@ template.innerHTML = `
             border: 2px solid rgb(193, 193, 193);
             box-sizing: border-box;
             line-height: normal;
-            margin: 0.5rem 0;
             padding: 0.5rem 1rem;
             text-align: center;
         }
@@ -182,8 +185,7 @@ template.innerHTML = `
 
         #backgammon {
             display: none;
-            max-height: 100vh;
-            max-width: 100vw;
+            max-width: 64rem;
         }
 
         text {
