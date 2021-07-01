@@ -1,9 +1,10 @@
-{% extends "base.html" %}
+{% extends "default.html" %}
 
-{% block content %}
+{% block description %}Play backgammon online with friends and competitors from around the world. No registration required, no ads, no third-party trackers. Free, open source.{% endblock %}
+
+{% block title %}Game | {% endblock %}
+
+{% block body %}
 <backgammon-board websocketURL="{{ websocket_url }}"></backgammon-board>
-{% endblock %}
-
-{% block javascript %}
 <script src="{{ url_for('static', filename='js/components/backgammon_board.js') }}"></script>
 {% endblock %}

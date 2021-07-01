@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block description %}Search for an opponent.{% endblock %}
+
+{% block title %}Matchmaker | {% endblock %}
+
 {% block content %}
 <match-maker websocketURL="{{ websocket_url }}"></match-maker>
 {% endblock %}

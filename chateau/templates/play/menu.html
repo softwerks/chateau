@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block description %}Start a new game. Invite a friend or search for an opponent.{% endblock %}
+
+{% block title %}Play | {% endblock %}
+
 {% block content %}
     <button type="button" onclick="document.location='{{ url_for('play.match') }}'">Find an opponent</button>
     <button type="button" onclick="document.location='{{ url_for('play.custom') }}'">Invite a friend</button>
