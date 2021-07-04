@@ -1,9 +1,37 @@
-{% extends "default.html" %}
+{% extends "base.html" %}
 
 {% block description %}What do you think of the Backgammon Network?{% endblock %}
 
 {% block title %}Feedback | {% endblock %}
 
-{% block body %}
-<p>Stub.</p>
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/feedback.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="feedback">
+    <h1>Thanks for playing!</h1>
+    <p>Before you go, please take a moment to tell me what you think of the Backgammon Network.</p>
+    <form action="{{ url_for('feedback.nps') }}" method="post">
+        {{ form.csrf_token }}
+        {{ form.nps.label(class="question") }}
+        <div class="nps">
+            {% for subfield in form.nps %}
+                <div>
+                    {{ subfield(required=True) }}
+                    <span>{{ subfield.label }}</span>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="description">
+            <span>Not at all likely</span>
+            <span>Neutral</span>
+            <span>Extremely likely</span>
+        </div>
+        {{ form.comments.label(class="question") }}
+        {{ form.comments(cols="40", rows="5", maxlength="511") }}
+        <button type="submit">Submit feedback</button>
+    <form>
+    <a href="{{ url_for('index') }}">Return to homepage</a>
+</div>
 {% endblock %}

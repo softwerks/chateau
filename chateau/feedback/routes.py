@@ -16,10 +16,21 @@ from typing import Tuple, Union
 import urllib.parse
 
 import flask
+import flask_wtf
+import werkzeug
 
 from chateau.feedback import blueprint
+from chateau.feedback import forms
 
 
-@blueprint.route("nps")
-def nps() -> str:
-    return flask.render_template("feedback/nps.html")
+@blueprint.route("nps", methods=["GET", "POST"])
+def nps() -> Union[werkzeug.wrappers.Response, str]:
+    form: flask_wtf.FlaskForm = forms.NPSForm()
+
+    if form.validate_on_submit():
+        nps: int = form.nps.data
+        comments: str = form.comments.data
+
+        return flask.redirect(flask.url_for("index"))
+
+    return flask.render_template("feedback/nps.html", form=form)
