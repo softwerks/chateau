@@ -13,10 +13,18 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     created TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+DROP TABLE IF EXISTS feedback;
+CREATE TABLE feedback (
+    id SERIAL PRIMARY KEY,
+    submitted TIMESTAMP WITH TIME ZONE NOT NULL,
+    nps INTEGER NOT NULL,
+    comments TEXT
 );

@@ -20,6 +20,7 @@ import psycopg2.pool
 
 from chateau.database import auth
 from chateau.database import connection
+from chateau.database import feedback
 
 
 class DatabaseError(Exception):

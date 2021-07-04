@@ -19,6 +19,7 @@ import flask
 import flask_wtf
 import werkzeug
 
+from chateau import database
 from chateau.feedback import blueprint
 from chateau.feedback import forms
 
@@ -30,6 +31,11 @@ def nps() -> Union[werkzeug.wrappers.Response, str]:
     if form.validate_on_submit():
         nps: int = form.nps.data
         comments: str = form.comments.data
+
+        try:
+            database.feedback.create(nps, comments)
+        except database.DatabaseError:
+            flask.abort(500)
 
         return flask.redirect(flask.url_for("index"))
 
