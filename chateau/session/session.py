@@ -32,6 +32,7 @@ class Session:
     token: str
     user_agent: str
     game_id: Optional[str] = None
+    feedback: Optional[str] = None
     time_zone: Optional[str] = None
     user_id: Optional[str] = None
 
@@ -58,6 +59,12 @@ class Session:
             ]
         else:
             return [self]
+
+    def update_feedback_timestamp(self) -> str:
+        self.feedback = str(time.time())
+        flask.g.redis.hset(f"session:{self.token}", "feedback", self.feedback)
+
+        return self.feedback
 
     def delete_all(self) -> None:
         """Delete all of the user's sessions."""
