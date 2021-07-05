@@ -39,4 +39,6 @@ def nps() -> Union[werkzeug.wrappers.Response, str]:
 
         return flask.redirect(flask.url_for("index"))
 
+    flask.g.session.update_feedback_timestamp()
+
     return flask.render_template("feedback/nps.html", form=form)
