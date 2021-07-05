@@ -452,6 +452,9 @@ customElements.define(
                     case 'close':
                         this.close(msg);
                         break;
+                    case 'feedback':
+                        this.feedback(msg);
+                        break;
                     case 'player':
                         this.player(msg);
                         break;
@@ -468,6 +471,11 @@ customElements.define(
         close(msg) {
             this.websocket.close(1000);
             window.location.href = '/';
+        }
+
+        feedback(msg) {
+            this.websocket.close(1000);
+            window.location.href = '/feedback/nps';
         }
 
         player(msg) {
