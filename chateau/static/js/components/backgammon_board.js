@@ -130,6 +130,34 @@ function sumArray(array) {
     );
 }
 
+function stringifyClock(start, timestamp, turnOwner) {
+    if (!turnOwner) {
+        const minutes = Math.floor(start / 1000 / 60)
+            .toString()
+            .padStart(2, '0');
+        const seconds = Math.floor((start / 1000) % 60)
+            .toString()
+            .padStart(2, '0');
+
+        return ['', `${minutes}:${seconds}`];
+    } else {
+        const now = Date.now();
+        const elapsed = now - timestamp;
+        const delay = Math.max(0, 15000 - elapsed);
+        const reserve = delay ? start : Math.max(0, start + 15000 - elapsed);
+
+        delaySeconds = delay ? Math.floor(delay / 1000).toString() : '';
+        reserveMinutes = Math.floor(reserve / 1000 / 60)
+            .toString()
+            .padStart(2, '0');
+        reserveSeconds = Math.floor((reserve / 1000) % 60)
+            .toString()
+            .padStart(2, '0');
+
+        return [delaySeconds, `${reserveMinutes}:${reserveSeconds}`];
+    }
+}
+
 let template = document.createElement('template');
 // prettier-ignore
 template.innerHTML = `
@@ -198,6 +226,13 @@ template.innerHTML = `
             pointer-events: none;
             user-select: none;
         }
+
+        text.clock {
+            fill: white;
+            font-size: 2rem;
+            text-anchor: middle;
+            alignment-baseline: central;
+        }
     </style>
     <div id="shareurl">
         <p>Share this URL with a friend to start the game:</p>
@@ -215,6 +250,10 @@ template.innerHTML = `
         <rect class="score1" x="1144" y="${BOARD.bottom - 112 - 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[1]}" stroke="${SCORE.stroke[1]}" stroke-width="8" />
         <circle class="status0" cx="1200" cy="160" r="8" fill="${STATUS.color.disconnected}" />
         <circle class="status1" cx="1200" cy="560" r="8" fill="${STATUS.color.disconnected}" />
+        <text id="reserve0" class="clock" x="1200" y="200"></text>
+        <text id="delay0" class="clock" x="1200" y="240"></text>
+        <text id="delay1" class="clock" x="1200" y="480"></text>
+        <text id="reserve1" class="clock" x="1200" y="520"></text>
     </svg>
 `;
 
@@ -419,6 +458,7 @@ customElements.define(
 
             this.connect();
             this.bindEvents();
+            this.clock();
         }
 
         connect() {
@@ -468,6 +508,29 @@ customElements.define(
             });
         }
 
+        clock() {
+            window.setInterval(() => {
+                if (this.match.gameState == 1) {
+                    const [delay0, reserve0] = stringifyClock(
+                        this.time0,
+                        this.timestamp,
+                        this.match.player == 0
+                    );
+                    const [delay1, reserve1] = stringifyClock(
+                        this.time1,
+                        this.timestamp,
+                        this.match.player == 1
+                    );
+
+                    const svg = this.shadowRoot.querySelector('svg');
+                    svg.querySelector('#delay0').textContent = delay0;
+                    svg.querySelector('#reserve0').textContent = reserve0;
+                    svg.querySelector('#delay1').textContent = delay1;
+                    svg.querySelector('#reserve1').textContent = reserve1;
+                }
+            }, 1000);
+        }
+
         close(msg) {
             this.websocket.close(1000);
             window.location.href = '/';
@@ -501,6 +564,9 @@ customElements.define(
             this.match = game.match;
             this.position = game.position;
             console.log(this.match, this.position);
+            this.time0 = parseInt(msg.time0);
+            this.time1 = parseInt(msg.time1);
+            this.timestamp = parseInt(msg.timestamp);
             if (
                 this.match.gameState == 1 &&
                 this.match.dice[0] != 0 &&
