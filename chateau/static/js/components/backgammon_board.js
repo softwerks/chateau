@@ -527,6 +527,11 @@ customElements.define(
                     svg.querySelector('#reserve0').textContent = reserve0;
                     svg.querySelector('#delay1').textContent = delay1;
                     svg.querySelector('#reserve1').textContent = reserve1;
+
+                    if (reserve0 == '00:00' || reserve1 == '00:00') {
+                        this.match.gameState = 2;
+                        this.draw();
+                    }
                 }
             }, 1000);
         }
