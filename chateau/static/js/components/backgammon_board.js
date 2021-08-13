@@ -509,7 +509,7 @@ customElements.define(
         }
 
         clock() {
-            window.setInterval(() => {
+            this.intervalId = window.setInterval(() => {
                 if (this.match.gameState == 1) {
                     const [delay0, reserve0] = stringifyClock(
                         this.time0,
@@ -529,11 +529,16 @@ customElements.define(
                     svg.querySelector('#reserve1').textContent = reserve1;
 
                     if (reserve0 == '00:00' || reserve1 == '00:00') {
+                        this.stopClock();
                         this.match.gameState = 2;
                         this.draw();
                     }
                 }
             }, 1000);
+        }
+
+        stopClock() {
+            window.clearInterval(this.intervalId);
         }
 
         close(msg) {
