@@ -510,7 +510,7 @@ customElements.define(
 
         clock() {
             this.intervalId = window.setInterval(() => {
-                if (this.match.gameState == 1) {
+                if (this.match?.gameState == 1) {
                     const [delay0, reserve0] = stringifyClock(
                         this.time0,
                         this.timestamp,
