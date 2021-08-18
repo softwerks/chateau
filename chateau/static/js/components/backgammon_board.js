@@ -83,7 +83,6 @@ const HAMBURGER = {
     height: 80,
     radius: 8,
     fill: 'grey',
-    highlight: 'white',
     barWidth: 60,
     barHeight: 10,
     barFill: 'black',
@@ -301,9 +300,7 @@ let hamburgerOpen = document.createElement('template');
 hamburgerOpen.innerHTML = `
     <svg width="${HAMBURGER.width}" height="${HAMBURGER.height}" viewBox ="0 0 ${HAMBURGER.width} ${HAMBURGER.height}">
         <rect width="${HAMBURGER.width}" height="${HAMBURGER.height}" rx="${HAMBURGER.radius}" ry="${HAMBURGER.radius}" fill="${HAMBURGER.fill}" />
-        <rect x="10" y="15" width="${HAMBURGER.barWidth}" height="${HAMBURGER.barHeight}" fill="${HAMBURGER.barFill}" />
-        <rect x="10" y="35" width="${HAMBURGER.barWidth}" height="${HAMBURGER.barHeight}" fill="${HAMBURGER.barFill}" />
-        <rect x="10" y="55" width="${HAMBURGER.barWidth}" height="${HAMBURGER.barHeight}" fill="${HAMBURGER.barFill}" />
+        <text x="${HAMBURGER.width / 2}" y="${HAMBURGER.height / 2}" fill="${HAMBURGER.barfill}" text-anchor="middle" alignment-baseline="middle" font-size="1.6rem">Menu</text>
     </svg>
 `;
 
