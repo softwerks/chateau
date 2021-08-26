@@ -93,6 +93,10 @@ const MENU_ITEM = {
     radius: 8,
     fill: 'black',
     stroke: 'white',
+    resignSingleY: 100,
+    resignGammonY: 220,
+    resignBackgammonY: 340,
+    exitY: 560,
 };
 const ROLL_DOUBLE_SKIP = {
     width: 200,
@@ -336,6 +340,33 @@ exit.innerHTML = `
     </svg>
 `;
 
+let resignSingleTemplate = document.createElement('template');
+// prettier-ignore
+resignSingleTemplate.innerHTML = `
+    <svg width="${MENU_ITEM.width}" height="${MENU_ITEM.height}" viewBox ="0 0 ${MENU_ITEM.width} ${MENU_ITEM.height}">
+    <rect width="${MENU_ITEM.width}" height="${MENU_ITEM.height}" rx="${MENU_ITEM.radius}" ry="${MENU_ITEM.radius}" fill="${MENU_ITEM.fill}" />
+    <text x="${MENU_ITEM.width / 2}" y="${MENU_ITEM.height / 2}" fill="white" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Resign Single</text>
+    </svg>
+`;
+
+let resignGammonTemplate = document.createElement('template');
+// prettier-ignore
+resignGammonTemplate.innerHTML = `
+    <svg width="${MENU_ITEM.width}" height="${MENU_ITEM.height}" viewBox ="0 0 ${MENU_ITEM.width} ${MENU_ITEM.height}">
+    <rect width="${MENU_ITEM.width}" height="${MENU_ITEM.height}" rx="${MENU_ITEM.radius}" ry="${MENU_ITEM.radius}" fill="${MENU_ITEM.fill}" />
+    <text x="${MENU_ITEM.width / 2}" y="${MENU_ITEM.height / 2}" fill="white" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Resign Gammon</text>
+    </svg>
+`;
+
+let resignBackgammonTemplate = document.createElement('template');
+// prettier-ignore
+resignBackgammonTemplate.innerHTML = `
+    <svg width="${MENU_ITEM.width}" height="${MENU_ITEM.height}" viewBox ="0 0 ${MENU_ITEM.width} ${MENU_ITEM.height}">
+    <rect width="${MENU_ITEM.width}" height="${MENU_ITEM.height}" rx="${MENU_ITEM.radius}" ry="${MENU_ITEM.radius}" fill="${MENU_ITEM.fill}" />
+    <text x="${MENU_ITEM.width / 2}" y="${MENU_ITEM.height / 2}" fill="white" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Resign Backgammon</text>
+    </svg>
+`;
+
 let rollButtonTemplate = document.createElement('template');
 // prettier-ignore
 rollButtonTemplate.innerHTML = `
@@ -432,6 +463,15 @@ die_6.innerHTML = `
     </svg>
 `;
 
+let acceptTemplate = document.createElement('template');
+// prettier-ignore
+acceptTemplate.innerHTML = `
+    <svg width="${BUTTON.width}" height="${BUTTON.height}" viewBox ="0 0 ${BUTTON.width} ${BUTTON.height}">
+        <rect width="${BUTTON.width}" height="${BUTTON.height}" rx="${BUTTON.radius}" ry="${BUTTON.radius}" fill="${BUTTON.acceptFill}" />
+        <path d="M12 30 L30 48 50 12" stroke="${BUTTON.stroke}" stroke-width="${BUTTON.strokeWidth}" fill="none" />
+    </svg>
+`;
+
 let reject = document.createElement('template');
 // prettier-ignore
 reject.innerHTML = `
@@ -511,12 +551,12 @@ customElements.define(
                     const [delay0, reserve0] = stringifyClock(
                         this.time0,
                         this.timestamp,
-                        this.match.player == 0
+                        this.match.turn == 0
                     );
                     const [delay1, reserve1] = stringifyClock(
                         this.time1,
                         this.timestamp,
-                        this.match.player == 1
+                        this.match.turn == 1
                     );
 
                     const svg = this.shadowRoot.querySelector('svg');
@@ -571,8 +611,11 @@ customElements.define(
             this.time0 = parseInt(msg.time0);
             this.time1 = parseInt(msg.time1);
             this.timestamp = parseInt(msg.timestamp);
+            this.plays = null;
+            this.reversedPlays = null;
             if (
                 this.match.gameState == 1 &&
+                !this.match.resign &&
                 this.match.dice[0] != 0 &&
                 this.player == this.match.player
             ) {
@@ -881,6 +924,7 @@ customElements.define(
                 if (this.menuOpen) {
                     this.drawMenu();
                     this.drawExit();
+                    this.drawResign();
                 } else {
                     this.drawBoard();
                     this.drawPoints();
@@ -889,22 +933,31 @@ customElements.define(
                     this.drawCube();
                     this.drawPipCount();
                     if (
-                        this.player == this.match.player &&
+                        this.match.gameState == 1 &&
+                        this.player == this.match.turn &&
                         this.match.dice[0] == 0 &&
-                        !this.match.double
+                        !this.match.double &&
+                        !this.match.resign
                     )
                         this.drawRollDouble();
-                    if (this.match.dice[0] != 0 && this.match.gameState == 1)
+                    if (
+                        this.match.dice[0] != 0 &&
+                        this.match.gameState == 1 &&
+                        !this.match.resign
+                    )
                         this.drawDice();
                     if (
                         this.match.gameState == 1 &&
-                        this.player == this.match.player &&
+                        !this.match.resign &&
+                        this.player == this.match.turn &&
                         this.match.dice[0] != 0 &&
                         !this.plays?.moves &&
                         !this.reversedPlays?.moves
                     )
                         this.drawSkip();
                     if (this.match.gameState == 2) this.drawGameOver();
+                    if (this.match.resign && this.player == this.match.turn)
+                        this.drawAcceptRejectResign();
                 }
                 this.drawScore();
             }
@@ -1194,6 +1247,72 @@ customElements.define(
             }
         }
 
+        drawAcceptRejectResign() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            function typeText(resignType) {
+                switch (resignType) {
+                    case 1:
+                        return 'single';
+                        break;
+                    case 2:
+                        return 'gammon';
+                        break;
+                    case 3:
+                        return 'backgammon';
+                        break;
+                }
+            }
+
+            let question = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'text'
+            );
+            question.setAttribute('x', BOARD.leftX);
+            question.setAttribute('y', BOARD.middleY);
+            question.setAttribute('text-anchor', 'middle');
+            question.setAttribute('alignment-baseline', 'middle');
+            question.setAttribute('font-size', '1.4rem');
+            let text = document.createTextNode(
+                `Accept ${typeText(this.match.resign)} resignation?`
+            );
+            question.appendChild(text);
+            question.className.baseVal = 'foreground';
+            svg.appendChild(question);
+
+            const y = BOARD.middleY - BUTTON.height / 2;
+
+            let acceptButton = acceptTemplate.content.cloneNode(true);
+            acceptButton.firstElementChild.setAttribute(
+                'x',
+                BOARD.rightX + BUTTON.padding
+            );
+            acceptButton.firstElementChild.setAttribute('y', y);
+            acceptButton.firstElementChild.className.baseVal = 'foreground';
+            acceptButton.firstElementChild.addEventListener(
+                'click',
+                (event) => {
+                    this.acceptResignation(event);
+                }
+            );
+            svg.appendChild(acceptButton);
+
+            let rejectButton = reject.content.cloneNode(true);
+            rejectButton.firstElementChild.setAttribute(
+                'x',
+                BOARD.rightX - BUTTON.width - BUTTON.padding
+            );
+            rejectButton.firstElementChild.setAttribute('y', y);
+            rejectButton.firstElementChild.className.baseVal = 'foreground';
+            rejectButton.firstElementChild.addEventListener(
+                'click',
+                (event) => {
+                    this.rejectResignation(event);
+                }
+            );
+            svg.appendChild(rejectButton);
+        }
+
         drawScore() {
             const svg = this.shadowRoot.querySelector('svg');
 
@@ -1434,15 +1553,53 @@ customElements.define(
                 'x',
                 BOARD.middleX - MENU_ITEM.width / 2
             );
-            exitButton.firstElementChild.setAttribute(
-                'y',
-                BOARD.middleY - MENU_ITEM.height / 2
-            );
+            exitButton.firstElementChild.setAttribute('y', MENU_ITEM.exitY);
             exitButton.firstElementChild.className.baseVal = 'foreground';
             exitButton.firstElementChild.addEventListener('click', (event) => {
                 this.exit(event);
             });
             svg.appendChild(exitButton);
+        }
+
+        drawResign() {
+            const svg = this.shadowRoot.querySelector('svg');
+
+            const x = BOARD.middleX - MENU_ITEM.width / 2;
+
+            let resignSingle = resignSingleTemplate.content.cloneNode(true);
+            resignSingle.firstElementChild.setAttribute('x', x);
+            resignSingle.firstElementChild.setAttribute(
+                'y',
+                MENU_ITEM.resignSingleY
+            );
+
+            let resignGammon = resignGammonTemplate.content.cloneNode(true);
+            resignGammon.firstElementChild.setAttribute('x', x);
+            resignGammon.firstElementChild.setAttribute(
+                'y',
+                MENU_ITEM.resignGammonY
+            );
+
+            let resignBackgammon =
+                resignBackgammonTemplate.content.cloneNode(true);
+            resignBackgammon.firstElementChild.setAttribute('x', x);
+            resignBackgammon.firstElementChild.setAttribute(
+                'y',
+                MENU_ITEM.resignBackgammonY
+            );
+
+            [resignSingle, resignGammon, resignBackgammon].forEach(
+                (button, index) => {
+                    button.firstElementChild.className.baseVal = 'foreground';
+                    button.firstElementChild.addEventListener(
+                        'click',
+                        (event) => {
+                            this.resign(event, index + 1);
+                        }
+                    );
+                    svg.appendChild(button);
+                }
+            );
         }
 
         toggleMenu(event) {
@@ -1549,6 +1706,34 @@ customElements.define(
             if (this.player != this.match.turn) return;
 
             if (!this.match.double) return;
+
+            this.websocket.send(JSON.stringify({ opcode: 'reject' }));
+        }
+
+        resign(event, resign_type) {
+            if (this.player != this.match.player) return;
+
+            if (this.match.resign) return;
+
+            this.websocket.send(
+                JSON.stringify({ opcode: 'resign', resign: resign_type })
+            );
+
+            this.toggleMenu();
+        }
+
+        acceptResignation(event) {
+            if (this.player != this.match.turn) return;
+
+            if (!this.match.resign) return;
+
+            this.websocket.send(JSON.stringify({ opcode: 'accept' }));
+        }
+
+        rejectResignation(event) {
+            if (this.player != this.match.turn) return;
+
+            if (!this.match.resign) return;
 
             this.websocket.send(JSON.stringify({ opcode: 'reject' }));
         }
