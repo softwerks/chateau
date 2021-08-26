@@ -1177,73 +1177,92 @@ customElements.define(
         drawCube() {
             const svg = this.shadowRoot.querySelector('svg');
 
-            let cube = document.createElementNS(
-                'http://www.w3.org/2000/svg',
-                'rect'
-            );
-            let x;
-            if (!this.match.double) {
-                x = BOARD.trayLeft;
+            if (this.match.crawford) {
+                let label = document.createElementNS(
+                    'http://www.w3.org/2000/svg',
+                    'text'
+                );
+                label.setAttribute('x', BOARD.trayLeft);
+                label.setAttribute('y', BOARD.middleY);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('alignment-baseline', 'middle');
+                label.setAttribute('fill', 'black');
+                label.setAttribute('font-size', '1rem');
+                let text = document.createTextNode('Crawford');
+                label.appendChild(text);
+                label.className.baseVal = 'foreground';
+                svg.appendChild(label);
             } else {
-                if (this.match.player == 0)
-                    x = BOARD.rightX + CUBE.width / 2 + BUTTON.padding;
-                else x = BOARD.leftX + CUBE.width / 2 + BUTTON.padding;
-            }
-            cube.setAttribute('x', x - CUBE.width / 2);
-
-            let y;
-            if (this.match.cubeHolder == 3 || this.match.double)
-                y = BOARD.middleY - CUBE.height / 2;
-            else if (this.match.cubeHolder == 0) y = BOARD.top + CUBE.padding;
-            else y = BOARD.bottom - (CUBE.height + CUBE.padding);
-            cube.setAttribute('y', y);
-
-            cube.setAttribute('rx', CUBE.radius);
-            cube.setAttribute('ry', CUBE.radius);
-            cube.setAttribute('width', CUBE.width);
-            cube.setAttribute('height', CUBE.height);
-            cube.setAttribute('fill', CUBE.fill);
-            if (this.match.double)
-                cube.addEventListener('click', (event) => {
-                    this.acceptDouble(event);
-                });
-            cube.className.baseVal = 'foreground';
-            svg.appendChild(cube);
-            const cubeValue = this.match.double
-                ? this.match.cubeValue * 2
-                : this.match.cubeValue == 1
-                ? 64
-                : this.match.cubeValue;
-            let label = document.createElementNS(
-                'http://www.w3.org/2000/svg',
-                'text'
-            );
-            label.setAttribute('x', x);
-            label.setAttribute('y', y + CUBE.height / 2);
-            label.setAttribute('text-anchor', 'middle');
-            label.setAttribute('alignment-baseline', 'middle');
-            label.setAttribute('fill', CUBE.text);
-            label.setAttribute('font-size', CUBE.fontSize);
-            let text = document.createTextNode(cubeValue);
-            label.appendChild(text);
-            label.className.baseVal = 'foreground';
-            svg.appendChild(label);
-
-            if (this.match.double) {
-                let rejectButton = reject.content.cloneNode(true);
-                rejectButton.firstElementChild.setAttribute(
-                    'x',
-                    x - BUTTON.width * 1.5 - BUTTON.padding * 2
+                let cube = document.createElementNS(
+                    'http://www.w3.org/2000/svg',
+                    'rect'
                 );
-                rejectButton.firstElementChild.setAttribute('y', y);
-                rejectButton.firstElementChild.className.baseVal = 'foreground';
-                rejectButton.firstElementChild.addEventListener(
-                    'click',
-                    (event) => {
-                        this.rejectDouble(event);
-                    }
+                let x;
+                if (!this.match.double) {
+                    x = BOARD.trayLeft;
+                } else {
+                    if (this.match.player == 0)
+                        x = BOARD.rightX + CUBE.width / 2 + BUTTON.padding;
+                    else x = BOARD.leftX + CUBE.width / 2 + BUTTON.padding;
+                }
+                cube.setAttribute('x', x - CUBE.width / 2);
+
+                let y;
+                if (this.match.cubeHolder == 3 || this.match.double)
+                    y = BOARD.middleY - CUBE.height / 2;
+                else if (this.match.cubeHolder == 0)
+                    y = BOARD.top + CUBE.padding;
+                else y = BOARD.bottom - (CUBE.height + CUBE.padding);
+                cube.setAttribute('y', y);
+
+                cube.setAttribute('rx', CUBE.radius);
+                cube.setAttribute('ry', CUBE.radius);
+                cube.setAttribute('width', CUBE.width);
+                cube.setAttribute('height', CUBE.height);
+                cube.setAttribute('fill', CUBE.fill);
+                if (this.match.double)
+                    cube.addEventListener('click', (event) => {
+                        this.acceptDouble(event);
+                    });
+                cube.className.baseVal = 'foreground';
+                svg.appendChild(cube);
+                const cubeValue = this.match.double
+                    ? this.match.cubeValue * 2
+                    : this.match.cubeValue == 1
+                    ? 64
+                    : this.match.cubeValue;
+                let label = document.createElementNS(
+                    'http://www.w3.org/2000/svg',
+                    'text'
                 );
-                svg.appendChild(rejectButton);
+                label.setAttribute('x', x);
+                label.setAttribute('y', y + CUBE.height / 2);
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('alignment-baseline', 'middle');
+                label.setAttribute('fill', CUBE.text);
+                label.setAttribute('font-size', CUBE.fontSize);
+                let text = document.createTextNode(cubeValue);
+                label.appendChild(text);
+                label.className.baseVal = 'foreground';
+                svg.appendChild(label);
+
+                if (this.match.double) {
+                    let rejectButton = reject.content.cloneNode(true);
+                    rejectButton.firstElementChild.setAttribute(
+                        'x',
+                        x - BUTTON.width * 1.5 - BUTTON.padding * 2
+                    );
+                    rejectButton.firstElementChild.setAttribute('y', y);
+                    rejectButton.firstElementChild.className.baseVal =
+                        'foreground';
+                    rejectButton.firstElementChild.addEventListener(
+                        'click',
+                        (event) => {
+                            this.rejectDouble(event);
+                        }
+                    );
+                    svg.appendChild(rejectButton);
+                }
             }
         }
 
