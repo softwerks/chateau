@@ -222,7 +222,6 @@ template.innerHTML = `
         #backgammon {
             display: none;
             max-width: 64rem;
-            max-height: -webkit-fill-available;
         }
 
         text {
