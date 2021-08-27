@@ -168,10 +168,14 @@ template.innerHTML = `
         :host {
             align-items: center;
             display: flex;
-            flex-direction: column;
             justify-content: center;
-            width: 100vw;
             height: 100vh;
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            :host {
+                height: -webkit-fill-available;
+            }
         }
 
         #shareurl p {
@@ -222,6 +226,7 @@ template.innerHTML = `
         #backgammon {
             display: none;
             max-width: 64rem;
+            max-height: 100%;
         }
 
         text {

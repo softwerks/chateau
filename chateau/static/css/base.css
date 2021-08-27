@@ -12,6 +12,12 @@ body {
     grid-template-rows: auto 1fr auto;
 }
 
+@supports (-webkit-touch-callout: none) {
+    body {
+        min-height: -webkit-fill-available;
+    }
+}
+
 footer {
     margin: 1rem 0 1rem 0;
     display: flex;
