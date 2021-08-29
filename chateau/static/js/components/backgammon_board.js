@@ -249,14 +249,14 @@ template.innerHTML = `
     </div>
     <svg id="backgammon" viewBox="0 0 1280 720">
         <rect width="1280" height="720" fill="black" />
-        <rect class="score0" x="1144" y="${BOARD.top + 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[0]}" stroke="${SCORE.stroke[0]}" stroke-width="8" />
-        <rect class="score1" x="1144" y="${BOARD.bottom - 112 - 4}" width="112" height="112" rx="8" ry="8" fill="${SCORE.fill[1]}" stroke="${SCORE.stroke[1]}" stroke-width="8" />
-        <circle class="status0" cx="1200" cy="160" r="8" fill="${STATUS.color.disconnected}" />
-        <circle class="status1" cx="1200" cy="560" r="8" fill="${STATUS.color.disconnected}" />
-        <text id="reserve0" class="clock" x="1200" y="200"></text>
-        <text id="delay0" class="clock" x="1200" y="240"></text>
-        <text id="delay1" class="clock" x="1200" y="480"></text>
-        <text id="reserve1" class="clock" x="1200" y="520"></text>
+        <rect id="scoreTop" x="1144" y="${BOARD.top + 4}" width="112" height="112" rx="8" ry="8" stroke-width="8" />
+        <rect id="scoreBottom" x="1144" y="${BOARD.bottom - 112 - 4}" width="112" height="112" rx="8" ry="8" stroke-width="8" />
+        <circle id="statusTop" cx="1200" cy="160" r="8" fill="${STATUS.color.disconnected}" />
+        <circle id="statusBottom" cx="1200" cy="560" r="8" fill="${STATUS.color.disconnected}" />
+        <text id="reserveTop" class="clock" x="1200" y="200"></text>
+        <text id="delayTop" class="clock" x="1200" y="240"></text>
+        <text id="delayBottom" class="clock" x="1200" y="480"></text>
+        <text id="reserveBottom" class="clock" x="1200" y="520"></text>
     </svg>
 `;
 
@@ -560,10 +560,29 @@ customElements.define(
                     );
 
                     const svg = this.shadowRoot.querySelector('svg');
-                    svg.querySelector('#delay0').textContent = delay0;
-                    svg.querySelector('#reserve0').textContent = reserve0;
-                    svg.querySelector('#delay1').textContent = delay1;
-                    svg.querySelector('#reserve1').textContent = reserve1;
+
+                    const delay0Element =
+                        this.player == 0
+                            ? svg.querySelector('#delayBottom')
+                            : svg.querySelector('#delayTop');
+                    const reserve0Element =
+                        this.player == 0
+                            ? svg.querySelector('#reserveBottom')
+                            : svg.querySelector('#reserveTop');
+
+                    const delay1Element =
+                        this.player == 0
+                            ? svg.querySelector('#delayTop')
+                            : svg.querySelector('#delayBottom');
+                    const reserve1Element =
+                        this.player == 0
+                            ? svg.querySelector('#reserveTop')
+                            : svg.querySelector('#reserveBottom');
+
+                    delay0Element.textContent = delay0;
+                    reserve0Element.textContent = reserve0;
+                    delay1Element.textContent = delay1;
+                    reserve1Element.textContent = reserve1;
 
                     if (reserve0 == '00:00' || reserve1 == '00:00')
                         this.stopClock();
@@ -592,14 +611,21 @@ customElements.define(
         status(msg) {
             const svg = this.shadowRoot.querySelector('svg');
 
+            const status0 =
+                this.player == 0
+                    ? svg.querySelector('#statusBottom')
+                    : svg.querySelector('#statusTop');
+            const status1 =
+                this.player == 0
+                    ? svg.querySelector('#statusTop')
+                    : svg.querySelector('#statusBottom');
+
             [0, 1].forEach((player) => {
                 const color = msg[player]
                     ? STATUS.color[msg[player]]
                     : STATUS.color.disconnected;
-                svg.querySelector(`.status${player}`).setAttribute(
-                    'fill',
-                    color
-                );
+                if (player == 0) status0.setAttribute('fill', color);
+                else status1.setAttribute('fill', color);
             });
         }
 
@@ -1017,16 +1043,19 @@ customElements.define(
                 }
             );
 
-            let normalizedPoints =
+            const normalizedPoints =
                 this.match.player == 0
                     ? annotatedPoints
                     : annotatedPoints.reverse();
 
+            const displayPoints =
+                this.player == 0
+                    ? normalizedPoints.reverse()
+                    : normalizedPoints;
+
             const halves = {
-                top: normalizedPoints
-                    .slice(0, normalizedPoints.length / 2)
-                    .reverse(),
-                bottom: normalizedPoints.slice(normalizedPoints.length / 2),
+                top: displayPoints.slice(0, displayPoints.length / 2).reverse(),
+                bottom: displayPoints.slice(displayPoints.length / 2),
             };
 
             for (const half in halves) {
@@ -1060,8 +1089,10 @@ customElements.define(
                     0,
                     numBarPlayer0,
                     BOARD.middleX,
-                    BOARD.top + CHECKER_COMBINED_RADIUS,
-                    DIRECTION.down
+                    this.player == 0
+                        ? BOARD.bottom - CHECKER_COMBINED_RADIUS
+                        : BOARD.top + CHECKER_COMBINED_RADIUS,
+                    this.player == 0 ? DIRECTION.up : DIRECTION.down
                 );
 
             const numBarPlayer1 =
@@ -1074,8 +1105,10 @@ customElements.define(
                     1,
                     numBarPlayer1,
                     BOARD.middleX,
-                    BOARD.bottom - CHECKER_COMBINED_RADIUS,
-                    DIRECTION.up
+                    this.player == 0
+                        ? BOARD.top + CHECKER_COMBINED_RADIUS
+                        : BOARD.bottom - CHECKER_COMBINED_RADIUS,
+                    this.player == 0 ? DIRECTION.down : DIRECTION.up
                 );
         }
 
@@ -1137,23 +1170,33 @@ customElements.define(
                 this.match.player == 0
                     ? this.position.playerOff
                     : this.position.opponentOff;
-            if (numOffPlayer0 > 0) this.drawTray(0, numOffPlayer0);
+            if (numOffPlayer0 > 0)
+                this.drawTray(
+                    0,
+                    numOffPlayer0,
+                    this.player == 0 ? false : true
+                );
 
             const numOffPlayer1 =
                 this.match.player == 1
                     ? this.position.playerOff
                     : this.position.opponentOff;
-            if (numOffPlayer1 > 0) this.drawTray(1, numOffPlayer1);
+            if (numOffPlayer1 > 0)
+                this.drawTray(
+                    1,
+                    numOffPlayer1,
+                    this.player == 0 ? true : false
+                );
         }
 
-        drawTray(player, num) {
+        drawTray(player, num, top) {
             const svg = this.shadowRoot.querySelector('svg');
 
-            let direction = player == 0 ? DIRECTION.down : DIRECTION.up;
+            let direction = top ? DIRECTION.down : DIRECTION.up;
             let fill = CHECKER_FILL[player];
             let x = BOARD.trayRight - OFF.width / 2;
             let y;
-            if (player == 0) y = BOARD.top + OFF.padding;
+            if (top) y = BOARD.top + OFF.padding;
             else y = BOARD.bottom - (OFF.height + OFF.padding);
 
             do {
@@ -1197,22 +1240,19 @@ customElements.define(
                     'http://www.w3.org/2000/svg',
                     'rect'
                 );
-                let x;
-                if (!this.match.double) {
-                    x = BOARD.trayLeft;
-                } else {
-                    if (this.match.player == 0)
-                        x = BOARD.rightX + CUBE.width / 2 + BUTTON.padding;
-                    else x = BOARD.leftX + CUBE.width / 2 + BUTTON.padding;
-                }
+                const x = !this.match.double
+                    ? BOARD.trayLeft
+                    : BOARD.rightX + CUBE.width / 2 + BUTTON.padding;
                 cube.setAttribute('x', x - CUBE.width / 2);
 
+                const topY = BOARD.top + CUBE.padding;
+                const bottomY = BOARD.bottom - (CUBE.height + CUBE.padding);
                 let y;
                 if (this.match.cubeHolder == 3 || this.match.double)
                     y = BOARD.middleY - CUBE.height / 2;
                 else if (this.match.cubeHolder == 0)
-                    y = BOARD.top + CUBE.padding;
-                else y = BOARD.bottom - (CUBE.height + CUBE.padding);
+                    y = this.player == 0 ? bottomY : topY;
+                else y = this.player == 0 ? topY : bottomY;
                 cube.setAttribute('y', y);
 
                 cube.setAttribute('rx', CUBE.radius);
@@ -1335,6 +1375,17 @@ customElements.define(
         drawScore() {
             const svg = this.shadowRoot.querySelector('svg');
 
+            const score0 =
+                this.player == 0
+                    ? svg.querySelector('#scoreBottom')
+                    : svg.querySelector('#scoreTop');
+            const score1 =
+                this.player == 0
+                    ? svg.querySelector('#scoreTop')
+                    : svg.querySelector('#scoreBottom');
+
+            console.log();
+
             [this.match.player0Score, this.match.player1Score].forEach(
                 (score, player) => {
                     let label = document.createElementNS(
@@ -1345,8 +1396,10 @@ customElements.define(
                     label.setAttribute(
                         'y',
                         player == 0
-                            ? BOARD.top + SCORE.height / 2
-                            : BOARD.bottom - SCORE.height / 2
+                            ? parseInt(score0.getAttribute('y')) +
+                                  parseInt(score0.getAttribute('height')) / 2
+                            : parseInt(score1.getAttribute('y')) +
+                                  parseInt(score1.getAttribute('height')) / 2
                     );
                     label.setAttribute('text-anchor', 'middle');
                     label.setAttribute('alignment-baseline', 'middle');
@@ -1359,25 +1412,19 @@ customElements.define(
                 }
             );
 
+            score0.setAttribute('fill', SCORE.fill[0]);
+            score0.setAttribute('stroke', SCORE.stroke[0]);
+
+            score1.setAttribute('fill', SCORE.fill[1]);
+            score1.setAttribute('stroke', SCORE.stroke[1]);
+
             if (this.match.gameState > 0) {
                 if (this.match.turn == 0) {
-                    svg.querySelector('.score0').setAttribute(
-                        'stroke',
-                        SCORE.highlight
-                    );
-                    svg.querySelector('.score1').setAttribute(
-                        'stroke',
-                        SCORE.stroke[1]
-                    );
+                    score0.setAttribute('stroke', SCORE.highlight);
+                    score1.setAttribute('stroke', SCORE.stroke[1]);
                 } else if (this.match.turn == 1) {
-                    svg.querySelector('.score1').setAttribute(
-                        'stroke',
-                        SCORE.highlight
-                    );
-                    svg.querySelector('.score0').setAttribute(
-                        'stroke',
-                        SCORE.stroke[0]
-                    );
+                    score1.setAttribute('stroke', SCORE.highlight);
+                    score0.setAttribute('stroke', SCORE.stroke[0]);
                 }
             }
         }
@@ -1411,11 +1458,17 @@ customElements.define(
                     'text'
                 );
                 label.setAttribute('x', BOARD.middleX);
+                const topY = BOARD.middleY - PIP_COUNT.offsetY;
+                const bottomY = BOARD.middleY + PIP_COUNT.offsetY;
                 label.setAttribute(
                     'y',
                     player == 0
-                        ? BOARD.middleY - PIP_COUNT.offsetY
-                        : BOARD.middleY + PIP_COUNT.offsetY
+                        ? this.player == 0
+                            ? bottomY
+                            : topY
+                        : this.player == 0
+                        ? topY
+                        : bottomY
                 );
                 label.setAttribute('text-anchor', 'middle');
                 label.setAttribute('alignment-baseline', 'middle');
@@ -1479,14 +1532,9 @@ customElements.define(
 
             this.match.dice.forEach((pips, index) => {
                 let x;
-                if (index == 0)
-                    x =
-                        (this.match.player == 0 ? BOARD.leftX : BOARD.rightX) -
-                        (DIE.width + DIE.padding);
-                else
-                    x =
-                        (this.match.player == 0 ? BOARD.leftX : BOARD.rightX) +
-                        DIE.padding;
+                if (index == 0) x = BOARD.rightX - (DIE.width + DIE.padding);
+                else x = BOARD.rightX + DIE.padding;
+
                 let die;
                 switch (pips) {
                     case 1:
