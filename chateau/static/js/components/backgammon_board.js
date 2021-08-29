@@ -482,6 +482,15 @@ reject.innerHTML = `
     </svg>
 `;
 
+let undoButtonTemplate = document.createElement('template');
+// prettier-ignore
+undoButtonTemplate.innerHTML = `
+    <svg width="${ROLL_DOUBLE_SKIP.width}" height="${ROLL_DOUBLE_SKIP.height}" viewBox ="0 0 ${ROLL_DOUBLE_SKIP.width} ${ROLL_DOUBLE_SKIP.height}">
+        <rect width="${ROLL_DOUBLE_SKIP.width}" height="${ROLL_DOUBLE_SKIP.height}" rx="${ROLL_DOUBLE_SKIP.radius}" ry="${ROLL_DOUBLE_SKIP.radius}" fill="${ROLL_DOUBLE_SKIP.fill}" />
+        <text x="${ROLL_DOUBLE_SKIP.width / 2}" y="${ROLL_DOUBLE_SKIP.height / 2}" fill="white" text-anchor="middle" alignment-baseline="middle" font-size="2rem">Undo</text>
+    </svg>
+`;
+
 customElements.define(
     'backgammon-board',
     class extends HTMLElement {
@@ -630,7 +639,8 @@ customElements.define(
         }
 
         update(msg) {
-            let game = this.decode(msg.id);
+            this.gnubgID = msg.id;
+            let game = this.decode(this.gnubgID);
             this.match = game.match;
             this.position = game.position;
             console.log(this.match, this.position);
@@ -970,8 +980,10 @@ customElements.define(
                         this.match.dice[0] != 0 &&
                         this.match.gameState == 1 &&
                         !this.match.resign
-                    )
+                    ) {
                         this.drawDice();
+                        this.drawUndo();
+                    }
                     if (
                         this.match.gameState == 1 &&
                         !this.match.resign &&
@@ -1569,6 +1581,30 @@ customElements.define(
             });
         }
 
+        drawUndo() {
+            if (this.moveList.length) {
+                const svg = this.shadowRoot.querySelector('svg');
+
+                let undoButton = undoButtonTemplate.content.cloneNode(true);
+                undoButton.firstElementChild.setAttribute(
+                    'x',
+                    BOARD.leftX - ROLL_DOUBLE_SKIP.width / 2
+                );
+                undoButton.firstElementChild.setAttribute(
+                    'y',
+                    BOARD.middleY - ROLL_DOUBLE_SKIP.height / 2
+                );
+                undoButton.firstElementChild.className.baseVal = 'foreground';
+                undoButton.firstElementChild.addEventListener(
+                    'click',
+                    (event) => {
+                        this.undo(event);
+                    }
+                );
+                svg.appendChild(undoButton);
+            }
+        }
+
         drawSkip() {
             const svg = this.shadowRoot.querySelector('svg');
 
@@ -1743,6 +1779,22 @@ customElements.define(
             [this.plays, this.reversedPlays] = [this.reversedPlays, this.plays];
             console.log(this.plays);
 
+            this.clear();
+            this.draw();
+        }
+
+        undo(event) {
+            if (this.player != this.match.player) return;
+
+            if (!this.moveList.length) return;
+
+            let game = this.decode(this.gnubgID);
+            this.match = game.match;
+            this.position = game.position;
+            this.plays = null;
+            this.reversedPlays = null;
+            [this.plays, this.reversedPlays] = this.generatePlays();
+            this.moveList = [];
             this.clear();
             this.draw();
         }
