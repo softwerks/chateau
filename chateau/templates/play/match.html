@@ -4,6 +4,10 @@
 
 {% block title %}Matchmaker | {% endblock %}
 
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/play.css') }}" />
+{% endblock %}
+
 {% block content %}
 <match-maker websocketURL="{{ websocket_url }}"></match-maker>
 {% endblock %}

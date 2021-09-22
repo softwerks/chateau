@@ -166,12 +166,11 @@ let template = document.createElement('template');
 template.innerHTML = `
     <style>
         :host {
-            align-items: center;
+            width: 100%;
+            height: 100%;
             display: flex;
-            flex-direction: column;
             justify-content: center;
-            width: 100vw;
-            height: 100vh;
+            align-items: center;
         }
 
         #shareurl p {
@@ -221,7 +220,8 @@ template.innerHTML = `
 
         #backgammon {
             display: none;
-            max-width: 64rem;
+            width: 100%;
+            height: 100%;
         }
 
         text {

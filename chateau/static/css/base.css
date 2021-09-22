@@ -1,3 +1,8 @@
+html {
+    width: 100%;
+    height: 100%;
+}
+
 a {
     text-decoration: none;
 }
@@ -7,9 +12,8 @@ body {
         Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
         "Segoe UI Symbol";
     background: rgb(248, 248, 248);
-    min-height: 100vh;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
+    width: 100%;
+    height: 100%;
 }
 
 footer {
